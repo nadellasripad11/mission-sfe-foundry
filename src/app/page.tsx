@@ -5,7 +5,6 @@ import Link from 'next/link';
 
 export default function Home() {
   const [scrollY, setScrollY] = useState(0);
-  const [titleIndex, setTitleIndex] = useState(0);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const [email, setEmail] = useState('');
 
@@ -14,15 +13,6 @@ export default function Home() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Typing effect
-  const fullTitle = 'Mission SFE Foundry';
-  useEffect(() => {
-    if (titleIndex < fullTitle.length) {
-      const timer = setTimeout(() => setTitleIndex(titleIndex + 1), 80);
-      return () => clearTimeout(timer);
-    }
-  }, [titleIndex]);
 
   const handleJoinSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,66 +39,141 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-[#47453f] text-[#e6f4fe] font-mono overflow-x-hidden">
+    <div className="bg-[#050505] text-white overflow-x-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
       <style>{`
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-30px); } }
-        @keyframes sway { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes walk { 0%, 100% { transform: translateX(0) translateY(0); } 25% { transform: translateX(20px) translateY(-8px); } 50% { transform: translateX(40px) translateY(0); } 75% { transform: translateX(20px) translateY(-8px); } }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        * {
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
 
-        .float-slow { animation: float 8s ease-in-out infinite; }
-        .float-slower { animation: float 10s ease-in-out infinite 2s; }
-        .sway-anim { animation: sway 4s ease-in-out infinite; }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(24px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
 
-        .slide-in-1 { animation: slideIn 0.6s ease-out forwards; }
-        .slide-in-2 { animation: slideIn 0.6s ease-out 0.1s forwards; opacity: 0; }
-        .slide-in-3 { animation: slideIn 0.6s ease-out 0.2s forwards; opacity: 0; }
-        .slide-in-4 { animation: slideIn 0.6s ease-out 0.3s forwards; opacity: 0; }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
 
-        .event-slide-1 { animation: slideInLeft 0.6s ease-out forwards; }
-        .event-slide-2 { animation: slideInLeft 0.6s ease-out 0.1s forwards; opacity: 0; }
-        .event-slide-3 { animation: slideInLeft 0.6s ease-out 0.2s forwards; opacity: 0; }
-        .event-slide-4 { animation: slideInLeft 0.6s ease-out 0.3s forwards; opacity: 0; }
+        .fade-in-up {
+          animation: fadeInUp 0.7s ease-out forwards;
+        }
 
-        .project-scale:nth-child(1) { animation: slideIn 0.5s ease-out forwards; }
-        .project-scale:nth-child(2) { animation: slideIn 0.5s ease-out 0.05s forwards; opacity: 0; }
-        .project-scale:nth-child(3) { animation: slideIn 0.5s ease-out 0.1s forwards; opacity: 0; }
-        .project-scale:nth-child(4) { animation: slideIn 0.5s ease-out 0.15s forwards; opacity: 0; }
-        .project-scale:nth-child(5) { animation: slideIn 0.5s ease-out 0.2s forwards; opacity: 0; }
-        .project-scale:nth-child(6) { animation: slideIn 0.5s ease-out 0.25s forwards; opacity: 0; }
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
 
-        .modal-overlay { animation: fadeIn 0.2s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .glass-card {
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(16px);
+        }
+
+        .glass-card-hover {
+          transition: all 0.3s ease;
+          border-color: rgba(255, 69, 0, 0.2);
+        }
+
+        .glass-card-hover:hover {
+          background: linear-gradient(135deg, rgba(255, 69, 0, 0.08), rgba(255, 69, 0, 0.02));
+          border-color: rgba(255, 69, 0, 0.4);
+          transform: translateY(-4px);
+        }
+
+        .accent-orange { color: #FF4500; }
+        .accent-lime { color: #A3E635; }
+
+        .gradient-text {
+          background: linear-gradient(135deg, #FF4500, #FF6B35);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .btn-primary {
+          background: #FF4500;
+          color: #050505;
+          font-weight: 600;
+          transition: all 0.3s ease;
+          border: 1px solid #FF4500;
+        }
+
+        .btn-primary:hover {
+          background: #FF6B35;
+          border-color: #FF6B35;
+          box-shadow: 0 8px 24px rgba(255, 69, 0, 0.3);
+        }
+
+        .btn-secondary {
+          background: transparent;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: white;
+          font-weight: 600;
+          transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+          border-color: #FF4500;
+          background: rgba(255, 69, 0, 0.1);
+        }
+
+        .scroll-progress {
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 2px;
+          background: linear-gradient(90deg, #FF4500 0%, #FF6B35 100%);
+          z-index: 100;
+          box-shadow: 0 0 20px rgba(255, 69, 0, 0.5);
+        }
+
+        input::placeholder { color: #6a6a6a; }
+        input:focus { outline: none; }
+
+        .nav-link {
+          color: #a1a1aa;
+          transition: all 0.3s ease;
+          font-size: 14px;
+          font-weight: 500;
+        }
+
+        .nav-link:hover {
+          color: #FF4500;
+        }
+
+        h1, h2, h3 {
+          font-weight: 700;
+          letter-spacing: -0.5px;
+        }
       `}</style>
+
+      {/* Scroll Progress */}
+      <div className="scroll-progress" style={{ width: `${(scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100}%` }} />
 
       {/* Join Modal */}
       {joinModalOpen && (
-        <div className="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-[#4b4840] border-2 border-[#c48382] p-8 max-w-md w-full rounded-lg">
-            <h3 className="text-3xl font-bold text-[#cbc1ae] mb-4">Join SFE Foundry</h3>
-            <p className="text-[#809fb7] mb-6">Get updates on hackathons, workshops, and opportunities.</p>
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="glass-card p-8 max-w-md w-full rounded-2xl">
+            <h3 className="text-2xl font-bold mb-2">Get early access</h3>
+            <p className="text-[#a1a1aa] text-sm mb-6">Join SFE Foundry and start building with us.</p>
             <form onSubmit={handleJoinSubmit} className="space-y-4">
               <input
                 type="email"
                 placeholder="your@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-[#47453f] text-[#e6f4fe] border-2 border-[#6c6659] placeholder-[#7f796d] font-mono focus:outline-none focus:border-[#c48382] transition"
+                className="w-full px-4 py-3 bg-[#1a1a1a] text-white rounded-lg border border-[#333333] focus:border-[#FF4500] transition"
                 required
               />
               <div className="flex gap-3">
-                <button
-                  type="submit"
-                  className="flex-1 px-4 py-3 bg-[#c48382] text-[#47453f] font-bold hover:bg-[#d49492] transition border-2 border-[#c48382]"
-                >
-                  Join →
+                <button type="submit" className="flex-1 btn-primary px-4 py-3 rounded-lg">
+                  Join
                 </button>
                 <button
                   type="button"
                   onClick={() => setJoinModalOpen(false)}
-                  className="flex-1 px-4 py-3 border-2 border-[#6c6659] text-[#809fb7] hover:border-[#809fb7] transition font-bold"
+                  className="flex-1 btn-secondary px-4 py-3 rounded-lg"
                 >
                   Close
                 </button>
@@ -118,113 +183,100 @@ export default function Home() {
         </div>
       )}
 
-      {/* Sticky Nav */}
-      <nav className="fixed top-0 w-full bg-[#47453f]/95 backdrop-blur z-50 border-b border-[#6c6659] py-3 px-8">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="text-lg font-bold tracking-wider text-[#c48382]">&gt; SFE</div>
-          <div className="hidden md:flex gap-8 text-sm">
-            <a href="#about" className="hover:text-[#93b4cd] transition">about</a>
-            <a href="#events" className="hover:text-[#c48382] transition">events</a>
-            <a href="#projects" className="hover:text-[#809fb7] transition">projects</a>
-            <a href="#join" className="hover:text-[#cbc1ae] transition">join</a>
+      {/* Navigation */}
+      <nav className="fixed top-0 w-full z-40 backdrop-blur-md border-b border-[#1a1a1a]">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="text-xl font-bold accent-orange">SFE</div>
+          <div className="hidden md:flex gap-8">
+            <a href="#about" className="nav-link">About</a>
+            <a href="#events" className="nav-link">Events</a>
+            <a href="#projects" className="nav-link">Projects</a>
+            <a href="#join" className="nav-link">Join</a>
           </div>
         </div>
       </nav>
 
       {/* Hero */}
-      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-b from-[#4b4840] to-[#47453f] pt-20 overflow-hidden">
-        {/* Animated gradient blobs */}
-        <div className="absolute w-96 h-96 bg-gradient-to-r from-[#c48382] to-[#93b4cd] rounded-full opacity-5 blur-3xl float-slow" style={{ top: '10%', left: '10%' }} />
-        <div className="absolute w-96 h-96 bg-gradient-to-r from-[#809fb7] to-[#c48382] rounded-full opacity-5 blur-3xl float-slower" style={{ bottom: '10%', right: '10%' }} />
+      <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-[#050505] to-[#0f0f0f]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#FF4500] opacity-10 blur-3xl rounded-full" />
 
-        {/* Parallax symbols */}
-        <div className="absolute top-20 left-10 text-7xl opacity-10 pointer-events-none font-bold" style={{ transform: `translateY(${scrollY * 0.5}px)` }}>&lt;/&gt;</div>
-        <div className="absolute bottom-32 right-10 text-7xl opacity-10 pointer-events-none font-bold" style={{ transform: `translateY(${scrollY * -0.3}px)` }}>{ }</div>
+        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
+          <div className="fade-in-up">
+            <p className="text-[#a1a1aa] text-sm font-medium mb-6 tracking-wide">The future of student innovation</p>
+          </div>
 
-        <div className="relative z-10 max-w-5xl mx-auto px-8 text-center">
-          <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tight">
-            <span className="text-[#c48382]">&gt; </span>
-            {fullTitle.slice(0, titleIndex)}
-            <span className="animate-pulse text-[#93b4cd]">|</span>
+          <h1 className="fade-in-up stagger-1 text-5xl md:text-7xl font-bold mb-6 leading-tight">
+            Build. <span className="gradient-text">Ship.</span> Scale.
           </h1>
-          <p className="text-xl md:text-3xl text-[#809fb7] mb-8 font-light leading-relaxed max-w-2xl mx-auto">
-            Code a project. Fly to shipping. Build mechanical dreams.
+
+          <p className="fade-in-up stagger-2 text-lg text-[#a1a1aa] mb-8 max-w-2xl mx-auto leading-relaxed">
+            A community of student builders launching real products. Join us for hackathons, mentorship, and the opportunity to build something that matters.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <button onClick={() => setJoinModalOpen(true)} className="px-8 py-4 bg-[#c48382] text-[#47453f] font-bold text-lg hover:bg-[#d49492] transition border-2 border-[#c48382] transform hover:scale-105 duration-300">
-              → Join Now
+
+          <div className="fade-in-up stagger-3 flex flex-col sm:flex-row gap-4 justify-center mb-20">
+            <button
+              onClick={() => setJoinModalOpen(true)}
+              className="btn-primary px-8 py-4 rounded-lg font-semibold"
+            >
+              Get Started
             </button>
-            <Link href="/events" className="px-8 py-4 border-2 border-[#809fb7] text-[#809fb7] hover:bg-[#809fb7] hover:text-[#47453f] transition font-bold text-lg transform hover:scale-105 duration-300 text-center">
-              ↓ See Events
+            <Link
+              href="/events"
+              className="btn-secondary px-8 py-4 rounded-lg font-semibold"
+            >
+              Explore Events
             </Link>
           </div>
 
-          {/* Walking Creature */}
-          <div className="mt-16 w-full h-32 flex items-center justify-center overflow-hidden opacity-90">
-            <svg viewBox="0 0 600 120" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
-              {/* Creature body */}
-              <rect x="200" y="40" width="200" height="40" rx="8" fill="#c48382" opacity="0.7" className="animate-walk" style={{ animationDuration: '3s' }} />
-
-              {/* Wheels/legs - left side */}
-              <g className="animate-spin" style={{ transformOrigin: '240px 80px', animationDuration: '1s' }}>
-                <circle cx="240" cy="80" r="20" fill="none" stroke="#809fb7" strokeWidth="3" opacity="0.8" />
-                <line x1="240" y1="60" x2="240" y2="100" stroke="#809fb7" strokeWidth="2" opacity="0.8" />
-              </g>
-
-              {/* Wheels/legs - middle */}
-              <g className="animate-spin" style={{ transformOrigin: '300px 80px', animationDuration: '1s' }}>
-                <circle cx="300" cy="80" r="20" fill="none" stroke="#93b4cd" strokeWidth="3" opacity="0.8" />
-                <line x1="300" y1="60" x2="300" y2="100" stroke="#93b4cd" strokeWidth="2" opacity="0.8" />
-              </g>
-
-              {/* Wheels/legs - right side */}
-              <g className="animate-spin" style={{ transformOrigin: '360px 80px', animationDuration: '1s' }}>
-                <circle cx="360" cy="80" r="20" fill="none" stroke="#809fb7" strokeWidth="3" opacity="0.8" />
-                <line x1="360" y1="60" x2="360" y2="100" stroke="#809fb7" strokeWidth="2" opacity="0.8" />
-              </g>
-
-              {/* Sail/antenna */}
-              <path d="M 300 40 L 280 10 L 300 20 Z" fill="#c48382" opacity="0.6" style={{ animation: 'flutter 2s ease-in-out infinite' }} />
-              <path d="M 300 40 L 320 10 L 300 20 Z" fill="#93b4cd" opacity="0.6" style={{ animation: 'flutter 2s ease-in-out infinite 0.5s' }} />
-            </svg>
-          </div>
-
-          {/* SVG Diagram */}
-          <div className="mt-4 opacity-60 hover:opacity-100 transition duration-500">
-            <svg viewBox="0 0 400 300" className="w-full h-auto max-w-md mx-auto">
-              <rect x="0" y="250" width="400" height="50" fill="#cbc1ae" opacity="0.3" />
-              {[0, 80, 160, 240, 320].map((x) => (
-                <g key={x}>
-                  <line x1={x + 40} y1="150" x2={x + 40} y2="240" stroke="#c48382" strokeWidth="4" opacity="0.6" className="sway-anim" style={{ transformOrigin: `${x + 40}px 150px` }} />
-                  <circle cx={x + 40} cy="245" r="8" fill="#c48382" opacity="0.5" />
-                </g>
-              ))}
-              <rect x="50" y="100" width="300" height="60" rx="8" fill="#93b4cd" opacity="0.8" />
-              <path d="M 200 80 L 180 40 L 200 50 Z" fill="#809fb7" opacity="0.7" style={{ animation: 'flutter 3s ease-in-out infinite' }} />
-              <path d="M 220 80 L 240 40 L 220 50 Z" fill="#c48382" opacity="0.7" style={{ animation: 'flutter 3s ease-in-out infinite 0.5s' }} />
-            </svg>
+          {/* Stats */}
+          <div className="fade-in-up stagger-4 grid md:grid-cols-3 gap-6 mt-16">
+            {[
+              { label: 'Builders', value: '500+' },
+              { label: 'Projects', value: '100+' },
+              { label: 'Events', value: '12+' },
+            ].map((stat, i) => (
+              <div key={i} className="glass-card p-6 rounded-lg">
+                <div className="text-3xl font-bold accent-orange mb-2">{stat.value}</div>
+                <div className="text-sm text-[#a1a1aa]">{stat.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* What We Do */}
-      <section id="about" className="py-20 bg-[#47453f] border-t-4 border-[#6c6659]">
-        <div className="max-w-6xl mx-auto px-8">
-          <h2 className="text-5xl font-bold mb-16 text-[#c48382]">&gt; What We Build</h2>
+      {/* About */}
+      <section id="about" className="relative py-24 px-6 border-t border-[#1a1a1a]">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold mb-16">What we're building</h2>
+
           <div className="grid md:grid-cols-2 gap-8">
             {[
-              { title: 'Monthly Hackathons', desc: '48-hour sprints where you ship real projects.', icon: '⚡' },
-              { title: 'Pitch Competitions', desc: 'Showcase ideas to judges and investors.', icon: '🎯' },
-              { title: 'Workshops', desc: 'Learn from founders and engineers.', icon: '📚' },
-              { title: 'Team Building', desc: 'Find co-founders and collaborate.', icon: '🤝' },
+              {
+                icon: '⚡',
+                title: 'Hackathons',
+                desc: '48-hour sprints to build and ship real products with mentorship.'
+              },
+              {
+                icon: '🎯',
+                title: 'Pitch Competitions',
+                desc: 'Showcase your ideas to investors and win seed funding.'
+              },
+              {
+                icon: '📚',
+                title: 'Workshops',
+                desc: 'Learn from founders and industry experts building real companies.'
+              },
+              {
+                icon: '🤝',
+                title: 'Community',
+                desc: 'Connect with ambitious student builders and find your co-founders.'
+              },
             ].map((item, idx) => (
-              <div key={idx} className={`p-8 border-2 border-[#6c6659] hover:border-[#c48382] transition bg-[#4b4840] hover:bg-[#504e47] group transform hover:scale-105 cursor-pointer relative overflow-hidden slide-in-${idx + 1}`}>
-                <div className="absolute inset-0 bg-gradient-to-br from-[#c48382] to-transparent opacity-0 group-hover:opacity-10 transition" />
-                <div className="relative z-10">
-                  <div className="text-6xl mb-4 group-hover:scale-125 transition duration-300">{item.icon}</div>
-                  <h3 className="text-2xl font-bold text-[#cbc1ae] mb-3 group-hover:text-[#c48382] transition">{item.title}</h3>
-                  <p className="text-[#809fb7] group-hover:text-[#93b4cd] transition">{item.desc}</p>
-                </div>
+              <div key={idx} className="glass-card glass-card-hover p-8 rounded-xl">
+                <div className="text-4xl mb-4">{item.icon}</div>
+                <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+                <p className="text-[#a1a1aa]">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -232,141 +284,130 @@ export default function Home() {
       </section>
 
       {/* Events */}
-      <section id="events" className="py-20 bg-[#4b4840] border-t-4 border-[#6c6659]">
-        <div className="max-w-6xl mx-auto px-8">
-          <h2 className="text-5xl font-bold mb-16 text-[#809fb7]">&gt; Upcoming Events</h2>
+      <section id="events" className="relative py-24 px-6 border-t border-[#1a1a1a]">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold mb-16">Upcoming events</h2>
+
           <div className="space-y-6">
             {[
-              { date: 'July 15-17', name: 'Summer Hackathon 2026', desc: 'Build anything. Win prizes. Ship fast.' },
-              { date: 'August 5', name: 'Pitch Competition', desc: 'Pitch for mentorship & funding.' },
-              { date: 'Biweekly Thu', name: 'Founder Workshops', desc: 'Learn from real founders.' },
-              { date: 'Sept 20', name: 'Demo Day', desc: 'Showcase to investors & community.' },
+              { date: 'July 15-17', name: 'Summer Hackathon 2026', desc: '48-hour sprint to build and ship.' },
+              { date: 'August 5', name: 'Pitch Competition', desc: 'Pitch for $5K seed funding and mentorship.' },
+              { date: 'Biweekly', name: 'Founder Workshops', desc: 'Learn from founders building real companies.' },
+              { date: 'Sept 20', name: 'Demo Day', desc: 'Showcase projects to investors and the community.' },
             ].map((event, idx) => (
-              <div key={idx} className={`group p-8 border-l-4 border-[#c48382] bg-[#47453f] hover:bg-[#504e47] transition relative overflow-hidden transform hover:translate-x-2 event-slide-${idx + 1}`}>
-                <div className="absolute inset-0 bg-gradient-to-r from-[#c48382] to-transparent opacity-0 group-hover:opacity-5 transition" />
-                <div className="relative z-10 flex justify-between items-start">
-                  <div>
-                    <span className="text-[#93b4cd] text-sm font-bold uppercase block mb-2">{event.date}</span>
-                    <h3 className="text-3xl font-bold text-[#cbc1ae] mb-3 group-hover:text-[#c48382] transition">{event.name}</h3>
-                    <p className="text-[#809fb7]">{event.desc}</p>
+              <Link key={idx} href="/events" className="glass-card glass-card-hover p-6 rounded-xl block group">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <p className="text-xs uppercase tracking-wider text-[#FF4500] font-semibold mb-2">{event.date}</p>
+                    <h3 className="text-xl font-bold group-hover:text-[#FF4500] transition mb-2">{event.name}</h3>
+                    <p className="text-[#a1a1aa]">{event.desc}</p>
                   </div>
-                  <Link href="/events" className="px-6 py-3 bg-[#c48382] text-[#47453f] font-bold hover:bg-[#d49492] transition text-sm transform group-hover:scale-110 whitespace-nowrap text-center">Learn →</Link>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
       {/* Projects */}
-      <section id="projects" className="py-20 bg-[#47453f] border-t-4 border-[#6c6659]">
-        <div className="max-w-6xl mx-auto px-8">
-          <h2 className="text-5xl font-bold mb-4 text-[#cbc1ae]">&gt; Wall of Fame</h2>
-          <p className="text-[#809fb7] mb-16 text-lg">Real products built by our community.</p>
+      <section id="projects" className="relative py-24 px-6 border-t border-[#1a1a1a]">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold mb-16">Wall of fame</h2>
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { name: 'TechStart MVP', by: 'Sarah & Alex', desc: 'AI scheduling', emoji: '🚀' },
-              { name: 'EcoTracker', by: 'Jordan', desc: 'Carbon footprint monitor', emoji: '🌍' },
-              { name: 'StudySync', by: 'Team of 4', desc: 'Collab study platform', emoji: '📚' },
-              { name: 'FinanceFlow', by: 'Maya', desc: 'Personal finance app', emoji: '💰' },
-              { name: 'MusicMatch', by: 'Chris & Sam', desc: 'AI playlist generator', emoji: '🎵' },
-              { name: 'HealthHub', by: 'Lisa', desc: 'Wellness tracking', emoji: '❤️' },
+              { emoji: '🚀', name: 'TechStart MVP', by: 'Sarah & Alex' },
+              { emoji: '🌍', name: 'EcoTracker', by: 'Jordan' },
+              { emoji: '📚', name: 'StudySync', by: 'Team of 4' },
+              { emoji: '💰', name: 'FinanceFlow', by: 'Maya' },
+              { emoji: '🎵', name: 'MusicMatch', by: 'Chris & Sam' },
+              { emoji: '❤️', name: 'HealthHub', by: 'Lisa' },
             ].map((proj, idx) => (
-              <Link key={idx} href="/projects" className="project-scale p-6 border-2 border-[#6c6659] bg-[#4b4840] hover:border-[#93b4cd] transition group relative overflow-hidden transform hover:scale-105 block">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#93b4cd] to-transparent opacity-0 group-hover:opacity-10 transition" />
-                <div className="relative z-10">
-                  <div className="text-5xl mb-3 group-hover:scale-125 transition duration-300">{proj.emoji}</div>
-                  <h3 className="text-lg font-bold text-[#93b4cd]">{proj.name}</h3>
-                  <p className="text-[#809fb7] text-sm mb-2">{proj.desc}</p>
-                  <p className="text-[#7f796d] text-xs">by {proj.by}</p>
-                </div>
+              <Link key={idx} href="/projects" className="glass-card glass-card-hover p-6 rounded-xl block">
+                <div className="text-4xl mb-4">{proj.emoji}</div>
+                <h3 className="text-lg font-bold mb-2">{proj.name}</h3>
+                <p className="text-sm text-[#a1a1aa]">by {proj.by}</p>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Who Can Join */}
-      <section className="py-20 bg-[#4b4840] border-t-4 border-[#6c6659]">
-        <div className="max-w-6xl mx-auto px-8">
-          <h2 className="text-5xl font-bold mb-12 text-[#809fb7]">&gt; Who Can Join?</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {['Builders', 'Designers', 'Marketers', 'Visionaries', 'Makers', 'Leaders', 'Thinkers', 'Doers'].map((role, idx) => (
-              <div key={idx} className="p-6 border-2 border-[#6c6659] bg-[#47453f] hover:bg-[#504e47] text-center transition group transform hover:scale-110 cursor-pointer" style={{ animation: `slideIn 0.5s ease-out ${idx * 50}ms forwards`, opacity: 0 }}>
-                <p className="font-bold text-[#cbc1ae] group-hover:text-[#c48382] transition">{role}</p>
-              </div>
+      {/* Resources */}
+      <section className="relative py-24 px-6 border-t border-[#1a1a1a]">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-bold mb-16">Resources & guides</h2>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { emoji: '🚀', title: 'Startup 101' },
+              { emoji: '⚙️', title: 'Tech Stack' },
+              { emoji: '📊', title: 'Pitch Deck' },
+              { emoji: '🎨', title: 'Design System' },
+              { emoji: '📢', title: 'Marketing' },
+              { emoji: '👥', title: 'Mentorship' },
+            ].map((res, idx) => (
+              <Link key={idx} href="/resources" className="glass-card glass-card-hover p-6 rounded-xl block">
+                <div className="text-3xl mb-3">{res.emoji}</div>
+                <h3 className="font-bold">{res.title}</h3>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
       {/* CTA */}
-      <section id="join" className="py-20 bg-[#c48382] text-[#47453f] border-t-4 border-[#a06866] relative overflow-hidden">
-        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, currentColor 1px, transparent 1px)', backgroundSize: '50px 50px' }} />
-        <div className="max-w-4xl mx-auto px-8 text-center relative z-10">
-          <h2 className="text-6xl font-black mb-6">Ready to Ship?</h2>
-          <p className="text-xl mb-12 opacity-90">Join ambitious students building real products that matter.</p>
-          <form className="max-w-md mx-auto flex flex-col sm:flex-row gap-3 mb-8">
-            <input type="email" placeholder="your@email.com" className="flex-1 px-4 py-4 bg-white text-[#47453f] font-mono placeholder-gray-400 border-2 border-[#47453f] focus:outline-none transition" required />
-            <button type="submit" className="px-8 py-4 bg-[#47453f] text-[#c48382] font-bold hover:bg-[#3a3632] transition border-2 border-[#47453f] transform hover:scale-105">Join →</button>
-          </form>
-          <p className="text-sm opacity-75">Updates, opportunities, zero spam.</p>
-        </div>
-      </section>
-
-      {/* Resources */}
-      <section className="py-20 bg-[#47453f] border-t-4 border-[#6c6659]">
-        <div className="max-w-6xl mx-auto px-8">
-          <h2 className="text-5xl font-bold mb-12 text-[#cbc1ae]">&gt; Resources</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { title: 'Startup 101', desc: 'Entrepreneurship guide.' },
-              { title: 'Tech Stack', desc: 'Tools for shipping fast.' },
-              { title: 'Pitch Deck', desc: 'Investor-ready template.' },
-              { title: 'Design System', desc: 'UI/UX principles.' },
-              { title: 'Marketing', desc: 'Go-to-market strategy.' },
-              { title: 'Mentorship', desc: 'Connect with experts.' },
-            ].map((res, idx) => (
-              <Link key={idx} href="/resources" className="p-6 border-2 border-[#6c6659] bg-[#4b4840] hover:border-[#809fb7] transition group transform hover:translate-y-[-4px] block">
-                <h3 className="text-xl font-bold text-[#93b4cd] mb-2 group-hover:text-[#809fb7]">{res.title}</h3>
-                <p className="text-[#7f796d] text-sm">{res.desc}</p>
-                <div className="mt-4 text-[#c48382] font-bold group-hover:translate-x-1 transition">→ Read</div>
+      <section id="join" className="relative py-24 px-6 border-t border-[#1a1a1a]">
+        <div className="max-w-4xl mx-auto">
+          <div className="glass-card p-12 md:p-16 rounded-2xl text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">Ready to build?</h2>
+            <p className="text-[#a1a1aa] mb-8 max-w-2xl mx-auto">Join ambitious student builders creating products that matter.</p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={() => setJoinModalOpen(true)}
+                className="btn-primary px-8 py-4 rounded-lg font-semibold"
+              >
+                Join the community
+              </button>
+              <Link href="/events" className="btn-secondary px-8 py-4 rounded-lg font-semibold">
+                View events
               </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="py-20 bg-[#4b4840] border-t-4 border-[#6c6659]">
-        <div className="max-w-3xl mx-auto px-8">
-          <h2 className="text-5xl font-bold mb-12 text-[#809fb7]">&gt; FAQ</h2>
-          <div className="space-y-8">
-            {[
-              { q: 'Do I need experience?', a: 'Nope. All levels welcome.' },
-              { q: 'Is there a cost?', a: 'No. Completely free.' },
-              { q: 'Can I join without a team?', a: 'Yes. We help you find teammates.' },
-              { q: 'What if I build something cool?', a: 'We help you ship and launch it.' },
-            ].map((faq, idx) => (
-              <div key={idx} className="border-l-4 border-[#c48382] pl-6 group hover:pl-8 transition">
-                <h3 className="text-xl font-bold text-[#cbc1ae] mb-2 group-hover:text-[#c48382] transition">{faq.q}</h3>
-                <p className="text-[#809fb7]">{faq.a}</p>
-              </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#3a3a38] border-t-4 border-[#c48382] py-12">
-        <div className="max-w-6xl mx-auto px-8">
+      <footer className="border-t border-[#1a1a1a] py-12 px-6">
+        <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div><h3 className="text-2xl font-bold text-[#c48382] mb-3">&gt; SFE</h3><p className="text-[#7f796d] text-sm">Empowering student builders since 2026.</p></div>
-            <div><h4 className="font-bold text-[#cbc1ae] mb-4">Links</h4><ul className="space-y-2 text-sm"><li><a href="#events" className="text-[#809fb7] hover:text-[#c48382]">Events</a></li><li><a href="#projects" className="text-[#809fb7] hover:text-[#c48382]">Projects</a></li><li><a href="#join" className="text-[#809fb7] hover:text-[#c48382]">Join</a></li></ul></div>
-            <div><h4 className="font-bold text-[#cbc1ae] mb-4">Resources</h4><ul className="space-y-2 text-sm"><li><a href="#" className="text-[#809fb7] hover:text-[#c48382]">Guides</a></li><li><a href="#" className="text-[#809fb7] hover:text-[#c48382]">Templates</a></li><li><a href="#" className="text-[#809fb7] hover:text-[#c48382]">Community</a></li></ul></div>
-            <div><h4 className="font-bold text-[#cbc1ae] mb-4">Contact</h4><p className="text-sm text-[#809fb7]">foundry@school.edu</p><p className="text-xs text-[#7f796d] mt-3">Discord: @sfe-foundry</p></div>
+            <div>
+              <h3 className="text-lg font-bold accent-orange mb-2">SFE</h3>
+              <p className="text-sm text-[#a1a1aa]">Building the next generation of founders.</p>
+            </div>
+            <div>
+              <h4 className="font-bold mb-4">Links</h4>
+              <ul className="space-y-2 text-sm text-[#a1a1aa]">
+                <li><a href="#events" className="hover:text-[#FF4500] transition">Events</a></li>
+                <li><a href="#projects" className="hover:text-[#FF4500] transition">Projects</a></li>
+                <li><a href="#about" className="hover:text-[#FF4500] transition">About</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold mb-4">Resources</h4>
+              <ul className="space-y-2 text-sm text-[#a1a1aa]">
+                <li><a href="/resources" className="hover:text-[#FF4500] transition">Guides</a></li>
+                <li><a href="/resources" className="hover:text-[#FF4500] transition">Templates</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold mb-4">Contact</h4>
+              <p className="text-sm text-[#a1a1aa]">foundry@school.edu</p>
+            </div>
           </div>
-          <div className="border-t border-[#6c6659] pt-8 text-center text-sm text-[#7f796d]"><p>© 2026 Mission SFE Foundry. Built by students, for students.</p></div>
+          <div className="border-t border-[#1a1a1a] pt-8 text-center text-sm text-[#6a6a6a]">
+            <p>© 2026 Mission SFE Foundry. Built by students, for students.</p>
+          </div>
         </div>
       </footer>
     </div>
