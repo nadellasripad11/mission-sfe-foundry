@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 export default function Home() {
   const [scrollY, setScrollY] = useState(0);
   const [titleIndex, setTitleIndex] = useState(0);
+  const [joinModalOpen, setJoinModalOpen] = useState(false);
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -21,6 +24,13 @@ export default function Home() {
     }
   }, [titleIndex]);
 
+  const handleJoinSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Join request:', { email });
+    setEmail('');
+    setJoinModalOpen(false);
+  };
+
   return (
     <div className="bg-[#47453f] text-[#e6f4fe] font-mono overflow-x-hidden">
       <style>{`
@@ -28,6 +38,8 @@ export default function Home() {
         @keyframes sway { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } }
         @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes walk { 0%, 100% { transform: translateX(0) translateY(0); } 25% { transform: translateX(20px) translateY(-8px); } 50% { transform: translateX(40px) translateY(0); } 75% { transform: translateX(20px) translateY(-8px); } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .float-slow { animation: float 8s ease-in-out infinite; }
         .float-slower { animation: float 10s ease-in-out infinite 2s; }
@@ -49,7 +61,45 @@ export default function Home() {
         .project-scale:nth-child(4) { animation: slideIn 0.5s ease-out 0.15s forwards; opacity: 0; }
         .project-scale:nth-child(5) { animation: slideIn 0.5s ease-out 0.2s forwards; opacity: 0; }
         .project-scale:nth-child(6) { animation: slideIn 0.5s ease-out 0.25s forwards; opacity: 0; }
+
+        .modal-overlay { animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
       `}</style>
+
+      {/* Join Modal */}
+      {joinModalOpen && (
+        <div className="modal-overlay fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-[#4b4840] border-2 border-[#c48382] p-8 max-w-md w-full rounded-lg">
+            <h3 className="text-3xl font-bold text-[#cbc1ae] mb-4">Join SFE Foundry</h3>
+            <p className="text-[#809fb7] mb-6">Get updates on hackathons, workshops, and opportunities.</p>
+            <form onSubmit={handleJoinSubmit} className="space-y-4">
+              <input
+                type="email"
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 bg-[#47453f] text-[#e6f4fe] border-2 border-[#6c6659] placeholder-[#7f796d] font-mono focus:outline-none focus:border-[#c48382] transition"
+                required
+              />
+              <div className="flex gap-3">
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-3 bg-[#c48382] text-[#47453f] font-bold hover:bg-[#d49492] transition border-2 border-[#c48382]"
+                >
+                  Join →
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setJoinModalOpen(false)}
+                  className="flex-1 px-4 py-3 border-2 border-[#6c6659] text-[#809fb7] hover:border-[#809fb7] transition font-bold"
+                >
+                  Close
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Sticky Nav */}
       <nav className="fixed top-0 w-full bg-[#47453f]/95 backdrop-blur z-50 border-b border-[#6c6659] py-3 px-8">
@@ -84,16 +134,46 @@ export default function Home() {
             Code a project. Fly to shipping. Build mechanical dreams.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <a href="#join" className="px-8 py-4 bg-[#c48382] text-[#47453f] font-bold text-lg hover:bg-[#d49492] transition border-2 border-[#c48382] transform hover:scale-105 duration-300">
+            <button onClick={() => setJoinModalOpen(true)} className="px-8 py-4 bg-[#c48382] text-[#47453f] font-bold text-lg hover:bg-[#d49492] transition border-2 border-[#c48382] transform hover:scale-105 duration-300">
               → Join Now
-            </a>
-            <a href="#events" className="px-8 py-4 border-2 border-[#809fb7] text-[#809fb7] hover:bg-[#809fb7] hover:text-[#47453f] transition font-bold text-lg transform hover:scale-105 duration-300">
+            </button>
+            <Link href="/events" className="px-8 py-4 border-2 border-[#809fb7] text-[#809fb7] hover:bg-[#809fb7] hover:text-[#47453f] transition font-bold text-lg transform hover:scale-105 duration-300 text-center">
               ↓ See Events
-            </a>
+            </Link>
+          </div>
+
+          {/* Walking Creature */}
+          <div className="mt-16 w-full h-32 flex items-center justify-center overflow-hidden opacity-90">
+            <svg viewBox="0 0 600 120" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+              {/* Creature body */}
+              <rect x="200" y="40" width="200" height="40" rx="8" fill="#c48382" opacity="0.7" className="animate-walk" style={{ animationDuration: '3s' }} />
+
+              {/* Wheels/legs - left side */}
+              <g className="animate-spin" style={{ transformOrigin: '240px 80px', animationDuration: '1s' }}>
+                <circle cx="240" cy="80" r="20" fill="none" stroke="#809fb7" strokeWidth="3" opacity="0.8" />
+                <line x1="240" y1="60" x2="240" y2="100" stroke="#809fb7" strokeWidth="2" opacity="0.8" />
+              </g>
+
+              {/* Wheels/legs - middle */}
+              <g className="animate-spin" style={{ transformOrigin: '300px 80px', animationDuration: '1s' }}>
+                <circle cx="300" cy="80" r="20" fill="none" stroke="#93b4cd" strokeWidth="3" opacity="0.8" />
+                <line x1="300" y1="60" x2="300" y2="100" stroke="#93b4cd" strokeWidth="2" opacity="0.8" />
+              </g>
+
+              {/* Wheels/legs - right side */}
+              <g className="animate-spin" style={{ transformOrigin: '360px 80px', animationDuration: '1s' }}>
+                <circle cx="360" cy="80" r="20" fill="none" stroke="#809fb7" strokeWidth="3" opacity="0.8" />
+                <line x1="360" y1="60" x2="360" y2="100" stroke="#809fb7" strokeWidth="2" opacity="0.8" />
+              </g>
+
+              {/* Sail/antenna */}
+              <path d="M 300 40 L 280 10 L 300 20 Z" fill="#c48382" opacity="0.6" style={{ animation: 'flutter 2s ease-in-out infinite' }} />
+              <path d="M 300 40 L 320 10 L 300 20 Z" fill="#93b4cd" opacity="0.6" style={{ animation: 'flutter 2s ease-in-out infinite 0.5s' }} />
+            </svg>
           </div>
 
           {/* SVG Diagram */}
-          <div className="mt-16 opacity-80 hover:opacity-100 transition duration-500">
+          <div className="mt-4 opacity-60 hover:opacity-100 transition duration-500">
             <svg viewBox="0 0 400 300" className="w-full h-auto max-w-md mx-auto">
               <rect x="0" y="250" width="400" height="50" fill="#cbc1ae" opacity="0.3" />
               {[0, 80, 160, 240, 320].map((x) => (
@@ -153,7 +233,7 @@ export default function Home() {
                     <h3 className="text-3xl font-bold text-[#cbc1ae] mb-3 group-hover:text-[#c48382] transition">{event.name}</h3>
                     <p className="text-[#809fb7]">{event.desc}</p>
                   </div>
-                  <button className="px-6 py-3 bg-[#c48382] text-[#47453f] font-bold hover:bg-[#d49492] transition text-sm transform group-hover:scale-110 whitespace-nowrap">Learn →</button>
+                  <Link href="/events" className="px-6 py-3 bg-[#c48382] text-[#47453f] font-bold hover:bg-[#d49492] transition text-sm transform group-hover:scale-110 whitespace-nowrap text-center">Learn →</Link>
                 </div>
               </div>
             ))}
@@ -175,7 +255,7 @@ export default function Home() {
               { name: 'MusicMatch', by: 'Chris & Sam', desc: 'AI playlist generator', emoji: '🎵' },
               { name: 'HealthHub', by: 'Lisa', desc: 'Wellness tracking', emoji: '❤️' },
             ].map((proj, idx) => (
-              <div key={idx} className="project-scale p-6 border-2 border-[#6c6659] bg-[#4b4840] hover:border-[#93b4cd] transition group relative overflow-hidden transform hover:scale-105 cursor-pointer">
+              <Link key={idx} href="/projects" className="project-scale p-6 border-2 border-[#6c6659] bg-[#4b4840] hover:border-[#93b4cd] transition group relative overflow-hidden transform hover:scale-105 block">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#93b4cd] to-transparent opacity-0 group-hover:opacity-10 transition" />
                 <div className="relative z-10">
                   <div className="text-5xl mb-3 group-hover:scale-125 transition duration-300">{proj.emoji}</div>
@@ -183,7 +263,7 @@ export default function Home() {
                   <p className="text-[#809fb7] text-sm mb-2">{proj.desc}</p>
                   <p className="text-[#7f796d] text-xs">by {proj.by}</p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -230,11 +310,11 @@ export default function Home() {
               { title: 'Marketing', desc: 'Go-to-market strategy.' },
               { title: 'Mentorship', desc: 'Connect with experts.' },
             ].map((res, idx) => (
-              <a key={idx} href="#" className="p-6 border-2 border-[#6c6659] bg-[#4b4840] hover:border-[#809fb7] transition group transform hover:translate-y-[-4px]">
+              <Link key={idx} href="/resources" className="p-6 border-2 border-[#6c6659] bg-[#4b4840] hover:border-[#809fb7] transition group transform hover:translate-y-[-4px] block">
                 <h3 className="text-xl font-bold text-[#93b4cd] mb-2 group-hover:text-[#809fb7]">{res.title}</h3>
                 <p className="text-[#7f796d] text-sm">{res.desc}</p>
                 <div className="mt-4 text-[#c48382] font-bold group-hover:translate-x-1 transition">→ Read</div>
-              </a>
+              </Link>
             ))}
           </div>
         </div>
