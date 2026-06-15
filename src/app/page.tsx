@@ -7,9 +7,16 @@ export default function Home() {
   const [scrollY, setScrollY] = useState(0);
   const [joinModalOpen, setJoinModalOpen] = useState(false);
   const [email, setEmail] = useState('');
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      setScrollY(scrollTop);
+      setScrollProgress(scrollPercent);
+    };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -149,7 +156,7 @@ export default function Home() {
       `}</style>
 
       {/* Scroll Progress */}
-      <div className="scroll-progress" style={{ width: `${(scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100}%` }} />
+      <div className="scroll-progress" style={{ width: `${scrollProgress}%` }} />
 
       {/* Join Modal */}
       {joinModalOpen && (
