@@ -24,11 +24,28 @@ export default function Home() {
     }
   }, [titleIndex]);
 
-  const handleJoinSubmit = (e: React.FormEvent) => {
+  const handleJoinSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Join request:', { email });
-    setEmail('');
-    setJoinModalOpen(false);
+    try {
+      const res = await fetch('/api/signups', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || 'Failed to sign up');
+        return;
+      }
+
+      alert('Thanks for signing up! 🎉');
+      setEmail('');
+      setJoinModalOpen(false);
+    } catch (error) {
+      alert('Something went wrong. Please try again.');
+      console.error('Signup error:', error);
+    }
   };
 
   return (
