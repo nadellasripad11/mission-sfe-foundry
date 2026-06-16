@@ -443,61 +443,33 @@ export default function Home() {
           position: fixed;
           pointer-events: none;
           z-index: 9999;
-          width: 32px;
+          width: 24px;
           height: 32px;
-          background: radial-gradient(circle, rgba(77, 168, 255, 0.8), rgba(77, 168, 255, 0.4));
-          border: 2px solid #4DA8FF;
-          border-radius: 50%;
-          box-shadow: 0 0 12px rgba(77, 168, 255, 0.6), inset 0 0 8px rgba(77, 168, 255, 0.3);
           transform: translate(-50%, -50%);
-          animation: cursorPulse 2s ease-in-out infinite;
-          mix-blend-mode: screen;
         }
 
         .custom-cursor::before {
           content: '';
           position: absolute;
-          top: 50%;
+          top: 0;
           left: 50%;
-          width: 4px;
-          height: 4px;
-          background: #FF6B35;
-          border-radius: 50%;
-          transform: translate(-50%, -50%);
-          box-shadow: 0 0 8px #FF6B35;
+          transform: translateX(-50%);
+          width: 0;
+          height: 0;
+          border-left: 8px solid transparent;
+          border-right: 8px solid transparent;
+          border-top: 12px solid #000;
         }
 
-        @keyframes cursorPulse {
-          0%, 100% {
-            box-shadow: 0 0 12px rgba(77, 168, 255, 0.6), inset 0 0 8px rgba(77, 168, 255, 0.3);
-          }
-          50% {
-            box-shadow: 0 0 20px rgba(77, 168, 255, 0.8), inset 0 0 12px rgba(77, 168, 255, 0.5);
-          }
-        }
-
-        /* Glow trail effect on move */
-        .cursor-trail {
-          position: fixed;
-          pointer-events: none;
-          z-index: 9998;
-          width: 8px;
-          height: 8px;
-          background: rgba(77, 168, 255, 0.4);
-          border-radius: 50%;
-          filter: blur(1px);
-          animation: trailFade 0.8s ease-out forwards;
-        }
-
-        @keyframes trailFade {
-          from {
-            opacity: 1;
-            transform: scale(1);
-          }
-          to {
-            opacity: 0;
-            transform: scale(0.5);
-          }
+        .custom-cursor::after {
+          content: '';
+          position: absolute;
+          top: 12px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 2px;
+          height: 12px;
+          background: #000;
         }
       `}</style>
 
