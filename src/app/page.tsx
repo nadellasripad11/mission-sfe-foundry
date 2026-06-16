@@ -443,33 +443,12 @@ export default function Home() {
           position: fixed;
           pointer-events: none;
           z-index: 9999;
-          width: 24px;
-          height: 32px;
-          transform: translate(-50%, -50%);
-        }
-
-        .custom-cursor::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 0;
-          height: 0;
-          border-left: 8px solid transparent;
-          border-right: 8px solid transparent;
-          border-top: 12px solid #000;
-        }
-
-        .custom-cursor::after {
-          content: '';
-          position: absolute;
-          top: 12px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 2px;
-          height: 12px;
-          background: #000;
+          width: 30px;
+          height: 40px;
+          transform: translate(0, 0);
+          background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 40" width="30" height="40"><path d="M 2 2 L 2 35 L 12 25 L 20 35 L 25 32 L 17 22 L 25 22 Z" fill="black"/></svg>');
+          background-repeat: no-repeat;
+          background-size: contain;
         }
       `}</style>
 
