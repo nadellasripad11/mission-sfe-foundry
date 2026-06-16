@@ -464,13 +464,14 @@ export default function Home() {
         .achievement {
           width: 80px;
           height: 80px;
-          background: rgba(59, 130, 246, 0.1);
+          background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(34, 211, 238, 0.1));
           border: 2px solid rgba(34, 211, 238, 0.4);
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 2rem;
+          font-size: 2.5rem;
+          font-weight: bold;
           transition: all 0.3s ease;
           box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
         }
@@ -561,11 +562,11 @@ export default function Home() {
           </svg>
         </div>
 
-        {/* Animated Stars */}
-        <div className="star" style={{ top: '10%', left: '15%', animationDelay: '0s' }}>⭐</div>
-        <div className="star" style={{ top: '25%', right: '10%', animationDelay: '1s' }}>✨</div>
-        <div className="star" style={{ bottom: '20%', left: '20%', animationDelay: '0.5s' }}>⭐</div>
-        <div className="star" style={{ top: '45%', right: '5%', animationDelay: '1.5s' }}>✨</div>
+        {/* Animated Accent Dots */}
+        <div className="star" style={{ top: '10%', left: '15%', animationDelay: '0s', fontSize: '0.5rem', opacity: '0.5' }}>●</div>
+        <div className="star" style={{ top: '25%', right: '10%', animationDelay: '1s', fontSize: '0.4rem', opacity: '0.4' }}>●</div>
+        <div className="star" style={{ bottom: '20%', left: '20%', animationDelay: '0.5s', fontSize: '0.5rem', opacity: '0.5' }}>●</div>
+        <div className="star" style={{ top: '45%', right: '5%', animationDelay: '1.5s', fontSize: '0.4rem', opacity: '0.4' }}>●</div>
       </div>
 
       {/* Content Wrapper */}
@@ -607,15 +608,15 @@ export default function Home() {
             {/* Floating Elements */}
             <div className="slide-in stagger-3 mt-16 flex justify-center gap-12">
               <div className="flex flex-col items-center">
-                <div className="text-4xl mb-2 float">🚀</div>
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 mb-2 float"></div>
                 <div className="font-bold text-lg glow-cyan">50+ Members</div>
               </div>
               <div className="flex flex-col items-center">
-                <div className="text-4xl mb-2 float" style={{ animationDelay: '0.5s' }}>⚡</div>
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-yellow-500 mb-2 float" style={{ animationDelay: '0.5s' }}></div>
                 <div className="font-bold text-lg glow-cyan">Building Daily</div>
               </div>
               <div className="flex flex-col items-center">
-                <div className="text-4xl mb-2 float" style={{ animationDelay: '1s' }}>🎨</div>
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mb-2 float" style={{ animationDelay: '1s' }}></div>
                 <div className="font-bold text-lg glow-cyan">Super Fun</div>
               </div>
             </div>
@@ -635,7 +636,7 @@ export default function Home() {
             <div className="grid md:grid-cols-3 gap-8">
               {['Pitch Competition', 'Demo Day', 'Founders Summit'].map((title, idx) => (
                 <div key={idx} className="feature-card card p-8 slide-in" style={{ animationDelay: `${idx * 0.2}s` }}>
-                  <div className="text-5xl mb-4">🎤</div>
+                  <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 mb-4"></div>
                   <h3 className="text-3xl font-bold handwritten mb-4 glow-orange">{title}</h3>
                   <p className="text-slate-300 mb-6 leading-relaxed">
                     Monthly competitions where student founders pitch ideas to judges and win prizes.
@@ -659,13 +660,13 @@ export default function Home() {
 
             <div className="space-y-8">
               {[
-                { title: '24-Hour Hackathons', emoji: '⏱️', color: 'from-orange-500/10 to-orange-600/5' },
-                { title: 'Weekly Challenges', emoji: '📅', color: 'from-blue-500/10 to-blue-600/5' },
-                { title: 'AI/ML Hackathons', emoji: '🤖', color: 'from-cyan-500/10 to-cyan-600/5' },
+                { title: '24-Hour Hackathons', number: '01', color: 'from-orange-500/10 to-orange-600/5' },
+                { title: 'Weekly Challenges', number: '02', color: 'from-blue-500/10 to-blue-600/5' },
+                { title: 'AI/ML Hackathons', number: '03', color: 'from-cyan-500/10 to-cyan-600/5' },
               ].map((hack, idx) => (
                 <div key={idx} className={`bg-gradient-to-r ${hack.color} border-2 border-cyan-500/30 rounded-3xl p-10 slide-in backdrop-blur-md`} style={{ animationDelay: `${idx * 0.15}s` }}>
                   <div className="flex items-center gap-6">
-                    <div className="text-6xl">{hack.emoji}</div>
+                    <div className="text-5xl font-bold text-cyan-400">{hack.number}</div>
                     <div className="flex-1">
                       <h3 className="text-3xl font-bold text-white mb-2">{hack.title}</h3>
                       <p className="text-slate-300">Build something amazing and compete with the community.</p>
@@ -690,15 +691,15 @@ export default function Home() {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
-                { title: 'AI Study Assistant', emoji: '📚', members: '3 members' },
-                { title: 'E-Commerce Platform', emoji: '🛍️', members: '5 members' },
-                { title: 'Social App', emoji: '💬', members: '2 members' },
-                { title: 'Mobile Game', emoji: '🎮', members: '4 members' },
-                { title: 'Weather Dashboard', emoji: '🌤️', members: '2 members' },
-                { title: 'Finance Tracker', emoji: '💰', members: '3 members' },
+                { title: 'AI Study Assistant', color: 'from-blue-500 to-cyan-500', members: '3 members' },
+                { title: 'E-Commerce Platform', color: 'from-orange-500 to-pink-500', members: '5 members' },
+                { title: 'Social App', color: 'from-purple-500 to-blue-500', members: '2 members' },
+                { title: 'Mobile Game', color: 'from-yellow-500 to-orange-500', members: '4 members' },
+                { title: 'Weather Dashboard', color: 'from-cyan-500 to-green-500', members: '2 members' },
+                { title: 'Finance Tracker', color: 'from-green-500 to-emerald-500', members: '3 members' },
               ].map((proj, idx) => (
                 <div key={idx} className="card p-6 slide-in" style={{ animationDelay: `${idx * 0.1}s` }}>
-                  <div className="text-6xl mb-4">{proj.emoji}</div>
+                  <div className={`w-14 h-14 rounded-lg bg-gradient-to-br ${proj.color} mb-4`}></div>
                   <h3 className="text-2xl font-bold text-white mb-2">{proj.title}</h3>
                   <p className="text-slate-400 text-sm mb-4">{proj.members}</p>
                   <button className="btn btn-secondary w-full text-sm">View Project</button>
@@ -712,7 +713,7 @@ export default function Home() {
         <section className="py-32 px-8">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-6xl font-bold handwritten text-center mb-4 glow-text">
-              🏆 Hall of <span className="glow-orange">Fame</span>
+              Hall of <span className="glow-orange">Fame</span>
             </h2>
             <p className="text-center text-lg text-slate-300 mb-16 max-w-2xl mx-auto">
               Celebrating the amazing builders, founders, and winners in our community.
@@ -720,18 +721,15 @@ export default function Home() {
 
             <div className="grid md:grid-cols-4 gap-8">
               {[
-                { name: 'Sarah Chen', achievement: 'Hackathon Winner', emoji: '🥇' },
-                { name: 'Marcus Johnson', achievement: 'Top Pitcher', emoji: '🎤' },
-                { name: 'Lisa Wong', achievement: 'Best Project', emoji: '⚡' },
-                { name: 'Alex Rodriguez', achievement: 'Community MVP', emoji: '⭐' },
+                { name: 'Sarah Chen', achievement: 'Hackathon Winner', color: 'from-yellow-500 to-orange-500' },
+                { name: 'Marcus Johnson', achievement: 'Top Pitcher', color: 'from-pink-500 to-orange-500' },
+                { name: 'Lisa Wong', achievement: 'Best Project', color: 'from-purple-500 to-pink-500' },
+                { name: 'Alex Rodriguez', achievement: 'Community MVP', color: 'from-blue-500 to-cyan-500' },
               ].map((person, idx) => (
                 <div key={idx} className="card p-8 text-center slide-in" style={{ animationDelay: `${idx * 0.1}s` }}>
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 mx-auto mb-4 flex items-center justify-center text-4xl">
-                    👤
-                  </div>
+                  <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${person.color} mx-auto mb-4`}></div>
                   <h3 className="text-2xl font-bold text-white mb-1">{person.name}</h3>
                   <p className="text-orange-400 font-bold mb-2">{person.achievement}</p>
-                  <div className="text-3xl">{person.emoji}</div>
                 </div>
               ))}
             </div>
@@ -752,7 +750,7 @@ export default function Home() {
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
                 <div key={i} className="h-32 rounded-3xl flex items-center justify-center cursor-pointer transition-all slide-in" style={{ animationDelay: `${i * 0.1}s`, background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(34, 211, 238, 0.05))', border: '2px solid rgba(34, 211, 238, 0.3)', backdropFilter: 'blur(10px)' }}>
                   <div className="text-center">
-                    <div className="text-3xl mb-2 float">⭐</div>
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 mx-auto mb-2"></div>
                     <div className="text-sm font-bold text-slate-300">Partner {i}</div>
                   </div>
                 </div>
@@ -773,14 +771,12 @@ export default function Home() {
 
             <div className="grid md:grid-cols-3 gap-8">
               {[
-                { role: 'Founder & President', name: 'Jamie Lee', emoji: '👨‍💼' },
-                { role: 'VP of Events', name: 'Alex Kim', emoji: '👩‍💼' },
-                { role: 'Community Lead', name: 'Jordan Smith', emoji: '👨‍🎓' },
+                { role: 'Founder & President', name: 'Jamie Lee', color: 'from-blue-500 to-cyan-500' },
+                { role: 'VP of Events', name: 'Alex Kim', color: 'from-purple-500 to-pink-500' },
+                { role: 'Community Lead', name: 'Jordan Smith', color: 'from-green-500 to-emerald-500' },
               ].map((member, idx) => (
                 <div key={idx} className="card p-8 text-center slide-in" style={{ animationDelay: `${idx * 0.15}s` }}>
-                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 mx-auto mb-6 flex items-center justify-center text-6xl">
-                    {member.emoji}
-                  </div>
+                  <div className={`w-32 h-32 rounded-full bg-gradient-to-br ${member.color} mx-auto mb-6`}></div>
                   <h3 className="text-2xl font-bold text-white mb-2">{member.name}</h3>
                   <p className="text-orange-400 font-bold">{member.role}</p>
                 </div>
@@ -798,17 +794,18 @@ export default function Home() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 justify-items-center">
               {[
-                { name: 'First Project', emoji: '🚀' },
-                { name: 'Hackathon Entered', emoji: '⚡' },
-                { name: 'Won Prize', emoji: '🏆' },
-                { name: 'Pitch Master', emoji: '🎤' },
-                { name: 'Team Leader', emoji: '👥' },
-                { name: 'Innovator', emoji: '💡' },
-                { name: 'Builder Streak', emoji: '🔥' },
-                { name: 'Community Star', emoji: '⭐' },
+                { name: 'First Project', num: '01' },
+                { name: 'Hackathon Entered', num: '02' },
+                { name: 'Won Prize', num: '03' },
+                { name: 'Pitch Master', num: '04' },
+                { name: 'Team Leader', num: '05' },
+                { name: 'Innovator', num: '06' },
+                { name: 'Builder Streak', num: '07' },
+                { name: 'Community Star', num: '08' },
               ].map((achievement, idx) => (
-                <div key={idx} className="achievement slide-in" style={{ animationDelay: `${idx * 0.05}s` }}>
-                  <div className="text-3xl">{achievement.emoji}</div>
+                <div key={idx} className="achievement slide-in flex flex-col items-center justify-center" style={{ animationDelay: `${idx * 0.05}s` }}>
+                  <div className="text-2xl font-bold text-cyan-400">{achievement.num}</div>
+                  <div className="text-xs text-slate-300 mt-2 text-center">{achievement.name}</div>
                 </div>
               ))}
             </div>
@@ -858,7 +855,7 @@ export default function Home() {
               <div>
                 <h4 className="font-bold text-white mb-4">Contact</h4>
                 <p className="text-slate-400">hello@sfefoundry.com</p>
-                <p className="text-orange-400 font-bold mt-2">Building cool things 🚀</p>
+                <p className="text-orange-400 font-bold mt-2">Building cool things.</p>
               </div>
             </div>
             <div className="border-t border-slate-700 pt-8 text-center text-slate-500">
