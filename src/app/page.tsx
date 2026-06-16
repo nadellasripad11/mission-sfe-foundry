@@ -23,7 +23,7 @@ export default function Home() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: 'Hello! 👋 I\'m here to help with any questions about SFE Foundry. What would you like to know?',
+      content: 'Hey! 👋 What do you wanna know about SFE Foundry?',
       suggestions: ['Tell me about SFE Foundry', 'How do I join?', 'What events do you host?', 'About hackathons']
     }
   ]);
@@ -1053,11 +1053,11 @@ export default function Home() {
                 <h3 className="font-bold text-sm text-gray-800">SFE Foundry Assistant</h3>
                 <button
                   onClick={() => setShowChat(false)}
-                  className="text-gray-500 hover:text-gray-700 p-0 transition flex-shrink-0"
+                  className="text-gray-400 hover:text-gray-600 p-0 transition flex-shrink-0 ml-auto"
                   title="Close"
                 >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                    <path strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                  <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                    <path strokeWidth={4} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
