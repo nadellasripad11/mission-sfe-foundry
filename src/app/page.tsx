@@ -52,7 +52,7 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-[#1a0805] text-white overflow-x-hidden">
+    <div className="bg-[#0d0402] text-white overflow-x-hidden">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Work+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800;900&display=swap');
 
@@ -99,10 +99,10 @@ export default function Home() {
         .stagger-5 { animation-delay: 0.5s; }
 
         .glass-card {
-          background: linear-gradient(135deg, rgba(139, 45, 35, 0.3), rgba(139, 45, 35, 0.15));
-          border: 1px solid rgba(255, 80, 40, 0.25);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
+          background: linear-gradient(135deg, rgba(80, 20, 10, 0.4), rgba(60, 15, 8, 0.2));
+          border: 1px solid rgba(255, 80, 40, 0.3);
+          backdrop-filter: blur(25px);
+          -webkit-backdrop-filter: blur(25px);
         }
 
         .glass-card-hover {
@@ -118,18 +118,19 @@ export default function Home() {
         }
 
         .btn-primary {
-          background: linear-gradient(135deg, #FF5028, #FF6B47);
+          background: linear-gradient(135deg, #FF4D2E, #FF6644);
           color: white;
           font-weight: 700;
           transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
           border: none;
           cursor: pointer;
-          box-shadow: 0 8px 24px rgba(255, 80, 40, 0.3);
+          box-shadow: 0 8px 28px rgba(255, 77, 46, 0.35);
         }
 
         .btn-primary:hover {
-          box-shadow: 0 16px 40px rgba(255, 80, 40, 0.5);
+          box-shadow: 0 16px 44px rgba(255, 77, 46, 0.55);
           transform: translateY(-3px);
+          background: linear-gradient(135deg, #FF5B3A, #FF7255);
         }
 
         .btn-primary:disabled {
@@ -147,7 +148,7 @@ export default function Home() {
         }
 
         .btn-secondary:hover {
-          border-color: #FF5028;
+          border-color: #FF4D2E;
           background: rgba(255, 80, 40, 0.12);
         }
 
@@ -156,7 +157,7 @@ export default function Home() {
           top: 0;
           left: 0;
           height: 3px;
-          background: linear-gradient(90deg, #FF5028 0%, #FF7F50 100%);
+          background: linear-gradient(90deg, #FF4D2E 0%, #FF7F50 100%);
           z-index: 100;
           box-shadow: 0 0 20px rgba(255, 80, 40, 0.8);
         }
@@ -172,7 +173,7 @@ export default function Home() {
         }
 
         .nav-link:hover {
-          color: #FF5028;
+          color: #FF4D2E;
         }
 
         .gradient-blob {
@@ -206,7 +207,7 @@ export default function Home() {
                 placeholder="your@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-[#2d1810] text-white rounded-xl border border-[#FF5028]/25 focus:border-[#FF5028] focus:outline-none transition placeholder-gray-500"
+                className="w-full px-4 py-3 bg-[#2d1810] text-white rounded-xl border border-[#FF4D2E]/25 focus:border-[#FF4D2E] focus:outline-none transition placeholder-gray-500"
                 required
               />
               <div className="flex gap-3">
@@ -231,10 +232,10 @@ export default function Home() {
       )}
 
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-40 backdrop-blur-lg bg-[#1a0805]/90 border-b section-divider border-b">
+      <nav className="fixed top-0 w-full z-40 backdrop-blur-lg bg-[#0d0402]/95 border-b section-divider border-b">
         <div className="max-w-7xl mx-auto px-8 py-4 flex justify-between items-center">
           <div className="text-2xl font-bold flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#FF5028]"></span>
+            <span className="w-2 h-2 rounded-full bg-[#FF4D2E]"></span>
             <span>SFE</span>
           </div>
           <div className="hidden md:flex gap-12">
@@ -256,14 +257,14 @@ export default function Home() {
             {/* Left: Text */}
             <div>
               <div className="fade-in-up mb-6">
-                <span className="inline-block px-4 py-2 bg-[#FF5028]/20 border border-[#FF5028]/50 rounded-full text-xs font-semibold text-[#FF7F50] tracking-wide uppercase">
+                <span className="inline-block px-4 py-2 bg-[#FF4D2E]/20 border border-[#FF4D2E]/50 rounded-full text-xs font-semibold text-[#FF7F50] tracking-wide uppercase">
                   Student Innovation
                 </span>
               </div>
 
               <h1 className="fade-in-up stagger-1 text-5xl md:text-7xl font-bold leading-tight mb-8">
                 Build every
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#FF5028] to-[#FF7F50]">
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#FF4D2E] to-[#FF7F50]">
                   idea.
                 </span>
                 Ship instantly.
@@ -296,7 +297,7 @@ export default function Home() {
                   { value: '$1M+', label: 'Raised' }
                 ].map((stat, i) => (
                   <div key={i}>
-                    <div className="text-4xl font-bold bg-gradient-to-r from-[#FF5028] to-[#FF7F50] bg-clip-text text-transparent">
+                    <div className="text-4xl font-bold bg-gradient-to-r from-[#FF4D2E] to-[#FF7F50] bg-clip-text text-transparent">
                       {stat.value}
                     </div>
                     <div className="text-xs text-gray-400 uppercase tracking-wide mt-1">{stat.label}</div>
@@ -312,7 +313,7 @@ export default function Home() {
                   <svg className="w-40 h-40 opacity-20" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#FF5028]/15 to-transparent rounded-3xl"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#FF4D2E]/15 to-transparent rounded-3xl"></div>
                 </div>
               </div>
             </div>
@@ -368,7 +369,7 @@ export default function Home() {
               },
             ].map((item, idx) => (
               <div key={idx} className="glass-card glass-card-hover p-8 rounded-2xl group">
-                <div className="text-[#FF5028] mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="text-[#FF4D2E] mb-4 group-hover:scale-110 transition-transform duration-300">
                   {item.icon}
                 </div>
                 <h3 className="text-2xl font-bold mb-3">{item.title}</h3>
@@ -399,14 +400,14 @@ export default function Home() {
                 href="/events"
                 className="glass-card glass-card-hover p-8 rounded-2xl block group relative overflow-hidden"
               >
-                <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-[#FF5028] to-transparent"></div>
+                <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-[#FF4D2E] to-transparent"></div>
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <p className="text-sm font-bold text-[#FF5028] mb-2 uppercase tracking-widest">{event.date}</p>
-                    <h3 className="text-2xl font-bold group-hover:text-[#FF5028] transition mb-2">{event.title}</h3>
+                    <p className="text-sm font-bold text-[#FF4D2E] mb-2 uppercase tracking-widest">{event.date}</p>
+                    <h3 className="text-2xl font-bold group-hover:text-[#FF4D2E] transition mb-2">{event.title}</h3>
                     <p className="text-gray-300">{event.desc}</p>
                   </div>
-                  <div className="text-gray-500 group-hover:text-[#FF5028] transition ml-4">
+                  <div className="text-gray-500 group-hover:text-[#FF4D2E] transition ml-4">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
@@ -505,7 +506,7 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-12 mb-12">
             <div>
               <div className="text-lg font-bold flex items-center gap-2 mb-3">
-                <span className="w-2 h-2 rounded-full bg-[#FF5028]"></span>
+                <span className="w-2 h-2 rounded-full bg-[#FF4D2E]"></span>
                 <span>SFE</span>
               </div>
               <p className="text-sm text-gray-400 leading-relaxed">Building the next generation of founders.</p>
@@ -513,16 +514,16 @@ export default function Home() {
             <div>
               <h4 className="font-bold mb-4 text-white">Navigation</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#events" className="text-gray-400 hover:text-[#FF5028] transition">Events</a></li>
-                <li><a href="#projects" className="text-gray-400 hover:text-[#FF5028] transition">Projects</a></li>
-                <li><a href="#about" className="text-gray-400 hover:text-[#FF5028] transition">About</a></li>
+                <li><a href="#events" className="text-gray-400 hover:text-[#FF4D2E] transition">Events</a></li>
+                <li><a href="#projects" className="text-gray-400 hover:text-[#FF4D2E] transition">Projects</a></li>
+                <li><a href="#about" className="text-gray-400 hover:text-[#FF4D2E] transition">About</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-bold mb-4 text-white">Resources</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="/resources" className="text-gray-400 hover:text-[#FF5028] transition">Guides</a></li>
-                <li><a href="/resources" className="text-gray-400 hover:text-[#FF5028] transition">Templates</a></li>
+                <li><a href="/resources" className="text-gray-400 hover:text-[#FF4D2E] transition">Guides</a></li>
+                <li><a href="/resources" className="text-gray-400 hover:text-[#FF4D2E] transition">Templates</a></li>
               </ul>
             </div>
             <div>
