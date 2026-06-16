@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from 'react';
 
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 export default function Home() {
   const [scrollY, setScrollY] = useState(0);
   const [showModal, setShowModal] = useState(false);
@@ -11,6 +16,14 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+
+  // Chatbot state
+  const [showChat, setShowChat] = useState(false);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
+    { role: 'assistant', content: 'Hello! 👋 I\'m here to help with any questions about SFE Foundry. What would you like to know?' }
+  ]);
+  const [chatInput, setChatInput] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -59,6 +72,44 @@ export default function Home() {
       setMessage('Failed to join. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleChatSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+
+    const userMessage = chatInput;
+    setChatInput('');
+
+    // Add user message to chat
+    const updatedMessages = [...chatMessages, { role: 'user', content: userMessage }];
+    setChatMessages(updatedMessages);
+    setChatLoading(true);
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: updatedMessages.map(msg => ({
+            role: msg.role,
+            content: msg.content,
+          })),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setChatMessages([...updatedMessages, { role: 'assistant', content: data.content }]);
+      } else {
+        setChatMessages([...updatedMessages, { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' }]);
+      }
+    } catch (error) {
+      setChatMessages([...updatedMessages, { role: 'assistant', content: 'Sorry, I\'m having trouble connecting. Please try again.' }]);
+    } finally {
+      setChatLoading(false);
     }
   };
 
@@ -958,6 +1009,84 @@ export default function Home() {
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* Chatbot Widget */}
+      {!showChat && (
+        <button
+          onClick={() => setShowChat(true)}
+          className="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-green-400 text-white shadow-lg hover:shadow-2xl transition-all transform hover:scale-110 flex items-center justify-center z-40 cursor-pointer"
+          title="Chat with us"
+        >
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+        </button>
+      )}
+
+      {showChat && (
+        <div className="fixed bottom-6 right-6 w-96 h-96 bg-white rounded-2xl shadow-2xl flex flex-col z-40 border border-blue-200">
+          {/* Chat Header */}
+          <div className="bg-gradient-to-r from-blue-400 to-green-400 text-white p-4 rounded-t-2xl flex justify-between items-center">
+            <h3 className="font-bold text-lg">SFE Foundry Assistant</h3>
+            <button
+              onClick={() => setShowChat(false)}
+              className="text-white hover:opacity-80 transition"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Chat Messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {chatMessages.map((msg, idx) => (
+              <div
+                key={idx}
+                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-xs px-4 py-2 rounded-lg ${
+                    msg.role === 'user'
+                      ? 'bg-blue-500 text-white rounded-br-none'
+                      : 'bg-gray-200 text-gray-800 rounded-bl-none'
+                  }`}
+                >
+                  <p className="text-sm">{msg.content}</p>
+                </div>
+              </div>
+            ))}
+            {chatLoading && (
+              <div className="flex justify-start">
+                <div className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg">
+                  <p className="text-sm">Typing...</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Chat Input */}
+          <form onSubmit={handleChatSubmit} className="border-t border-gray-200 p-3 flex gap-2">
+            <input
+              type="text"
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              placeholder="Ask me anything..."
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+              disabled={chatLoading}
+            />
+            <button
+              type="submit"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition disabled:opacity-50"
+              disabled={chatLoading || !chatInput.trim()}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+            </button>
+          </form>
         </div>
       )}
 
