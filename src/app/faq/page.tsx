@@ -51,7 +51,7 @@ const faqs: FAQItem[] = [
 ];
 
 export default function FAQ() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndexes, setOpenIndexes] = useState<Set<number>>(new Set());
 
   return (
     <div className="min-h-screen bg-[#EEF2F7] text-[#1D3557] py-20 px-8">
@@ -74,7 +74,15 @@ export default function FAQ() {
               className="bg-white rounded-xl shadow-sm border border-blue-100 overflow-hidden hover:shadow-md transition"
             >
               <button
-                onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
+                onClick={() => {
+                  const newSet = new Set(openIndexes);
+                  if (newSet.has(idx)) {
+                    newSet.delete(idx);
+                  } else {
+                    newSet.add(idx);
+                  }
+                  setOpenIndexes(newSet);
+                }}
                 className="w-full px-6 py-4 flex justify-between items-center hover:bg-blue-50 transition"
               >
                 <h3 className="text-lg font-semibold text-[#1D3557] text-left">
@@ -82,7 +90,7 @@ export default function FAQ() {
                 </h3>
                 <span
                   className={`text-2xl text-blue-500 transition-transform flex-shrink-0 ml-4 ${
-                    openIndex === idx ? 'rotate-45' : ''
+                    openIndexes.has(idx) ? 'rotate-45' : ''
                   }`}
                 >
                   +
@@ -90,7 +98,7 @@ export default function FAQ() {
               </button>
 
               {/* Answer */}
-              {openIndex === idx && (
+              {openIndexes.has(idx) && (
                 <div className="px-6 py-4 bg-blue-50 border-t border-blue-100">
                   <p className="text-[#1D3557]/80 leading-relaxed">
                     {faq.answer}
