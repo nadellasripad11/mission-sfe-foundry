@@ -1056,7 +1056,7 @@ export default function Home() {
                   className="text-gray-400 hover:text-gray-600 p-0 transition flex-shrink-0 ml-auto"
                   title="Close"
                 >
-                  <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                  <svg className="w-1.5 h-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                     <path strokeWidth={4} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>

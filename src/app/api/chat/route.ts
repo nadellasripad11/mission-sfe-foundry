@@ -56,7 +56,7 @@ Quick facts about us:
 
 Keep it brief and chill. Be encouraging and have fun!
 
-If something is out of scope, just say you're not sure and suggest emailing hello@sfefoundry.com.`;
+If something is out of scope, just say you're not sure and suggest emailing sfefoundery@gmail.com.`;
 
 export async function POST(req: NextRequest) {
   try {
