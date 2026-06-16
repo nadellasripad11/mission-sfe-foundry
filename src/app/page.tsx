@@ -425,7 +425,7 @@ export default function Home() {
       `}</style>
 
       {/* Floating Startup Elements */}
-      <div className="floating-element float-animation" style={{ top: '8%', right: '5%', width: '160px', height: '160px', '--rotation': '15deg' }}>
+      <div className="floating-element float-animation" style={{ top: '8%', right: '5%', width: '160px', height: '160px', '--rotation': '15deg' } as any}>
         <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Rocket */}
           <g>
@@ -438,7 +438,7 @@ export default function Home() {
         </svg>
       </div>
 
-      <div className="floating-element drift-animation" style={{ top: '25%', left: '3%', width: '140px', height: '140px', '--rotation': '-20deg' }}>
+      <div className="floating-element drift-animation" style={{ top: '25%', left: '3%', width: '140px', height: '140px', '--rotation': '-20deg' } as any}>
         <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Laptop */}
           <g>
@@ -450,7 +450,7 @@ export default function Home() {
         </svg>
       </div>
 
-      <div className="floating-element float-animation" style={{ top: '50%', right: '8%', width: '150px', height: '150px', '--rotation': '10deg', animationDelay: '1s' }}>
+      <div className="floating-element float-animation" style={{ top: '50%', right: '8%', width: '150px', height: '150px', '--rotation': '10deg', animationDelay: '1s' } as any}>
         <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Trophy */}
           <g>
@@ -474,7 +474,7 @@ export default function Home() {
         </svg>
       </div>
 
-      <div className="floating-element drift-animation" style={{ top: '45%', left: '85%', width: '120px', height: '120px', '--rotation': '25deg', animationDelay: '2s' }}>
+      <div className="floating-element drift-animation" style={{ top: '45%', left: '85%', width: '120px', height: '120px', '--rotation': '25deg', animationDelay: '2s' } as any}>
         <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Sticky Note */}
           <g>
@@ -487,7 +487,7 @@ export default function Home() {
         </svg>
       </div>
 
-      <div className="floating-element float-animation" style={{ top: '65%', right: '12%', width: '140px', height: '140px', '--rotation': '-15deg', animationDelay: '1.5s' }}>
+      <div className="floating-element float-animation" style={{ top: '65%', right: '12%', width: '140px', height: '140px', '--rotation': '-15deg', animationDelay: '1.5s' } as any}>
         <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Robot */}
           <g>
@@ -501,7 +501,7 @@ export default function Home() {
         </svg>
       </div>
 
-      <div className="floating-element drift-animation" style={{ bottom: '35%', right: '5%', width: '150px', height: '150px', '--rotation': '20deg', animationDelay: '0.5s' }}>
+      <div className="floating-element drift-animation" style={{ bottom: '35%', right: '5%', width: '150px', height: '150px', '--rotation': '20deg', animationDelay: '0.5s' } as any}>
         <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Pitch Deck */}
           <g>
@@ -515,7 +515,7 @@ export default function Home() {
         </svg>
       </div>
 
-      <div className="floating-element float-animation" style={{ top: '15%', left: '70%', width: '140px', height: '140px', '--rotation': '-10deg', animationDelay: '2.5s' }}>
+      <div className="floating-element float-animation" style={{ top: '15%', left: '70%', width: '140px', height: '140px', '--rotation': '-10deg', animationDelay: '2.5s' } as any}>
         <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Dashboard */}
           <g>
@@ -532,7 +532,7 @@ export default function Home() {
         </svg>
       </div>
 
-      <div className="floating-element drift-animation" style={{ bottom: '8%', left: '75%', width: '130px', height: '130px', '--rotation': '-25deg', animationDelay: '1.2s' }}>
+      <div className="floating-element drift-animation" style={{ bottom: '8%', left: '75%', width: '130px', height: '130px', '--rotation': '-25deg', animationDelay: '1.2s' } as any}>
         <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
           {/* Medal */}
           <g>
