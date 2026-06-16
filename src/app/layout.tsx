@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://sfe-foundry.vercel.app/og-image.png",
+        url: "https://sfe-foundry.vercel.app/og-image.webp",
         width: 1200,
         height: 630,
         alt: "SFE Foundry - Build. Compete. Launch.",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "SFE Foundry - Build. Compete. Launch.",
     description: "Join a community of student founders, hackers, and builders.",
-    images: ["https://sfe-foundry.vercel.app/og-image.png"],
+    images: ["https://sfe-foundry.vercel.app/og-image.webp"],
   },
 };
 
