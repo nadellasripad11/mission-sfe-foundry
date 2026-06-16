@@ -52,9 +52,9 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-[#0F0F23] text-white overflow-x-hidden">
+    <div className="bg-[#1a0805] text-white overflow-x-hidden">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Work+Sans:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Work+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800;900&display=swap');
 
         * {
           font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -99,8 +99,8 @@ export default function Home() {
         .stagger-5 { animation-delay: 0.5s; }
 
         .glass-card {
-          background: linear-gradient(135deg, rgba(30, 27, 75, 0.4), rgba(30, 27, 75, 0.2));
-          border: 1px solid rgba(249, 115, 22, 0.2);
+          background: linear-gradient(135deg, rgba(139, 45, 35, 0.3), rgba(139, 45, 35, 0.15));
+          border: 1px solid rgba(255, 80, 40, 0.25);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
         }
@@ -111,23 +111,24 @@ export default function Home() {
         }
 
         .glass-card-hover:hover {
-          background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(249, 115, 22, 0.08));
-          border-color: rgba(249, 115, 22, 0.5);
+          background: linear-gradient(135deg, rgba(255, 80, 40, 0.2), rgba(255, 80, 40, 0.1));
+          border-color: rgba(255, 80, 40, 0.6);
           transform: translateY(-8px);
-          box-shadow: 0 20px 50px rgba(249, 115, 22, 0.25);
+          box-shadow: 0 20px 50px rgba(255, 80, 40, 0.3);
         }
 
         .btn-primary {
-          background: linear-gradient(135deg, #F97316, #FB923C);
+          background: linear-gradient(135deg, #FF5028, #FF6B47);
           color: white;
           font-weight: 700;
           transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
           border: none;
           cursor: pointer;
+          box-shadow: 0 8px 24px rgba(255, 80, 40, 0.3);
         }
 
         .btn-primary:hover {
-          box-shadow: 0 20px 50px rgba(249, 115, 22, 0.4);
+          box-shadow: 0 16px 40px rgba(255, 80, 40, 0.5);
           transform: translateY(-3px);
         }
 
@@ -138,7 +139,7 @@ export default function Home() {
 
         .btn-secondary {
           background: transparent;
-          border: 2px solid rgba(255, 255, 255, 0.3);
+          border: 2px solid rgba(255, 255, 255, 0.4);
           color: white;
           font-weight: 600;
           transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -146,8 +147,8 @@ export default function Home() {
         }
 
         .btn-secondary:hover {
-          border-color: #F97316;
-          background: rgba(249, 115, 22, 0.1);
+          border-color: #FF5028;
+          background: rgba(255, 80, 40, 0.12);
         }
 
         .scroll-progress {
@@ -155,13 +156,13 @@ export default function Home() {
           top: 0;
           left: 0;
           height: 3px;
-          background: linear-gradient(90deg, #F97316 0%, #FB923C 100%);
+          background: linear-gradient(90deg, #FF5028 0%, #FF7F50 100%);
           z-index: 100;
-          box-shadow: 0 0 20px rgba(249, 115, 22, 0.6);
+          box-shadow: 0 0 20px rgba(255, 80, 40, 0.8);
         }
 
         .nav-link {
-          color: rgba(255, 255, 255, 0.7);
+          color: rgba(255, 255, 255, 0.75);
           transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
           font-size: 14px;
           font-weight: 600;
@@ -171,18 +172,18 @@ export default function Home() {
         }
 
         .nav-link:hover {
-          color: #F97316;
+          color: #FF5028;
         }
 
         .gradient-blob {
           position: absolute;
           border-radius: 50%;
           filter: blur(80px);
-          opacity: 0.1;
+          opacity: 0.12;
         }
 
         .section-divider {
-          border-color: rgba(249, 115, 22, 0.15);
+          border-color: rgba(255, 80, 40, 0.2);
         }
       `}</style>
 
@@ -190,8 +191,8 @@ export default function Home() {
       <div className="scroll-progress" style={{ width: `${scrollProgress}%` }} />
 
       {/* Background gradient blobs */}
-      <div className="gradient-blob w-[800px] h-[800px] top-20 right-0 bg-gradient-to-br from-[#F97316] to-transparent" />
-      <div className="gradient-blob w-[600px] h-[600px] bottom-32 left-0 bg-gradient-to-tr from-[#F97316] to-transparent" />
+      <div className="gradient-blob w-[800px] h-[800px] top-20 right-0 bg-gradient-to-br from-[#CC2811] to-transparent" />
+      <div className="gradient-blob w-[600px] h-[600px] bottom-32 left-0 bg-gradient-to-tr from-[#AA3D28] to-transparent" />
 
       {/* Join Modal */}
       {joinModalOpen && (
@@ -205,7 +206,7 @@ export default function Home() {
                 placeholder="your@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-[#1E1B4B] text-white rounded-xl border border-[#F97316]/20 focus:border-[#F97316] focus:outline-none transition placeholder-gray-500"
+                className="w-full px-4 py-3 bg-[#2d1810] text-white rounded-xl border border-[#FF5028]/25 focus:border-[#FF5028] focus:outline-none transition placeholder-gray-500"
                 required
               />
               <div className="flex gap-3">
@@ -230,10 +231,10 @@ export default function Home() {
       )}
 
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-40 backdrop-blur-lg bg-[#0F0F23]/80 border-b section-divider border-b">
+      <nav className="fixed top-0 w-full z-40 backdrop-blur-lg bg-[#1a0805]/90 border-b section-divider border-b">
         <div className="max-w-7xl mx-auto px-8 py-4 flex justify-between items-center">
           <div className="text-2xl font-bold flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#F97316]"></span>
+            <span className="w-2 h-2 rounded-full bg-[#FF5028]"></span>
             <span>SFE</span>
           </div>
           <div className="hidden md:flex gap-12">
@@ -255,14 +256,14 @@ export default function Home() {
             {/* Left: Text */}
             <div>
               <div className="fade-in-up mb-6">
-                <span className="inline-block px-4 py-2 bg-[#F97316]/15 border border-[#F97316]/40 rounded-full text-xs font-semibold text-[#FB923C] tracking-wide uppercase">
+                <span className="inline-block px-4 py-2 bg-[#FF5028]/20 border border-[#FF5028]/50 rounded-full text-xs font-semibold text-[#FF7F50] tracking-wide uppercase">
                   Student Innovation
                 </span>
               </div>
 
               <h1 className="fade-in-up stagger-1 text-5xl md:text-7xl font-bold leading-tight mb-8">
                 Build every
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#F97316] to-[#FB923C]">
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#FF5028] to-[#FF7F50]">
                   idea.
                 </span>
                 Ship instantly.
@@ -295,7 +296,7 @@ export default function Home() {
                   { value: '$1M+', label: 'Raised' }
                 ].map((stat, i) => (
                   <div key={i}>
-                    <div className="text-4xl font-bold bg-gradient-to-r from-[#F97316] to-[#FB923C] bg-clip-text text-transparent">
+                    <div className="text-4xl font-bold bg-gradient-to-r from-[#FF5028] to-[#FF7F50] bg-clip-text text-transparent">
                       {stat.value}
                     </div>
                     <div className="text-xs text-gray-400 uppercase tracking-wide mt-1">{stat.label}</div>
@@ -307,11 +308,11 @@ export default function Home() {
             {/* Right: Visual */}
             <div className="fade-in-up stagger-2 relative h-[500px] hidden md:block">
               <div className="glass-card p-1 rounded-3xl h-full flex items-center justify-center overflow-hidden">
-                <div className="w-full h-full rounded-3xl bg-gradient-to-br from-[#1E1B4B] via-[#2D1B3D] to-[#1a0f23] relative flex items-center justify-center">
+                <div className="w-full h-full rounded-3xl bg-gradient-to-br from-[#2d1810] via-[#3d1f15] to-[#1a0805] relative flex items-center justify-center">
                   <svg className="w-40 h-40 opacity-20" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#F97316]/10 to-transparent rounded-3xl"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#FF5028]/15 to-transparent rounded-3xl"></div>
                 </div>
               </div>
             </div>
@@ -367,7 +368,7 @@ export default function Home() {
               },
             ].map((item, idx) => (
               <div key={idx} className="glass-card glass-card-hover p-8 rounded-2xl group">
-                <div className="text-[#F97316] mb-4 group-hover:scale-110 transition-transform duration-300">
+                <div className="text-[#FF5028] mb-4 group-hover:scale-110 transition-transform duration-300">
                   {item.icon}
                 </div>
                 <h3 className="text-2xl font-bold mb-3">{item.title}</h3>
@@ -388,24 +389,24 @@ export default function Home() {
 
           <div className="space-y-4">
             {[
-              { date: 'July 15-17', title: 'Summer Hackathon 2026', desc: '48-hour sprint to build and ship.', color: 'from-[#F97316]' },
-              { date: 'August 5', title: 'Pitch Competition', desc: '$5K in seed funding + investor intros.', color: 'from-[#FB923C]' },
-              { date: 'Biweekly', title: 'Founder Workshops', desc: 'Learn from founders in the network.', color: 'from-[#F97316]' },
-              { date: 'Sept 20', title: 'Demo Day', desc: 'Showcase to investors and community.', color: 'from-[#FB923C]' },
+              { date: 'July 15-17', title: 'Summer Hackathon 2026', desc: '48-hour sprint to build and ship.' },
+              { date: 'August 5', title: 'Pitch Competition', desc: '$5K in seed funding + investor intros.' },
+              { date: 'Biweekly', title: 'Founder Workshops', desc: 'Learn from founders in the network.' },
+              { date: 'Sept 20', title: 'Demo Day', desc: 'Showcase to investors and community.' },
             ].map((event, idx) => (
               <Link
                 key={idx}
                 href="/events"
                 className="glass-card glass-card-hover p-8 rounded-2xl block group relative overflow-hidden"
               >
-                <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-[#F97316] to-transparent"></div>
+                <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-[#FF5028] to-transparent"></div>
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <p className="text-sm font-bold text-[#F97316] mb-2 uppercase tracking-widest">{event.date}</p>
-                    <h3 className="text-2xl font-bold group-hover:text-[#F97316] transition mb-2">{event.title}</h3>
+                    <p className="text-sm font-bold text-[#FF5028] mb-2 uppercase tracking-widest">{event.date}</p>
+                    <h3 className="text-2xl font-bold group-hover:text-[#FF5028] transition mb-2">{event.title}</h3>
                     <p className="text-gray-300">{event.desc}</p>
                   </div>
-                  <div className="text-gray-500 group-hover:text-[#F97316] transition ml-4">
+                  <div className="text-gray-500 group-hover:text-[#FF5028] transition ml-4">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
@@ -504,7 +505,7 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-12 mb-12">
             <div>
               <div className="text-lg font-bold flex items-center gap-2 mb-3">
-                <span className="w-2 h-2 rounded-full bg-[#F97316]"></span>
+                <span className="w-2 h-2 rounded-full bg-[#FF5028]"></span>
                 <span>SFE</span>
               </div>
               <p className="text-sm text-gray-400 leading-relaxed">Building the next generation of founders.</p>
@@ -512,16 +513,16 @@ export default function Home() {
             <div>
               <h4 className="font-bold mb-4 text-white">Navigation</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#events" className="text-gray-400 hover:text-[#F97316] transition">Events</a></li>
-                <li><a href="#projects" className="text-gray-400 hover:text-[#F97316] transition">Projects</a></li>
-                <li><a href="#about" className="text-gray-400 hover:text-[#F97316] transition">About</a></li>
+                <li><a href="#events" className="text-gray-400 hover:text-[#FF5028] transition">Events</a></li>
+                <li><a href="#projects" className="text-gray-400 hover:text-[#FF5028] transition">Projects</a></li>
+                <li><a href="#about" className="text-gray-400 hover:text-[#FF5028] transition">About</a></li>
               </ul>
             </div>
             <div>
               <h4 className="font-bold mb-4 text-white">Resources</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="/resources" className="text-gray-400 hover:text-[#F97316] transition">Guides</a></li>
-                <li><a href="/resources" className="text-gray-400 hover:text-[#F97316] transition">Templates</a></li>
+                <li><a href="/resources" className="text-gray-400 hover:text-[#FF5028] transition">Guides</a></li>
+                <li><a href="/resources" className="text-gray-400 hover:text-[#FF5028] transition">Templates</a></li>
               </ul>
             </div>
             <div>
