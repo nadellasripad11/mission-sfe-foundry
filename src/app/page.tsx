@@ -44,6 +44,16 @@ export default function Home() {
     };
   }, []);
 
+  // Auto-scroll to bottom of chat when new messages arrive
+  useEffect(() => {
+    const chatMessagesContainer = document.querySelector('[data-chat-messages]');
+    if (chatMessagesContainer) {
+      setTimeout(() => {
+        chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+      }, 100);
+    }
+  }, [chatMessages]);
+
   const handleJoinSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !name) return;
@@ -1029,10 +1039,10 @@ export default function Home() {
       {!showChat && (
         <button
           onClick={() => setShowChat(true)}
-          className="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-green-400 text-white shadow-lg hover:shadow-2xl transition-all transform hover:scale-110 flex items-center justify-center z-40 cursor-pointer"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-blue-400 to-green-400 text-white shadow-lg hover:shadow-2xl transition-all transform hover:scale-110 flex items-center justify-center z-40 cursor-pointer"
           title="Chat with us"
         >
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
         </button>
@@ -1046,25 +1056,23 @@ export default function Home() {
             onClick={() => setShowChat(false)}
           />
           {/* Chat Modal - Fixed and Properly Structured */}
-          <div className="fixed bottom-6 right-6 w-96 h-[550px] bg-gradient-to-b from-blue-50 via-cyan-50 to-green-50 rounded-3xl shadow-2xl flex flex-col z-40 overflow-hidden border border-blue-100">
+          <div className="fixed bottom-4 right-4 w-full sm:w-96 h-[calc(100vh-2rem)] sm:h-[550px] bg-gradient-to-b from-blue-50 via-cyan-50 to-green-50 rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col z-40 overflow-hidden border border-blue-100 max-w-sm">
             {/* Header - Fixed Height */}
             <div className="h-14 px-6 py-3 flex justify-between items-center border-b border-blue-100 flex-shrink-0 bg-gradient-to-r from-blue-100 to-cyan-100">
-              <div className="flex items-center gap-2">
-                <h3 className="font-bold text-sm text-gray-800">SFE Foundry Assistant</h3>
-                <button
-                  onClick={() => setShowChat(false)}
-                  className="text-gray-400 hover:text-gray-600 p-0 transition flex-shrink-0 ml-auto"
-                  title="Close"
-                >
-                  <svg className="w-1.5 h-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                    <path strokeWidth={4} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
+              <h3 className="font-bold text-sm text-gray-800">SFE Foundry Assistant</h3>
+              <button
+                onClick={() => setShowChat(false)}
+                className="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-200 transition"
+                title="Minimize"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                </svg>
+              </button>
             </div>
 
             {/* Messages Container - Takes remaining space */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-blue-50 via-cyan-50 to-green-50">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-blue-50 via-cyan-50 to-green-50" data-chat-messages>
               {chatMessages.map((msg, idx) => (
                 <div key={idx} className="space-y-3">
                   <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -1115,19 +1123,19 @@ export default function Home() {
             <form
               onSubmit={handleChatSubmit}
               data-chat-form
-              className="h-20 px-4 py-3 border-t border-blue-100 flex gap-2 items-center flex-shrink-0 bg-gradient-to-b from-cyan-50 to-green-50"
+              className="h-auto px-3 sm:px-4 py-2 sm:py-3 border-t border-blue-100 flex gap-2 items-center flex-shrink-0 bg-gradient-to-b from-cyan-50 to-green-50"
             >
               <input
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 placeholder="Message..."
-                className="flex-1 px-4 py-2.5 bg-white rounded-full text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 border border-blue-100 shadow-sm"
+                className="flex-1 px-3 sm:px-4 py-2 bg-white rounded-full text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 border border-blue-100 shadow-sm"
                 disabled={chatLoading}
               />
               <button
                 type="submit"
-                className="w-8 h-8 bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 disabled:bg-gray-400 text-white rounded-full flex items-center justify-center transition flex-shrink-0 shadow-md"
+                className="w-8 h-8 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 disabled:bg-gray-400 text-white rounded-full flex items-center justify-center transition flex-shrink-0 shadow-md"
                 disabled={chatLoading || !chatInput.trim()}
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
