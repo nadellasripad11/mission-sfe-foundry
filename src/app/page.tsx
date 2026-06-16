@@ -4,12 +4,46 @@ import { useEffect, useState } from 'react';
 
 export default function Home() {
   const [scrollY, setScrollY] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleJoinSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setLoading(true);
+    setMessage('');
+
+    try {
+      const res = await fetch('/api/signups', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setMessage('Welcome! Check your email for next steps.');
+        setEmail('');
+        setTimeout(() => setShowModal(false), 2000);
+      } else {
+        setMessage(data.error || 'Something went wrong');
+      }
+    } catch (error) {
+      setMessage('Failed to join. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="bg-[#EEF2F7] text-[#1D3557] overflow-x-hidden">
@@ -297,6 +331,97 @@ export default function Home() {
           color: white;
           transform: scale(1.05);
         }
+
+        /* Modal Styles */
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          items: center;
+          justify: center;
+          z-index: 100;
+          animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        .modal-content {
+          background: white;
+          border-radius: 24px;
+          padding: 40px;
+          max-width: 500px;
+          width: 90%;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+          animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .modal-content h2 {
+          font-size: 1.875rem;
+          margin-bottom: 12px;
+          color: #1D3557;
+        }
+
+        .modal-content p {
+          color: #1D3557;
+          opacity: 0.7;
+          margin-bottom: 24px;
+          line-height: 1.6;
+        }
+
+        .modal-input {
+          width: 100%;
+          padding: 12px 16px;
+          border: 2px solid rgba(77, 168, 255, 0.2);
+          border-radius: 12px;
+          font-family: 'Inter', sans-serif;
+          font-size: 1rem;
+          transition: all 0.3s ease;
+          margin-bottom: 16px;
+        }
+
+        .modal-input:focus {
+          outline: none;
+          border-color: #4DA8FF;
+          box-shadow: 0 0 0 3px rgba(77, 168, 255, 0.1);
+        }
+
+        .modal-buttons {
+          display: flex;
+          gap: 12px;
+        }
+
+        .modal-message {
+          text-align: center;
+          padding: 12px;
+          border-radius: 8px;
+          margin-bottom: 16px;
+          font-size: 0.95rem;
+        }
+
+        .modal-message.success {
+          background: rgba(6, 214, 160, 0.1);
+          color: #06D6A0;
+        }
+
+        .modal-message.error {
+          background: rgba(255, 107, 53, 0.1);
+          color: #FF6B35;
+        }
       `}</style>
 
       {/* Floating Startup Elements */}
@@ -451,7 +576,7 @@ export default function Home() {
               <a href="#projects" className="nav-link">Projects</a>
               <a href="#team" className="nav-link">Team</a>
             </div>
-            <button className="btn btn-primary px-6 py-3">
+            <button className="btn btn-primary px-6 py-3" onClick={() => setShowModal(true)}>
               Join Us
             </button>
           </div>
@@ -471,22 +596,22 @@ export default function Home() {
             </p>
 
             <div className="slide-in stagger-2 flex flex-col sm:flex-row gap-6 justify-center">
-              <button className="btn btn-primary">Join SFE Foundry</button>
-              <button className="btn btn-secondary">Upcoming Events</button>
+              <button className="btn btn-primary" onClick={() => setShowModal(true)}>Join SFE Foundry</button>
+              <button className="btn btn-secondary" onClick={() => window.location.href = '#events'}>Upcoming Events</button>
             </div>
 
             {/* Stats */}
             <div className="slide-in stagger-3 mt-16 flex justify-center gap-12">
               <div className="flex flex-col items-center">
-                <div className="text-5xl font-bold text-blue mb-3">50+</div>
-                <div className="font-bold text-lg text-blue">Members</div>
+                <div className="text-5xl mb-3">🚀</div>
+                <div className="font-bold text-lg text-blue">50+ Members</div>
               </div>
               <div className="flex flex-col items-center">
-                <div className="text-5xl font-bold text-green mb-3">∞</div>
+                <div className="text-5xl mb-3">⚡</div>
                 <div className="font-bold text-lg text-blue">Building Daily</div>
               </div>
               <div className="flex flex-col items-center">
-                <div className="text-5xl font-bold text-orange mb-3">↗</div>
+                <div className="text-5xl mb-3">🎨</div>
                 <div className="font-bold text-lg text-blue">Super Ambitious</div>
               </div>
             </div>
@@ -506,12 +631,12 @@ export default function Home() {
             <div className="grid md:grid-cols-3 gap-8">
               {['Pitch Competition', 'Demo Day', 'Founders Summit'].map((title, idx) => (
                 <div key={idx} className="card slide-in" style={{ animationDelay: `${idx * 0.2}s` }}>
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange to-yellow mb-4"></div>
+                  <div className="text-5xl mb-4">🎤</div>
                   <h3 className="text-3xl font-bold handwritten mb-4 text-orange">{title}</h3>
                   <p className="text-[#1D3557]/70 mb-6 leading-relaxed">
                     Monthly competitions where student founders pitch ideas to judges and win prizes.
                   </p>
-                  <button className="btn btn-secondary w-full">Learn More</button>
+                  <button className="btn btn-secondary w-full" onClick={() => window.location.href = '#events'}>Learn More</button>
                 </div>
               ))}
             </div>
@@ -530,18 +655,18 @@ export default function Home() {
 
             <div className="space-y-8">
               {[
-                { title: '24-Hour Hackathons', number: '01', bg: 'bg-yellow-light' },
-                { title: 'Weekly Challenges', number: '02', bg: 'bg-blue-light' },
-                { title: 'AI/ML Hackathons', number: '03', bg: 'bg-green-light' },
+                { title: '24-Hour Hackathons', emoji: '⏱️', bg: 'bg-yellow-light' },
+                { title: 'Weekly Challenges', emoji: '📅', bg: 'bg-blue-light' },
+                { title: 'AI/ML Hackathons', emoji: '🤖', bg: 'bg-green-light' },
               ].map((hack, idx) => (
                 <div key={idx} className={`${hack.bg} border-2 border-[#4DA8FF] rounded-3xl p-10 slide-in`} style={{ animationDelay: `${idx * 0.15}s` }}>
                   <div className="flex items-center gap-6">
-                    <div className="text-5xl font-bold text-blue">{hack.number}</div>
+                    <div className="text-6xl">{hack.emoji}</div>
                     <div className="flex-1">
                       <h3 className="text-3xl font-bold text-[#1D3557] mb-2">{hack.title}</h3>
                       <p className="text-[#1D3557]/70">Build something amazing and compete with the community.</p>
                     </div>
-                    <button className="btn btn-primary">Register</button>
+                    <button className="btn btn-primary" onClick={() => setShowModal(true)}>Register</button>
                   </div>
                 </div>
               ))}
@@ -561,18 +686,18 @@ export default function Home() {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
-                { title: 'AI Study Assistant', color: 'from-blue to-cyan', members: '3 members' },
-                { title: 'E-Commerce Platform', color: 'from-orange to-yellow', members: '5 members' },
-                { title: 'Social App', color: 'from-green to-teal', members: '2 members' },
-                { title: 'Mobile Game', color: 'from-blue to-purple', members: '4 members' },
-                { title: 'Weather Dashboard', color: 'from-yellow to-orange', members: '2 members' },
-                { title: 'Finance Tracker', color: 'from-green to-emerald', members: '3 members' },
+                { title: 'AI Study Assistant', emoji: '📚', members: '3 members' },
+                { title: 'E-Commerce Platform', emoji: '🛍️', members: '5 members' },
+                { title: 'Social App', emoji: '💬', members: '2 members' },
+                { title: 'Mobile Game', emoji: '🎮', members: '4 members' },
+                { title: 'Weather Dashboard', emoji: '🌤️', members: '2 members' },
+                { title: 'Finance Tracker', emoji: '💰', members: '3 members' },
               ].map((proj, idx) => (
                 <div key={idx} className="card slide-in" style={{ animationDelay: `${idx * 0.1}s` }}>
-                  <div className={`w-16 h-16 rounded-lg bg-gradient-to-br ${proj.color} mb-4`}></div>
+                  <div className="text-6xl mb-4">{proj.emoji}</div>
                   <h3 className="text-2xl font-bold text-[#1D3557] mb-2">{proj.title}</h3>
                   <p className="text-[#1D3557]/60 text-sm mb-4">{proj.members}</p>
-                  <button className="btn btn-secondary w-full text-sm">View Project</button>
+                  <button className="btn btn-secondary w-full text-sm" onClick={() => alert(`${proj.title} project details coming soon!`)}>View Project</button>
                 </div>
               ))}
             </div>
@@ -583,7 +708,7 @@ export default function Home() {
         <section className="py-32 px-8 relative">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-6xl font-bold handwritten text-center mb-4">
-              Hall of <span className="text-orange">Fame</span>
+              🏆 Hall of <span className="text-orange">Fame</span>
             </h2>
             <p className="text-center text-lg text-[#1D3557]/70 mb-16 max-w-2xl mx-auto">
               Celebrating our amazing builders and innovators.
@@ -620,7 +745,7 @@ export default function Home() {
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
                 <div key={i} className="h-32 rounded-3xl flex items-center justify-center cursor-pointer transition-all slide-in card" style={{ animationDelay: `${i * 0.1}s` }}>
                   <div className="text-center">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-500 mx-auto mb-2"></div>
+                    <div className="text-3xl mb-2">⭐</div>
                     <div className="text-sm font-bold text-[#1D3557]">Partner {i}</div>
                   </div>
                 </div>
@@ -664,17 +789,17 @@ export default function Home() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 justify-items-center">
               {[
-                { name: 'First Project', num: '01' },
-                { name: 'Hackathon Entered', num: '02' },
-                { name: 'Won Prize', num: '03' },
-                { name: 'Pitch Master', num: '04' },
-                { name: 'Team Leader', num: '05' },
-                { name: 'Innovator', num: '06' },
-                { name: 'Builder Streak', num: '07' },
-                { name: 'Community Star', num: '08' },
+                { emoji: '🚀' },
+                { emoji: '⚡' },
+                { emoji: '🏆' },
+                { emoji: '🎤' },
+                { emoji: '👥' },
+                { emoji: '💡' },
+                { emoji: '🔥' },
+                { emoji: '⭐' },
               ].map((achievement, idx) => (
-                <div key={idx} className="w-20 h-20 rounded-full bg-white border-2 border-[#4DA8FF] flex flex-col items-center justify-center slide-in hover:scale-110 transition-transform cursor-pointer shadow-md" style={{ animationDelay: `${idx * 0.05}s` }}>
-                  <div className="text-lg font-bold text-blue">{achievement.num}</div>
+                <div key={idx} className="w-20 h-20 rounded-full bg-white border-2 border-[#4DA8FF] flex items-center justify-center text-3xl slide-in hover:scale-110 transition-transform cursor-pointer shadow-md" style={{ animationDelay: `${idx * 0.05}s` }}>
+                  {achievement.emoji}
                 </div>
               ))}
             </div>
@@ -691,8 +816,8 @@ export default function Home() {
               Join SFE Foundry and become part of a movement of ambitious students turning ideas into reality.
             </p>
             <div className="slide-in stagger-2 flex flex-col sm:flex-row gap-6 justify-center">
-              <button className="btn btn-primary">Join the Community</button>
-              <button className="btn btn-secondary">See Events →</button>
+              <button className="btn btn-primary" onClick={() => setShowModal(true)}>Join the Community</button>
+              <button className="btn btn-secondary" onClick={() => window.location.href = '#events'}>See Events →</button>
             </div>
           </div>
         </section>
@@ -733,6 +858,52 @@ export default function Home() {
           </div>
         </footer>
       </div>
+
+      {/* Join Modal */}
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Join SFE Foundry</h2>
+            <p>Be part of a community building the future. Get updates on competitions, hackathons, and events.</p>
+
+            {message && (
+              <div className={`modal-message ${message.includes('Welcome') || message.includes('successful') ? 'success' : 'error'}`}>
+                {message}
+              </div>
+            )}
+
+            <form onSubmit={handleJoinSubmit}>
+              <input
+                type="email"
+                className="modal-input"
+                placeholder="your@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={loading}
+              />
+
+              <div className="modal-buttons">
+                <button
+                  type="submit"
+                  className="btn btn-primary flex-1"
+                  disabled={loading}
+                >
+                  {loading ? 'Joining...' : 'Join Now'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="btn btn-secondary flex-1"
+                  disabled={loading}
+                >
+                  Close
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
