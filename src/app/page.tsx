@@ -6,6 +6,8 @@ export default function Home() {
   const [scrollY, setScrollY] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [reason, setReason] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
@@ -26,7 +28,7 @@ export default function Home() {
 
   const handleJoinSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email || !name) return;
 
     setLoading(true);
     setMessage('');
@@ -35,7 +37,11 @@ export default function Home() {
       const res = await fetch('/api/signups', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({
+          email,
+          name,
+          reason: reason || null
+        }),
       });
 
       const data = await res.json();
@@ -43,6 +49,8 @@ export default function Home() {
       if (res.ok) {
         setMessage('Welcome! Check your email for next steps.');
         setEmail('');
+        setName('');
+        setReason('');
         setTimeout(() => setShowModal(false), 2000);
       } else {
         setMessage(data.error || 'Something went wrong');
@@ -902,6 +910,16 @@ export default function Home() {
 
             <form onSubmit={handleJoinSubmit}>
               <input
+                type="text"
+                className="modal-input"
+                placeholder="Your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                disabled={loading}
+              />
+
+              <input
                 type="email"
                 className="modal-input"
                 placeholder="your@email.com"
@@ -911,11 +929,21 @@ export default function Home() {
                 disabled={loading}
               />
 
+              <textarea
+                className="modal-input"
+                placeholder="Why do you want to join? (optional)"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                disabled={loading}
+                rows={3}
+                style={{ resize: 'none', fontFamily: 'Inter, sans-serif' }}
+              />
+
               <div className="modal-buttons">
                 <button
                   type="submit"
                   className="btn btn-primary flex-1"
-                  disabled={loading}
+                  disabled={loading || !email || !name}
                 >
                   {loading ? 'Joining...' : 'Join Now'}
                 </button>
