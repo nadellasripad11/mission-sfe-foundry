@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -8,8 +8,14 @@ interface ChatMessage {
   suggestions?: string[];
 }
 
+interface ScrollElement {
+  element: Element;
+  isVisible: boolean;
+}
+
 export default function Home() {
   const [scrollY, setScrollY] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -17,21 +23,40 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [visibleElements, setVisibleElements] = useState<Set<string>>(new Set());
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   // Chatbot state
   const [showChat, setShowChat] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: 'Hey! 👋 What do you wanna know about SFE Foundry?',
+      content: 'Hey! What do you wanna know about SFE Foundry?',
       suggestions: ['Tell me about SFE Foundry', 'How do I join?', 'What events do you host?', 'About hackathons']
     }
   ]);
   const [chatInput, setChatInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
 
+  // Scroll progress and parallax tracking
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+
+      // Calculate scroll progress
+      const windowHeight = window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight - windowHeight;
+      const progress = docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
+      setScrollProgress(progress);
+
+      // Parallax effect for floating elements
+      const parallaxElements = document.querySelectorAll('.floating-element');
+      parallaxElements.forEach((el) => {
+        const offset = window.scrollY * 0.5;
+        (el as HTMLElement).style.transform = `translateY(${offset}px)`;
+      });
+    };
+
     const handleMouseMove = (e: MouseEvent) => {
       setCursorPos({ x: e.clientX, y: e.clientY });
     };
@@ -41,6 +66,33 @@ export default function Home() {
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
+
+  // Intersection Observer for scroll-triggered animations
+  useEffect(() => {
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const id = entry.target.getAttribute('data-scroll-id');
+          if (entry.isIntersecting && id) {
+            setVisibleElements((prev) => new Set([...prev, id]));
+            // Apply visible class to trigger animation
+            entry.target.classList.add('visible');
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px',
+      }
+    );
+
+    const elementsToObserve = document.querySelectorAll('[data-scroll-id]');
+    elementsToObserve.forEach((el) => observerRef.current?.observe(el));
+
+    return () => {
+      observerRef.current?.disconnect();
     };
   }, []);
 
@@ -149,6 +201,18 @@ export default function Home() {
         * {
           font-family: 'Inter', sans-serif;
           cursor: none !important;
+        }
+
+        /* Scroll Progress Bar */
+        .scroll-progress-bar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 4px;
+          background: linear-gradient(90deg, #4DA8FF, #06D6A0, #FF6B35);
+          z-index: 1000;
+          width: 0%;
+          transition: width 0.1s ease-out;
         }
 
         ::selection {
@@ -311,23 +375,68 @@ export default function Home() {
           color: white;
           border-color: transparent;
           box-shadow: 0 8px 20px rgba(77, 168, 255, 0.3);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .btn-primary::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: rgba(255, 255, 255, 0.2);
+          transition: left 0.4s ease;
+          z-index: -1;
+        }
+
+        .btn-primary:hover::before {
+          left: 100%;
         }
 
         .btn-primary:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 12px 32px rgba(77, 168, 255, 0.4);
+          transform: translateY(-3px) scale(1.02);
+          box-shadow: 0 16px 40px rgba(77, 168, 255, 0.5);
+        }
+
+        .btn-primary:active {
+          transform: translateY(-1px) scale(0.98);
         }
 
         .btn-secondary {
           background: white;
           color: #FF6B35;
           border-color: #FF6B35;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .btn-secondary::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: #FF6B35;
+          transition: left 0.4s ease;
+          z-index: -1;
+        }
+
+        .btn-secondary:hover::before {
+          left: 100%;
         }
 
         .btn-secondary:hover {
           background: #FF6B35;
           color: white;
-          transform: translateY(-3px);
+          transform: translateY(-3px) scale(1.02);
+          box-shadow: 0 12px 32px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-secondary:active {
+          transform: translateY(-1px) scale(0.98);
         }
 
         /* Cards */
@@ -384,6 +493,27 @@ export default function Home() {
         .stagger-2 { animation-delay: 0.2s; }
         .stagger-3 { animation-delay: 0.3s; }
         .stagger-4 { animation-delay: 0.4s; }
+
+        /* Scroll-triggered animations */
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        [data-scroll-id]:not(.visible) {
+          opacity: 0;
+          transform: translateY(40px);
+        }
+
+        [data-scroll-id].visible {
+          animation: fadeInUp 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
 
         /* Section Styles */
         section {
@@ -533,6 +663,9 @@ export default function Home() {
           background-size: contain;
         }
       `}</style>
+
+      {/* Scroll Progress Bar */}
+      <div className="scroll-progress-bar" style={{ width: `${scrollProgress}%` }} />
 
       {/* Floating Startup Elements */}
       <div className="floating-element float-animation" style={{ top: '8%', right: '5%', width: '160px', height: '160px', '--rotation': '15deg' } as any}>
@@ -694,7 +827,7 @@ export default function Home() {
         </nav>
 
         {/* Hero Section */}
-        <section className="relative min-h-screen flex items-center justify-center pt-20 px-8 overflow-hidden">
+        <section className="relative min-h-screen flex items-center justify-center pt-20 px-8 overflow-hidden" data-scroll-id="hero">
           <div className="relative z-10 max-w-4xl mx-auto text-center">
             <h1 className="text-8xl md:text-9xl font-bold handwritten mb-6 text-blue slide-in" style={{ lineHeight: '1.2' }}>
               Build cool
@@ -714,15 +847,21 @@ export default function Home() {
             {/* Stats */}
             <div className="slide-in stagger-3 mt-16 flex justify-center gap-12">
               <div className="flex flex-col items-center">
-                <div className="text-5xl mb-3">🚀</div>
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center mb-3 shadow-lg hover:shadow-xl transition-shadow">
+                  <span className="text-2xl font-bold text-white">01</span>
+                </div>
                 <div className="font-bold text-lg text-blue">50+ Members</div>
               </div>
               <div className="flex flex-col items-center">
-                <div className="text-5xl mb-3">⚡</div>
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-400 to-emerald-400 flex items-center justify-center mb-3 shadow-lg hover:shadow-xl transition-shadow">
+                  <span className="text-2xl font-bold text-white">02</span>
+                </div>
                 <div className="font-bold text-lg text-blue">Building Daily</div>
               </div>
               <div className="flex flex-col items-center">
-                <div className="text-5xl mb-3">🎨</div>
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 to-red-400 flex items-center justify-center mb-3 shadow-lg hover:shadow-xl transition-shadow">
+                  <span className="text-2xl font-bold text-white">03</span>
+                </div>
                 <div className="font-bold text-lg text-blue">Super Ambitious</div>
               </div>
             </div>
@@ -730,20 +869,26 @@ export default function Home() {
         </section>
 
         {/* Startup Competitions Section */}
-        <section id="competitions" className="py-32 px-8 relative">
+        <section id="competitions" className="py-32 px-8 relative" data-scroll-id="competitions-section">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-6xl font-bold handwritten text-center mb-4 text-blue">
+            <h2 className="text-6xl font-bold handwritten text-center mb-4 text-blue slide-in" style={{ animationDelay: '0s' }}>
               Startup <span className="text-orange">Competitions</span>
             </h2>
-            <p className="text-center text-lg text-[#1D3557]/70 mb-16 max-w-2xl mx-auto">
+            <p className="text-center text-lg text-[#1D3557]/70 mb-16 max-w-2xl mx-auto slide-in" style={{ animationDelay: '0.1s' }}>
               Pitch your ideas, get feedback from mentors, compete for prizes, and launch your next big thing.
             </p>
 
             <div className="grid md:grid-cols-3 gap-8">
-              {['Pitch Competition', 'Demo Day', 'Founders Summit'].map((title, idx) => (
-                <div key={idx} className="card slide-in" style={{ animationDelay: `${idx * 0.2}s` }}>
-                  <div className="text-5xl mb-4">🎤</div>
-                  <h3 className="text-3xl font-bold handwritten mb-4 text-orange">{title}</h3>
+              {[
+                { title: 'Pitch Competition', num: '01' },
+                { title: 'Demo Day', num: '02' },
+                { title: 'Founders Summit', num: '03' }
+              ].map((item, idx) => (
+                <div key={idx} className="card slide-in" style={{ animationDelay: `${idx * 0.2}s` }} data-scroll-id={`comp-${idx}`}>
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-orange-400 to-red-400 flex items-center justify-center mb-4 shadow-lg">
+                    <span className="text-xl font-bold text-white">{item.num}</span>
+                  </div>
+                  <h3 className="text-3xl font-bold handwritten mb-4 text-orange">{item.title}</h3>
                   <p className="text-[#1D3557]/70 mb-6 leading-relaxed">
                     Monthly competitions where student founders pitch ideas to judges and win prizes.
                   </p>
@@ -755,24 +900,26 @@ export default function Home() {
         </section>
 
         {/* Hackathons Section */}
-        <section id="events" className="py-32 px-8 relative">
+        <section id="events" className="py-32 px-8 relative" data-scroll-id="hackathons-section">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-6xl font-bold handwritten text-center mb-4 text-blue">
+            <h2 className="text-6xl font-bold handwritten text-center mb-4 text-blue slide-in" style={{ animationDelay: '0s' }}>
               <span className="text-green">Hackathons</span> & Build Challenges
             </h2>
-            <p className="text-center text-lg text-[#1D3557]/70 mb-16 max-w-2xl mx-auto">
+            <p className="text-center text-lg text-[#1D3557]/70 mb-16 max-w-2xl mx-auto slide-in" style={{ animationDelay: '0.1s' }}>
               Build projects, compete with friends, and show off your creations.
             </p>
 
             <div className="space-y-8">
               {[
-                { title: '24-Hour Hackathons', emoji: '⏱️', bg: 'bg-yellow-light' },
-                { title: 'Weekly Challenges', emoji: '📅', bg: 'bg-blue-light' },
-                { title: 'AI/ML Hackathons', emoji: '🤖', bg: 'bg-green-light' },
+                { title: '24-Hour Hackathons', num: '01', bg: 'bg-yellow-light' },
+                { title: 'Weekly Challenges', num: '02', bg: 'bg-blue-light' },
+                { title: 'AI/ML Hackathons', num: '03', bg: 'bg-green-light' },
               ].map((hack, idx) => (
-                <div key={idx} className={`${hack.bg} border-2 border-[#4DA8FF] rounded-3xl p-10 slide-in`} style={{ animationDelay: `${idx * 0.15}s` }}>
+                <div key={idx} className={`${hack.bg} border-2 border-[#4DA8FF] rounded-3xl p-10 slide-in`} style={{ animationDelay: `${idx * 0.15}s` }} data-scroll-id={`hack-${idx}`}>
                   <div className="flex items-center gap-6">
-                    <div className="text-6xl">{hack.emoji}</div>
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-400 to-red-400 flex items-center justify-center flex-shrink-0 shadow-lg">
+                      <span className="text-3xl font-bold text-white">{hack.num}</span>
+                    </div>
                     <div className="flex-1">
                       <h3 className="text-3xl font-bold text-[#1D3557] mb-2">{hack.title}</h3>
                       <p className="text-[#1D3557]/70">Build something amazing and compete with the community.</p>
@@ -786,26 +933,28 @@ export default function Home() {
         </section>
 
         {/* Community Projects Section */}
-        <section id="projects" className="py-32 px-8 relative">
+        <section id="projects" className="py-32 px-8 relative" data-scroll-id="projects-section">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-6xl font-bold handwritten text-center mb-4 text-blue">
+            <h2 className="text-6xl font-bold handwritten text-center mb-4 text-blue slide-in" style={{ animationDelay: '0s' }}>
               Projects Built by <span className="text-green">Our Community</span>
             </h2>
-            <p className="text-center text-lg text-[#1D3557]/70 mb-16 max-w-2xl mx-auto">
+            <p className="text-center text-lg text-[#1D3557]/70 mb-16 max-w-2xl mx-auto slide-in" style={{ animationDelay: '0.1s' }}>
               Check out the amazing things our members are building.
             </p>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
-                { title: 'AI Study Assistant', emoji: '📚', members: '3 members' },
-                { title: 'E-Commerce Platform', emoji: '🛍️', members: '5 members' },
-                { title: 'Social App', emoji: '💬', members: '2 members' },
-                { title: 'Mobile Game', emoji: '🎮', members: '4 members' },
-                { title: 'Weather Dashboard', emoji: '🌤️', members: '2 members' },
-                { title: 'Finance Tracker', emoji: '💰', members: '3 members' },
+                { title: 'AI Study Assistant', num: '01', members: '3 members', color: 'from-blue-400 to-cyan-400' },
+                { title: 'E-Commerce Platform', num: '02', members: '5 members', color: 'from-green-400 to-emerald-400' },
+                { title: 'Social App', num: '03', members: '2 members', color: 'from-purple-400 to-pink-400' },
+                { title: 'Mobile Game', num: '04', members: '4 members', color: 'from-orange-400 to-red-400' },
+                { title: 'Weather Dashboard', num: '05', members: '2 members', color: 'from-yellow-400 to-orange-400' },
+                { title: 'Finance Tracker', num: '06', members: '3 members', color: 'from-indigo-400 to-blue-400' },
               ].map((proj, idx) => (
-                <div key={idx} className="card slide-in" style={{ animationDelay: `${idx * 0.1}s` }}>
-                  <div className="text-6xl mb-4">{proj.emoji}</div>
+                <div key={idx} className="card slide-in" style={{ animationDelay: `${idx * 0.1}s` }} data-scroll-id={`proj-${idx}`}>
+                  <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${proj.color} flex items-center justify-center mb-4 shadow-lg`}>
+                    <span className="text-lg font-bold text-white">{proj.num}</span>
+                  </div>
                   <h3 className="text-2xl font-bold text-[#1D3557] mb-2">{proj.title}</h3>
                   <p className="text-[#1D3557]/60 text-sm mb-4">{proj.members}</p>
                   <button className="btn btn-secondary w-full text-sm" onClick={() => alert(`${proj.title} project details coming soon!`)}>View Project</button>
@@ -816,11 +965,19 @@ export default function Home() {
         </section>
 
         {/* Hall of Fame */}
-        <section className="py-32 px-8 relative">
+        <section className="py-32 px-8 relative" data-scroll-id="hall-of-fame">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-6xl font-bold handwritten text-center mb-4">
-              🏆 Hall of <span className="text-orange">Fame</span>
-            </h2>
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center shadow-lg">
+                <span className="text-2xl">⭐</span>
+              </div>
+              <h2 className="text-6xl font-bold handwritten text-center">
+                Hall of <span className="text-orange">Fame</span>
+              </h2>
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center shadow-lg">
+                <span className="text-2xl">⭐</span>
+              </div>
+            </div>
             <p className="text-center text-lg text-[#1D3557]/70 mb-16 max-w-2xl mx-auto">
               Celebrating our amazing builders and innovators.
             </p>
@@ -843,7 +1000,7 @@ export default function Home() {
         </section>
 
         {/* Sponsors */}
-        <section className="py-32 px-8 bg-gradient-to-br from-blue-light to-green-light relative">
+        <section className="py-32 px-8 bg-gradient-to-br from-blue-light to-green-light relative" data-scroll-id="sponsors">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-6xl font-bold handwritten text-center mb-4 text-blue">
               Supported By <span className="text-orange">Amazing Partners</span>
@@ -854,9 +1011,11 @@ export default function Home() {
 
             <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-                <div key={i} className="h-32 rounded-3xl flex items-center justify-center cursor-pointer transition-all slide-in card" style={{ animationDelay: `${i * 0.1}s` }}>
+                <div key={i} className="h-32 rounded-3xl flex items-center justify-center cursor-pointer transition-all slide-in card hover:shadow-xl" style={{ animationDelay: `${i * 0.1}s` }} data-scroll-id={`partner-${i}`}>
                   <div className="text-center">
-                    <div className="text-3xl mb-2">⭐</div>
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center mx-auto mb-2 shadow-lg">
+                      <span className="text-lg font-bold text-white">{String(i).padStart(2, '0')}</span>
+                    </div>
                     <div className="text-sm font-bold text-[#1D3557]">Partner {i}</div>
                   </div>
                 </div>
@@ -866,12 +1025,12 @@ export default function Home() {
         </section>
 
         {/* Team */}
-        <section id="team" className="py-32 px-8 relative">
+        <section id="team" className="py-32 px-8 relative" data-scroll-id="team-section">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-6xl font-bold handwritten text-center mb-4 text-blue">
+            <h2 className="text-6xl font-bold handwritten text-center mb-4 text-blue slide-in" style={{ animationDelay: '0s' }}>
               Meet the <span className="text-green">Builders</span>
             </h2>
-            <p className="text-center text-lg text-[#1D3557]/70 mb-16 max-w-2xl mx-auto">
+            <p className="text-center text-lg text-[#1D3557]/70 mb-16 max-w-2xl mx-auto slide-in" style={{ animationDelay: '0.1s' }}>
               The amazing students leading SFE Foundry.
             </p>
 
@@ -892,7 +1051,7 @@ export default function Home() {
         </section>
 
         {/* Achievements */}
-        <section className="py-32 px-8 relative">
+        <section className="py-32 px-8 relative" data-scroll-id="achievements">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-5xl font-bold handwritten text-center mb-12 text-blue">
               Your <span className="text-orange">Achievements</span>
@@ -900,17 +1059,19 @@ export default function Home() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 justify-items-center">
               {[
-                { emoji: '🚀' },
-                { emoji: '⚡' },
-                { emoji: '🏆' },
-                { emoji: '🎤' },
-                { emoji: '👥' },
-                { emoji: '💡' },
-                { emoji: '🔥' },
-                { emoji: '⭐' },
+                { label: 'Launched', color: 'from-blue-400 to-cyan-400' },
+                { label: 'Building', color: 'from-green-400 to-emerald-400' },
+                { label: 'Winner', color: 'from-yellow-400 to-orange-400' },
+                { label: 'Pitched', color: 'from-orange-400 to-red-400' },
+                { label: 'Community', color: 'from-purple-400 to-pink-400' },
+                { label: 'Innovator', color: 'from-indigo-400 to-blue-400' },
+                { label: 'Leader', color: 'from-rose-400 to-red-400' },
+                { label: 'Star', color: 'from-yellow-400 to-yellow-500' },
               ].map((achievement, idx) => (
-                <div key={idx} className="w-20 h-20 rounded-full bg-white border-2 border-[#4DA8FF] flex items-center justify-center text-3xl slide-in hover:scale-110 transition-transform cursor-pointer shadow-md" style={{ animationDelay: `${idx * 0.05}s` }}>
-                  {achievement.emoji}
+                <div key={idx} className="w-20 h-20 rounded-full bg-white border-2 border-[#4DA8FF] flex items-center justify-center text-sm font-bold slide-in hover:scale-110 hover:shadow-xl transition-all cursor-pointer shadow-md" style={{ animationDelay: `${idx * 0.05}s` }} data-scroll-id={`achievement-${idx}`}>
+                  <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${achievement.color} flex items-center justify-center text-white text-xs font-bold text-center px-1`}>
+                    {achievement.label}
+                  </div>
                 </div>
               ))}
             </div>
