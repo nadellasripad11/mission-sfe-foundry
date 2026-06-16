@@ -1,9 +1,7 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { NextRequest, NextResponse } from 'next/server';
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 const SYSTEM_PROMPT = `You are a helpful and friendly chatbot for SFE Foundry, a student-led innovation and entrepreneurship club at Stanford.
 
@@ -33,27 +31,23 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const response = await client.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 1024,
-      system: SYSTEM_PROMPT,
-      messages: messages.map((msg: any) => ({
-        role: msg.role,
-        content: msg.content,
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+
+    // Convert messages to Gemini format
+    const chat = model.startChat({
+      history: messages.slice(0, -1).map((msg: any) => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.content }],
       })),
     });
 
-    const assistantMessage = response.content[0];
-
-    if (assistantMessage.type !== 'text') {
-      return NextResponse.json(
-        { error: 'Unexpected response type' },
-        { status: 500 }
-      );
-    }
+    const lastMessage = messages[messages.length - 1];
+    const result = await chat.sendMessage(lastMessage.content);
+    const response = await result.response;
+    const text = response.text();
 
     return NextResponse.json({
-      content: assistantMessage.text,
+      content: text,
     });
   } catch (error) {
     console.error('Chat error:', error);
