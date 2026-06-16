@@ -1,5 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+function generateSuggestions(response: string, messages: any[]): string[] {
+  const suggestions: string[] = [];
+
+  // Context-aware suggestions based on conversation
+  const lastUserMessage = messages
+    .slice()
+    .reverse()
+    .find((m: any) => m.role === 'user')?.content.toLowerCase() || '';
+
+  if (response.includes('join') || lastUserMessage.includes('join')) {
+    if (!suggestions.includes('What\'s the membership process?')) {
+      suggestions.push('What\'s the membership process?');
+    }
+  }
+
+  if (response.includes('event') || lastUserMessage.includes('event')) {
+    if (!suggestions.includes('When is the next event?')) {
+      suggestions.push('When is the next event?');
+    }
+  }
+
+  if (response.includes('competition') || response.includes('hackathon')) {
+    if (!suggestions.includes('How do I register for an event?')) {
+      suggestions.push('How do I register for an event?');
+    }
+  }
+
+  if (response.includes('startup') || response.includes('entrepreneurship')) {
+    if (!suggestions.includes('Tell me about the pitch competition')) {
+      suggestions.push('Tell me about the pitch competition');
+    }
+  }
+
+  // Default suggestions if none were added
+  if (suggestions.length === 0) {
+    const defaultSuggestions = [
+      'Tell me more',
+      'What else should I know?',
+      'How can I get involved?',
+      'What\'s next?'
+    ];
+    return defaultSuggestions.slice(0, 3);
+  }
+
+  return suggestions.slice(0, 4);
+}
+
 const SYSTEM_PROMPT = `You are a helpful and friendly chatbot for SFE Foundry, a student-led innovation and entrepreneurship club at Stanford.
 
 About SFE Foundry:
@@ -75,8 +122,12 @@ export async function POST(req: NextRequest) {
 
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'I apologize, I could not generate a response.';
 
+    // Generate suggestions based on the response
+    const suggestions = generateSuggestions(text, messages);
+
     return NextResponse.json({
       content: text,
+      suggestions,
     });
   } catch (error) {
     console.error('Chat error:', error);

@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
+  suggestions?: string[];
 }
 
 export default function Home() {
@@ -20,7 +21,11 @@ export default function Home() {
   // Chatbot state
   const [showChat, setShowChat] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    { role: 'assistant', content: 'Hello! 👋 I\'m here to help with any questions about SFE Foundry. What would you like to know?' }
+    {
+      role: 'assistant',
+      content: 'Hello! 👋 I\'m here to help with any questions about SFE Foundry. What would you like to know?',
+      suggestions: ['Tell me about SFE Foundry', 'How do I join?', 'What events do you host?', 'About hackathons']
+    }
   ]);
   const [chatInput, setChatInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
@@ -103,7 +108,11 @@ export default function Home() {
       const data = await res.json();
 
       if (res.ok) {
-        const assistantMsg: ChatMessage = { role: 'assistant', content: data.content };
+        const assistantMsg: ChatMessage = {
+          role: 'assistant',
+          content: data.content,
+          suggestions: data.suggestions || []
+        };
         setChatMessages([...updatedMessages, assistantMsg]);
       } else {
         const errorMsg: ChatMessage = { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' };
@@ -1037,41 +1046,69 @@ export default function Home() {
             onClick={() => setShowChat(false)}
           />
           {/* Chat Modal */}
-          <div className="fixed bottom-6 right-6 w-96 h-[500px] bg-white rounded-2xl shadow-2xl flex flex-col z-40 overflow-hidden">
+          <div className="fixed bottom-6 right-6 w-96 h-[600px] bg-gradient-to-b from-purple-100 via-pink-50 to-pink-100 rounded-3xl shadow-2xl flex flex-col z-40 overflow-hidden">
             {/* Chat Header */}
-            <div className="bg-gradient-to-r from-blue-400 to-green-400 text-white p-4 flex justify-between items-center flex-shrink-0">
-              <h3 className="font-bold text-lg">SFE Foundry Assistant</h3>
-              <button
-                onClick={() => setShowChat(false)}
-                className="text-white hover:opacity-80 transition flex-shrink-0"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+            <div className="px-6 py-4 flex justify-between items-center flex-shrink-0 border-b border-white/30">
+              <h3 className="font-bold text-lg text-gray-800">SFE Foundry Assistant</h3>
+              <div className="flex gap-2">
+                <button className="text-gray-600 hover:text-gray-800">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setShowChat(false)}
+                  className="text-gray-600 hover:text-gray-800"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             {/* Chat Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 min-h-0">
               {chatMessages.map((msg, idx) => (
-                <div
-                  key={idx}
-                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
+                <div key={idx} className="space-y-3">
                   <div
-                    className={`max-w-xs px-4 py-2 rounded-lg ${
-                      msg.role === 'user'
-                        ? 'bg-blue-500 text-white rounded-br-none'
-                        : 'bg-gray-200 text-gray-800 rounded-bl-none'
-                    }`}
+                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
-                    <p className="text-sm break-words">{msg.content}</p>
+                    <div
+                      className={`max-w-xs px-4 py-3 rounded-2xl text-sm break-words ${
+                        msg.role === 'user'
+                          ? 'bg-black text-white rounded-br-none'
+                          : 'bg-white text-gray-800 rounded-bl-none shadow-sm'
+                      }`}
+                    >
+                      {msg.content}
+                    </div>
                   </div>
+                  {msg.suggestions && msg.suggestions.length > 0 && (
+                    <div className="flex flex-wrap gap-2 justify-start">
+                      {msg.suggestions.map((suggestion, sidx) => (
+                        <button
+                          key={sidx}
+                          onClick={() => {
+                            setChatInput(suggestion);
+                            // Optionally auto-submit
+                            setTimeout(() => {
+                              const event = new Event('submit', { bubbles: true });
+                              document.querySelector('form')?.dispatchEvent(event);
+                            }, 100);
+                          }}
+                          className="px-4 py-2 bg-white text-gray-800 rounded-full text-sm hover:bg-gray-100 transition border border-gray-200 shadow-sm"
+                        >
+                          {suggestion}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
               {chatLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg">
+                  <div className="bg-white text-gray-800 px-4 py-3 rounded-2xl rounded-bl-none shadow-sm">
                     <p className="text-sm">Typing...</p>
                   </div>
                 </div>
@@ -1079,22 +1116,22 @@ export default function Home() {
             </div>
 
             {/* Chat Input */}
-            <form onSubmit={handleChatSubmit} className="border-t border-gray-200 p-3 flex gap-2 flex-shrink-0">
+            <form onSubmit={handleChatSubmit} className="px-4 py-4 flex gap-2 flex-shrink-0">
               <input
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Ask me anything..."
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+                placeholder="Message..."
+                className="flex-1 px-4 py-3 bg-white rounded-full focus:outline-none text-sm text-gray-800 placeholder-gray-400"
                 disabled={chatLoading}
               />
               <button
                 type="submit"
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition disabled:opacity-50 flex-shrink-0"
+                className="bg-gray-500 hover:bg-gray-600 text-white rounded-full p-3 transition disabled:opacity-50 flex-shrink-0 flex items-center justify-center"
                 disabled={chatLoading || !chatInput.trim()}
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M7 11l5-5v12l-5-7z" />
                 </svg>
               </button>
             </form>
