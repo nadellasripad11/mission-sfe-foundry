@@ -639,21 +639,15 @@ export default function Home() {
             {/* Stats */}
             <div className="slide-in stagger-3 mt-16 flex justify-center gap-12">
               <div className="flex flex-col items-center">
-                <svg className="w-12 h-12 mb-3 text-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
+                <div className="text-5xl mb-3">🚀</div>
                 <div className="font-bold text-lg text-blue">50+ Members</div>
               </div>
               <div className="flex flex-col items-center">
-                <svg className="w-12 h-12 mb-3 text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10l-2 2m0 0l-4-4m4 4l4-4m-4 4v10a1 1 0 01-1 1H5a1 1 0 01-1-1V9a1 1 0 011-1h6a1 1 0 011 1v2" />
-                </svg>
+                <div className="text-5xl mb-3">⚡</div>
                 <div className="font-bold text-lg text-blue">Building Daily</div>
               </div>
               <div className="flex flex-col items-center">
-                <svg className="w-12 h-12 mb-3 text-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-                </svg>
+                <div className="text-5xl mb-3">🎨</div>
                 <div className="font-bold text-lg text-blue">Super Ambitious</div>
               </div>
             </div>
@@ -673,9 +667,7 @@ export default function Home() {
             <div className="grid md:grid-cols-3 gap-8">
               {['Pitch Competition', 'Demo Day', 'Founders Summit'].map((title, idx) => (
                 <div key={idx} className="card slide-in" style={{ animationDelay: `${idx * 0.2}s` }}>
-                  <svg className="w-12 h-12 mb-4 text-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2m3 2h12m0 0c1.657 0 3-.895 3-2m0 2v-13m-9 13c1.657 0 3-.895 3-2m0 2c-1.657 0-3-.895-3-2m0-5c1.657 0 3-.895 3-2m0 2c-1.657 0-3-.895-3-2m0 0V6" />
-                  </svg>
+                  <div className="text-5xl mb-4">🎤</div>
                   <h3 className="text-3xl font-bold handwritten mb-4 text-orange">{title}</h3>
                   <p className="text-[#1D3557]/70 mb-6 leading-relaxed">
                     Monthly competitions where student founders pitch ideas to judges and win prizes.
@@ -699,27 +691,13 @@ export default function Home() {
 
             <div className="space-y-8">
               {[
-                { title: '24-Hour Hackathons', icon: 'clock', bg: 'bg-yellow-light' },
-                { title: 'Weekly Challenges', icon: 'calendar', bg: 'bg-blue-light' },
-                { title: 'AI/ML Hackathons', icon: 'cpu', bg: 'bg-green-light' },
+                { title: '24-Hour Hackathons', emoji: '⏱️', bg: 'bg-yellow-light' },
+                { title: 'Weekly Challenges', emoji: '📅', bg: 'bg-blue-light' },
+                { title: 'AI/ML Hackathons', emoji: '🤖', bg: 'bg-green-light' },
               ].map((hack, idx) => (
                 <div key={idx} className={`${hack.bg} border-2 border-[#4DA8FF] rounded-3xl p-10 slide-in`} style={{ animationDelay: `${idx * 0.15}s` }}>
                   <div className="flex items-center gap-6">
-                    {hack.icon === 'clock' && (
-                      <svg className="w-16 h-16 text-blue flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 2m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    )}
-                    {hack.icon === 'calendar' && (
-                      <svg className="w-16 h-16 text-blue flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    )}
-                    {hack.icon === 'cpu' && (
-                      <svg className="w-16 h-16 text-blue flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2m-6 0v2m0-2V3m0 2h6m0 0v12m-6-12h6m0 0v2m0-2v12m-6 0h6" />
-                      </svg>
-                    )}
+                    <div className="text-6xl">{hack.emoji}</div>
                     <div className="flex-1">
                       <h3 className="text-3xl font-bold text-[#1D3557] mb-2">{hack.title}</h3>
                       <p className="text-[#1D3557]/70">Build something amazing and compete with the community.</p>
@@ -744,44 +722,15 @@ export default function Home() {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
-                { title: 'AI Study Assistant', icon: 'book', members: '3 members' },
-                { title: 'E-Commerce Platform', icon: 'shopping', members: '5 members' },
-                { title: 'Social App', icon: 'chat', members: '2 members' },
-                { title: 'Mobile Game', icon: 'gamepad', members: '4 members' },
-                { title: 'Weather Dashboard', icon: 'cloud', members: '2 members' },
-                { title: 'Finance Tracker', icon: 'chart', members: '3 members' },
+                { title: 'AI Study Assistant', emoji: '📚', members: '3 members' },
+                { title: 'E-Commerce Platform', emoji: '🛍️', members: '5 members' },
+                { title: 'Social App', emoji: '💬', members: '2 members' },
+                { title: 'Mobile Game', emoji: '🎮', members: '4 members' },
+                { title: 'Weather Dashboard', emoji: '🌤️', members: '2 members' },
+                { title: 'Finance Tracker', emoji: '💰', members: '3 members' },
               ].map((proj, idx) => (
                 <div key={idx} className="card slide-in" style={{ animationDelay: `${idx * 0.1}s` }}>
-                  {proj.icon === 'book' && (
-                    <svg className="w-12 h-12 mb-4 text-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C6.5 6.253 2 10.998 2 17.25m20-11.002c-3.5-.006-7-1.007-10-3.001m0 13.006c3 2.000 6.5 3.006 10 3.006" />
-                    </svg>
-                  )}
-                  {proj.icon === 'shopping' && (
-                    <svg className="w-12 h-12 mb-4 text-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                  )}
-                  {proj.icon === 'chat' && (
-                    <svg className="w-12 h-12 mb-4 text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                    </svg>
-                  )}
-                  {proj.icon === 'gamepad' && (
-                    <svg className="w-12 h-12 mb-4 text-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                  )}
-                  {proj.icon === 'cloud' && (
-                    <svg className="w-12 h-12 mb-4 text-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-                    </svg>
-                  )}
-                  {proj.icon === 'chart' && (
-                    <svg className="w-12 h-12 mb-4 text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                  )}
+                  <div className="text-6xl mb-4">{proj.emoji}</div>
                   <h3 className="text-2xl font-bold text-[#1D3557] mb-2">{proj.title}</h3>
                   <p className="text-[#1D3557]/60 text-sm mb-4">{proj.members}</p>
                   <button className="btn btn-secondary w-full text-sm" onClick={() => alert(`${proj.title} project details coming soon!`)}>View Project</button>
@@ -794,11 +743,8 @@ export default function Home() {
         {/* Hall of Fame */}
         <section className="py-32 px-8 relative">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-6xl font-bold handwritten text-center mb-4 flex items-center justify-center gap-3">
-              <svg className="w-16 h-16 text-orange" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-              </svg>
-              Hall of <span className="text-orange">Fame</span>
+            <h2 className="text-6xl font-bold handwritten text-center mb-4">
+              🏆 Hall of <span className="text-orange">Fame</span>
             </h2>
             <p className="text-center text-lg text-[#1D3557]/70 mb-16 max-w-2xl mx-auto">
               Celebrating our amazing builders and innovators.
@@ -835,9 +781,7 @@ export default function Home() {
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
                 <div key={i} className="h-32 rounded-3xl flex items-center justify-center cursor-pointer transition-all slide-in card" style={{ animationDelay: `${i * 0.1}s` }}>
                   <div className="text-center">
-                    <svg className="w-8 h-8 text-orange mx-auto mb-2" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
+                    <div className="text-3xl mb-2">⭐</div>
                     <div className="text-sm font-bold text-[#1D3557]">Partner {i}</div>
                   </div>
                 </div>
@@ -881,56 +825,17 @@ export default function Home() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 justify-items-center">
               {[
-                { icon: 'rocket', label: 'Rocket' },
-                { icon: 'lightning', label: 'Lightning' },
-                { icon: 'trophy', label: 'Trophy' },
-                { icon: 'mic', label: 'Microphone' },
-                { icon: 'users', label: 'Community' },
-                { icon: 'lightbulb', label: 'Idea' },
-                { icon: 'flame', label: 'Fire' },
-                { icon: 'star', label: 'Star' },
+                { emoji: '🚀' },
+                { emoji: '⚡' },
+                { emoji: '🏆' },
+                { emoji: '🎤' },
+                { emoji: '👥' },
+                { emoji: '💡' },
+                { emoji: '🔥' },
+                { emoji: '⭐' },
               ].map((achievement, idx) => (
-                <div key={idx} className="w-20 h-20 rounded-full bg-white border-2 border-[#4DA8FF] flex items-center justify-center slide-in hover:scale-110 transition-transform cursor-pointer shadow-md" style={{ animationDelay: `${idx * 0.05}s` }}>
-                  {achievement.icon === 'rocket' && (
-                    <svg className="w-8 h-8 text-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                  )}
-                  {achievement.icon === 'lightning' && (
-                    <svg className="w-8 h-8 text-blue" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                    </svg>
-                  )}
-                  {achievement.icon === 'trophy' && (
-                    <svg className="w-8 h-8 text-orange" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
-                  )}
-                  {achievement.icon === 'mic' && (
-                    <svg className="w-8 h-8 text-blue" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.91-1c-.4 0-.78.12-1.11.32.56.58.96 1.34.96 2.18 0 1.66-1.34 3-3 3s-3-1.34-3-3c0-.84.4-1.6.96-2.18-.33-.2-.71-.32-1.11-.32H5c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1h1v3c0 .55.45 1 1 1h2v-2h2v2h2c.55 0 1-.45 1-1v-3h1c.55 0 1-.45 1-1v-3c0-.55-.45-1-1-1z" />
-                    </svg>
-                  )}
-                  {achievement.icon === 'users' && (
-                    <svg className="w-8 h-8 text-blue" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.64 2.2 1.44 2.7 2.45H21v-2.5c0-2.33-4.67-3.5-7-3.5z" />
-                    </svg>
-                  )}
-                  {achievement.icon === 'lightbulb' && (
-                    <svg className="w-8 h-8 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" />
-                    </svg>
-                  )}
-                  {achievement.icon === 'flame' && (
-                    <svg className="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67z" />
-                    </svg>
-                  )}
-                  {achievement.icon === 'star' && (
-                    <svg className="w-8 h-8 text-orange" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
-                  )}
+                <div key={idx} className="w-20 h-20 rounded-full bg-white border-2 border-[#4DA8FF] flex items-center justify-center text-3xl slide-in hover:scale-110 transition-transform cursor-pointer shadow-md" style={{ animationDelay: `${idx * 0.05}s` }}>
+                  {achievement.emoji}
                 </div>
               ))}
             </div>
