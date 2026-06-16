@@ -8,11 +8,20 @@ export default function Home() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
+    const handleMouseMove = (e: MouseEvent) => {
+      setCursorPos({ x: e.clientX, y: e.clientY });
+    };
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
   }, []);
 
   const handleJoinSubmit = async (e: React.FormEvent) => {
@@ -52,10 +61,16 @@ export default function Home() {
 
         html {
           scroll-behavior: smooth;
+          cursor: none;
         }
 
         * {
           font-family: 'Inter', sans-serif;
+          cursor: none !important;
+        }
+
+        ::selection {
+          background: rgba(77, 168, 255, 0.3);
         }
 
         h1, h2, h3, h4, h5, h6 {
@@ -421,6 +436,68 @@ export default function Home() {
         .modal-message.error {
           background: rgba(255, 107, 53, 0.1);
           color: #FF6B35;
+        }
+
+        /* Custom Cursor */
+        .custom-cursor {
+          position: fixed;
+          pointer-events: none;
+          z-index: 9999;
+          width: 32px;
+          height: 32px;
+          background: radial-gradient(circle, rgba(77, 168, 255, 0.8), rgba(77, 168, 255, 0.4));
+          border: 2px solid #4DA8FF;
+          border-radius: 50%;
+          box-shadow: 0 0 12px rgba(77, 168, 255, 0.6), inset 0 0 8px rgba(77, 168, 255, 0.3);
+          transform: translate(-50%, -50%);
+          animation: cursorPulse 2s ease-in-out infinite;
+          mix-blend-mode: screen;
+        }
+
+        .custom-cursor::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 4px;
+          height: 4px;
+          background: #FF6B35;
+          border-radius: 50%;
+          transform: translate(-50%, -50%);
+          box-shadow: 0 0 8px #FF6B35;
+        }
+
+        @keyframes cursorPulse {
+          0%, 100% {
+            box-shadow: 0 0 12px rgba(77, 168, 255, 0.6), inset 0 0 8px rgba(77, 168, 255, 0.3);
+          }
+          50% {
+            box-shadow: 0 0 20px rgba(77, 168, 255, 0.8), inset 0 0 12px rgba(77, 168, 255, 0.5);
+          }
+        }
+
+        /* Glow trail effect on move */
+        .cursor-trail {
+          position: fixed;
+          pointer-events: none;
+          z-index: 9998;
+          width: 8px;
+          height: 8px;
+          background: rgba(77, 168, 255, 0.4);
+          border-radius: 50%;
+          filter: blur(1px);
+          animation: trailFade 0.8s ease-out forwards;
+        }
+
+        @keyframes trailFade {
+          from {
+            opacity: 1;
+            transform: scale(1);
+          }
+          to {
+            opacity: 0;
+            transform: scale(0.5);
+          }
         }
       `}</style>
 
@@ -904,6 +981,15 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Custom Cursor */}
+      <div
+        className="custom-cursor"
+        style={{
+          left: `${cursorPos.x}px`,
+          top: `${cursorPos.y}px`
+        }}
+      />
     </div>
   );
 }
