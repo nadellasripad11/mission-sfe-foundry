@@ -108,7 +108,7 @@ export default function FAQ() {
             Get in touch with us directly or use the chat assistant on the website!
           </p>
           <a
-            href="mailto:sfefoundery@gmail.com"
+            href="mailto:sfefoundery@gmail.com?subject=Question%20about%20SFE%20Foundry&body=Hi%20SFE%20Foundry%20team%2C%0A%0AI%20have%20a%20question%3A%0A%0A"
             className="inline-block px-8 py-3 bg-white text-blue-600 rounded-lg font-bold hover:bg-blue-50 transition"
           >
             Email Us
