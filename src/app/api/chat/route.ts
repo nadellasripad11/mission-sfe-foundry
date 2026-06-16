@@ -1,7 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { NextRequest, NextResponse } from 'next/server';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 const SYSTEM_PROMPT = `You are a helpful and friendly chatbot for SFE Foundry, a student-led innovation and entrepreneurship club at Stanford.
 
@@ -31,20 +28,52 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'API key not configured' },
+        { status: 500 }
+      );
+    }
 
-    // Convert messages to Gemini format
-    const chat = model.startChat({
-      history: messages.slice(0, -1).map((msg: any) => ({
-        role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.content }],
-      })),
+    // Use the REST API directly with available models
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+    // Convert messages to Gemini REST format
+    const contents = messages.map((msg: any) => ({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.content }],
+    }));
+
+    const requestBody = {
+      contents,
+      systemInstruction: {
+        parts: [{ text: SYSTEM_PROMPT }],
+      },
+      generationConfig: {
+        maxOutputTokens: 256,
+      },
+    };
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
     });
 
-    const lastMessage = messages[messages.length - 1];
-    const result = await chat.sendMessage(lastMessage.content);
-    const response = await result.response;
-    const text = response.text();
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('Gemini API error:', data);
+      return NextResponse.json(
+        { error: 'Failed to process chat message', details: data.error?.message || 'Unknown error' },
+        { status: 500 }
+      );
+    }
+
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'I apologize, I could not generate a response.';
 
     return NextResponse.json({
       content: text,
@@ -52,7 +81,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Chat error:', error);
     return NextResponse.json(
-      { error: 'Failed to process chat message' },
+      { error: 'Failed to process chat message', details: String(error) },
       { status: 500 }
     );
   }
