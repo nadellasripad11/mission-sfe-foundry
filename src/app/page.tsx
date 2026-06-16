@@ -137,7 +137,27 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-[#EEF2F7] text-[#1D3557] overflow-x-hidden">
+    <div className="bg-[#EEF2F7] text-[#1D3557] overflow-x-hidden flex">
+      {/* Sidebar Navigation */}
+      <nav className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-blue-100 overflow-y-auto z-50 pt-8 px-6">
+        <h2 className="text-2xl font-bold text-blue-600 mb-8">SFE Foundry</h2>
+        <div className="space-y-2">
+          <a href="#competitions" className="nav-link block px-4 py-3 rounded-lg hover:bg-blue-50 transition">Competitions</a>
+          <a href="#events" className="nav-link block px-4 py-3 rounded-lg hover:bg-blue-50 transition">Events</a>
+          <a href="#projects" className="nav-link block px-4 py-3 rounded-lg hover:bg-blue-50 transition">Projects</a>
+          <a href="#team" className="nav-link block px-4 py-3 rounded-lg hover:bg-blue-50 transition">Team</a>
+          <a href="/faq" className="nav-link block px-4 py-3 rounded-lg hover:bg-blue-50 transition">FAQ</a>
+        </div>
+        <button
+          onClick={() => setShowModal(true)}
+          className="w-full mt-8 px-4 py-3 bg-gradient-to-r from-blue-400 to-cyan-400 text-white rounded-lg font-bold hover:shadow-lg transition"
+        >
+          Join
+        </button>
+      </nav>
+
+      {/* Main Content */}
+      <div className="flex-1 ml-64">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
@@ -677,22 +697,6 @@ export default function Home() {
       {/* Content Wrapper */}
       <div className="content-wrapper">
         {/* Navigation */}
-        <nav className="px-8 py-4 sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <div className="text-3xl font-bold handwritten text-text-orange">SFE Foundry</div>
-            <div className="hidden md:flex gap-10">
-              <a href="#competitions" className="nav-link">Competitions</a>
-              <a href="#events" className="nav-link">Events</a>
-              <a href="#projects" className="nav-link">Projects</a>
-              <a href="#team" className="nav-link">Team</a>
-              <a href="/faq" className="nav-link">FAQ</a>
-            </div>
-            <button className="btn btn-primary px-6 py-3" onClick={() => setShowModal(true)}>
-              Join Us
-            </button>
-          </div>
-        </nav>
-
         {/* Hero Section */}
         <section className="relative min-h-screen flex items-center justify-center pt-20 px-8 overflow-hidden">
           <div className="relative z-10 max-w-4xl mx-auto text-center">
@@ -1156,6 +1160,7 @@ export default function Home() {
           top: `${cursorPos.y}px`
         }}
       />
+      </div>
     </div>
   );
 }
