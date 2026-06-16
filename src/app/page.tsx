@@ -83,7 +83,8 @@ export default function Home() {
     setChatInput('');
 
     // Add user message to chat
-    const updatedMessages = [...chatMessages, { role: 'user', content: userMessage }];
+    const userMsg: ChatMessage = { role: 'user', content: userMessage };
+    const updatedMessages = [...chatMessages, userMsg];
     setChatMessages(updatedMessages);
     setChatLoading(true);
 
@@ -102,12 +103,15 @@ export default function Home() {
       const data = await res.json();
 
       if (res.ok) {
-        setChatMessages([...updatedMessages, { role: 'assistant', content: data.content }]);
+        const assistantMsg: ChatMessage = { role: 'assistant', content: data.content };
+        setChatMessages([...updatedMessages, assistantMsg]);
       } else {
-        setChatMessages([...updatedMessages, { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' }]);
+        const errorMsg: ChatMessage = { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' };
+        setChatMessages([...updatedMessages, errorMsg]);
       }
     } catch (error) {
-      setChatMessages([...updatedMessages, { role: 'assistant', content: 'Sorry, I\'m having trouble connecting. Please try again.' }]);
+      const errorMsg: ChatMessage = { role: 'assistant', content: 'Sorry, I\'m having trouble connecting. Please try again.' };
+      setChatMessages([...updatedMessages, errorMsg]);
     } finally {
       setChatLoading(false);
     }
@@ -1026,68 +1030,76 @@ export default function Home() {
       )}
 
       {showChat && (
-        <div className="fixed bottom-6 right-6 w-96 h-96 bg-white rounded-2xl shadow-2xl flex flex-col z-40 border border-blue-200">
-          {/* Chat Header */}
-          <div className="bg-gradient-to-r from-blue-400 to-green-400 text-white p-4 rounded-t-2xl flex justify-between items-center">
-            <h3 className="font-bold text-lg">SFE Foundry Assistant</h3>
-            <button
-              onClick={() => setShowChat(false)}
-              className="text-white hover:opacity-80 transition"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Chat Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {chatMessages.map((msg, idx) => (
-              <div
-                key={idx}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+        <>
+          {/* Modal Overlay */}
+          <div
+            className="fixed inset-0 bg-black/20 z-30"
+            onClick={() => setShowChat(false)}
+          />
+          {/* Chat Modal */}
+          <div className="fixed bottom-6 right-6 w-96 h-[500px] bg-white rounded-2xl shadow-2xl flex flex-col z-40 overflow-hidden">
+            {/* Chat Header */}
+            <div className="bg-gradient-to-r from-blue-400 to-green-400 text-white p-4 flex justify-between items-center flex-shrink-0">
+              <h3 className="font-bold text-lg">SFE Foundry Assistant</h3>
+              <button
+                onClick={() => setShowChat(false)}
+                className="text-white hover:opacity-80 transition flex-shrink-0"
               >
-                <div
-                  className={`max-w-xs px-4 py-2 rounded-lg ${
-                    msg.role === 'user'
-                      ? 'bg-blue-500 text-white rounded-br-none'
-                      : 'bg-gray-200 text-gray-800 rounded-bl-none'
-                  }`}
-                >
-                  <p className="text-sm">{msg.content}</p>
-                </div>
-              </div>
-            ))}
-            {chatLoading && (
-              <div className="flex justify-start">
-                <div className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg">
-                  <p className="text-sm">Typing...</p>
-                </div>
-              </div>
-            )}
-          </div>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
 
-          {/* Chat Input */}
-          <form onSubmit={handleChatSubmit} className="border-t border-gray-200 p-3 flex gap-2">
-            <input
-              type="text"
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              placeholder="Ask me anything..."
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
-              disabled={chatLoading}
-            />
-            <button
-              type="submit"
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition disabled:opacity-50"
-              disabled={chatLoading || !chatInput.trim()}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-              </svg>
-            </button>
-          </form>
-        </div>
+            {/* Chat Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
+              {chatMessages.map((msg, idx) => (
+                <div
+                  key={idx}
+                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div
+                    className={`max-w-xs px-4 py-2 rounded-lg ${
+                      msg.role === 'user'
+                        ? 'bg-blue-500 text-white rounded-br-none'
+                        : 'bg-gray-200 text-gray-800 rounded-bl-none'
+                    }`}
+                  >
+                    <p className="text-sm break-words">{msg.content}</p>
+                  </div>
+                </div>
+              ))}
+              {chatLoading && (
+                <div className="flex justify-start">
+                  <div className="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg">
+                    <p className="text-sm">Typing...</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Chat Input */}
+            <form onSubmit={handleChatSubmit} className="border-t border-gray-200 p-3 flex gap-2 flex-shrink-0">
+              <input
+                type="text"
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                placeholder="Ask me anything..."
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"
+                disabled={chatLoading}
+              />
+              <button
+                type="submit"
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition disabled:opacity-50 flex-shrink-0"
+                disabled={chatLoading || !chatInput.trim()}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+              </button>
+            </form>
+          </div>
+        </>
       )}
 
       {/* Custom Cursor */}
