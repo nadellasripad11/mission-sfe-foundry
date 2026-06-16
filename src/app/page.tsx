@@ -1048,16 +1048,19 @@ export default function Home() {
           {/* Chat Modal - Fixed and Properly Structured */}
           <div className="fixed bottom-6 right-6 w-96 h-[550px] bg-gradient-to-b from-blue-50 via-cyan-50 to-green-50 rounded-3xl shadow-2xl flex flex-col z-40 overflow-hidden border border-blue-100">
             {/* Header - Fixed Height */}
-            <div className="h-16 px-6 py-4 flex justify-between items-center border-b border-blue-100 flex-shrink-0 bg-gradient-to-r from-blue-100 to-cyan-100">
-              <h3 className="font-bold text-base text-gray-800">SFE Foundry Assistant</h3>
-              <button
-                onClick={() => setShowChat(false)}
-                className="text-gray-600 hover:text-gray-800 p-0 transition"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+            <div className="h-14 px-6 py-3 flex justify-between items-center border-b border-blue-100 flex-shrink-0 bg-gradient-to-r from-blue-100 to-cyan-100">
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-sm text-gray-800">SFE Foundry Assistant</h3>
+                <button
+                  onClick={() => setShowChat(false)}
+                  className="text-gray-500 hover:text-gray-700 p-0 transition flex-shrink-0"
+                  title="Close"
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                    <path strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             {/* Messages Container - Takes remaining space */}
