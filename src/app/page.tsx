@@ -685,6 +685,7 @@ export default function Home() {
               <a href="#events" className="nav-link">Events</a>
               <a href="#projects" className="nav-link">Projects</a>
               <a href="#team" className="nav-link">Team</a>
+              <a href="/faq" className="nav-link">FAQ</a>
             </div>
             <button className="btn btn-primary px-6 py-3" onClick={() => setShowModal(true)}>
               Join Us

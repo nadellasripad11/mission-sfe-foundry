@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { findMatchingResponse } from './saved-responses';
 
 function generateSuggestions(response: string, messages: any[]): string[] {
   const suggestions: string[] = [];
@@ -69,6 +70,26 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Get the last user message
+    const lastMessage = messages[messages.length - 1];
+    if (!lastMessage || lastMessage.role !== 'user') {
+      return NextResponse.json(
+        { error: 'Last message must be from user' },
+        { status: 400 }
+      );
+    }
+
+    // Check for saved responses first
+    const savedResponse = findMatchingResponse(lastMessage.content);
+    if (savedResponse) {
+      const suggestions = generateSuggestions(savedResponse.response, messages);
+      return NextResponse.json({
+        content: savedResponse.response,
+        suggestions,
+      });
+    }
+
+    // If no saved response, use AI
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
