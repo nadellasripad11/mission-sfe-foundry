@@ -89,13 +89,19 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Friendly fallback shown when the AI is unavailable (no key / rate-limited / error)
+    const fallback = (note?: string) =>
+      NextResponse.json({
+        content:
+          (note ? note + ' ' : '') +
+          "I can't answer that one right now, but I'd love to help! You can email us at sfefoundery@gmail.com, or ask me about joining, events, or hackathons.",
+        suggestions: ['How do I join?', 'What events do you host?', 'About hackathons'],
+      });
+
     // If no saved response, use AI
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return NextResponse.json(
-        { error: 'API key not configured' },
-        { status: 500 }
-      );
+      return fallback();
     }
 
     // Use the REST API directly with available models
@@ -126,10 +132,8 @@ export async function POST(req: NextRequest) {
 
     if (!response.ok) {
       console.error('Gemini API error:', data);
-      return NextResponse.json(
-        { error: 'Failed to process chat message', details: data.error?.message || 'Unknown error' },
-        { status: 500 }
-      );
+      // Gracefully degrade instead of surfacing a scary error in the chat UI
+      return fallback();
     }
 
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'I apologize, I could not generate a response.';
@@ -143,9 +147,10 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('Chat error:', error);
-    return NextResponse.json(
-      { error: 'Failed to process chat message', details: String(error) },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      content:
+        "Sorry, I'm having a little trouble right now. You can reach the team at sfefoundery@gmail.com, or ask me about joining, events, or hackathons.",
+      suggestions: ['How do I join?', 'What events do you host?', 'About hackathons'],
+    });
   }
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 interface FAQItem {
   question: string;
@@ -54,14 +55,25 @@ export default function FAQ() {
   const [openIndexes, setOpenIndexes] = useState<Set<number>>(new Set());
 
   return (
-    <div className="min-h-screen bg-[#EEF2F7] text-[#1D3557] py-20 px-8">
+    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] py-12 px-8">
       <div className="max-w-3xl mx-auto">
+        {/* Back button */}
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 mb-10 px-4 py-2 rounded-lg border border-[#BFDBFE] text-[#2563EB] font-semibold text-sm hover:bg-[#EFF6FF] hover:border-[#93C5FD] transition"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Back to home
+        </Link>
+
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-bold mb-4 text-blue-600">
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 text-[#0F2A5C]">
             Frequently Asked Questions
           </h1>
-          <p className="text-lg text-[#1D3557]/70">
+          <p className="text-lg text-[#64748B]">
             Can't find what you're looking for? Email us at sfefoundery@gmail.com
           </p>
         </div>
@@ -110,14 +122,14 @@ export default function FAQ() {
         </div>
 
         {/* CTA */}
-        <div className="mt-16 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-2xl p-8 text-white text-center">
+        <div className="mt-16 rounded-2xl p-8 text-white text-center" style={{ background: '#0F2A5C' }}>
           <h2 className="text-2xl font-bold mb-4">Still have questions?</h2>
-          <p className="mb-6">
+          <p className="mb-6 text-[#A9BEDC]">
             Get in touch with us directly or use the chat assistant on the website!
           </p>
           <a
             href="mailto:sfefoundery@gmail.com?subject=Question%20about%20SFE%20Foundry&body=Hi%20SFE%20Foundry%20team%2C%0A%0AI%20have%20a%20question%3A%0A%0A"
-            className="inline-block px-8 py-3 bg-white text-blue-600 rounded-lg font-bold hover:bg-blue-50 transition"
+            className="inline-block px-8 py-3 bg-white text-[#0F2A5C] rounded-lg font-bold hover:bg-[#EFF6FF] transition"
           >
             Email Us
           </a>

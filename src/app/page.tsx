@@ -1,6 +1,9 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import { supabase } from '../lib/supabaseClient';
+
+type OAuthProvider = 'google';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -8,23 +11,99 @@ interface ChatMessage {
   suggestions?: string[];
 }
 
-interface ScrollElement {
-  element: Element;
-  isVisible: boolean;
-}
+type AuthMode = 'signup' | 'signin';
+
+// ── Explore panel tabs ──────────────────────────────────────────────
+const TABS = [
+  {
+    id: 'competitions',
+    label: 'Competitions',
+    title: 'Startup Competitions',
+    blurb: 'Pitch your ideas, get real feedback from mentors, and compete for prizes.',
+    items: [
+      { n: '01', h: 'Pitch Competition', p: 'Monthly events where student founders pitch to a panel of judges for prizes and mentorship.' },
+      { n: '02', h: 'Demo Day', p: 'Show live prototypes and get real feedback from founders, investors, and engineers.' },
+      { n: '03', h: 'Founders Summit', p: 'Annual summit bringing together student builders from across campus and beyond.' },
+    ],
+  },
+  {
+    id: 'events',
+    label: 'Hackathons',
+    title: 'Hackathons & Challenges',
+    blurb: 'Build fast, compete, and ship something real in a weekend.',
+    items: [
+      { n: '01', h: '24-Hour Hackathon', p: 'Build anything in 24 hours. Themes announced night-of. Pizza included.' },
+      { n: '02', h: 'Weekly Build Challenge', p: 'One theme, one week. Ship it or it didn\'t happen.' },
+      { n: '03', h: 'AI / ML Hackathon', p: 'Hack on LLMs, agents, embeddings, and real datasets.' },
+    ],
+  },
+  {
+    id: 'projects',
+    label: 'Projects',
+    title: 'Built by Members',
+    blurb: 'Real projects shipped by students in our community.',
+    items: [
+      { n: '01', h: 'AI Study Assistant', p: 'Built by 3 members — an LLM-powered tutor for exam prep.' },
+      { n: '02', h: 'E-Commerce Platform', p: 'Built by 5 members — full-stack storefront with payments.' },
+      { n: '03', h: 'Finance Tracker', p: 'Built by 3 members — budgeting app with live dashboards.' },
+    ],
+  },
+  {
+    id: 'team',
+    label: 'Team',
+    title: 'Meet the Team',
+    blurb: 'The students leading SFE Foundry.',
+    items: [
+      { n: 'JL', h: 'Jamie Lee', p: 'Founder & President' },
+      { n: 'AK', h: 'Alex Kim', p: 'VP of Events' },
+      { n: 'JS', h: 'Jordan Smith', p: 'Community Lead' },
+    ],
+  },
+];
+
+// ── Personalized board (Pinterest-style) ────────────────────────────
+const INTERESTS = ['Hackathons', 'AI / ML', 'Startups', 'Web Dev', 'Design', 'Pitching', 'Mobile', 'Data'];
+
+const PINS = [
+  { cat: 'Hackathons', title: '24-Hour Build Sprint', blurb: 'Next jam drops in 2 weeks — teams of up to 4.', h: 168 },
+  { cat: 'AI / ML', title: 'Agents Workshop', blurb: 'Hands-on with tool-calling and RAG pipelines.', h: 132 },
+  { cat: 'Startups', title: 'Pitch Night', blurb: '5-minute pitches, live judge feedback.', h: 196 },
+  { cat: 'Web Dev', title: 'Next.js Crash Course', blurb: 'Ship a full-stack app in one session.', h: 144 },
+  { cat: 'Design', title: 'Figma to Prod', blurb: 'Turn mockups into clean, shippable UI.', h: 176 },
+  { cat: 'Pitching', title: 'Deck Clinic', blurb: 'Get your pitch deck torn apart (kindly).', h: 128 },
+  { cat: 'Mobile', title: 'React Native Lab', blurb: 'Build for iOS + Android from one codebase.', h: 184 },
+  { cat: 'Data', title: 'Data Viz Jam', blurb: 'Make dashboards that actually tell a story.', h: 140 },
+  { cat: 'AI / ML', title: 'Model Demo Day', blurb: 'Show off what your model can do.', h: 160 },
+  { cat: 'Startups', title: 'Founder Office Hours', blurb: 'Weekly 1:1s with mentors.', h: 124 },
+  { cat: 'Hackathons', title: 'Beginner Hack', blurb: 'First hackathon? Start here.', h: 152 },
+  { cat: 'Web Dev', title: 'API Design Talk', blurb: 'Build APIs people enjoy using.', h: 136 },
+];
 
 export default function Home() {
-  const [scrollY, setScrollY] = useState(0);
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const pageRef = useRef<HTMLDivElement>(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Auth modal
   const [showModal, setShowModal] = useState(false);
+  const [authMode, setAuthMode] = useState<AuthMode>('signup');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [reason, setReason] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-  const [visibleElements, setVisibleElements] = useState<Set<string>>(new Set());
-  const observerRef = useRef<IntersectionObserver | null>(null);
+  const [msgOk, setMsgOk] = useState(false);
+
+  // Signed-in user (persisted client-side)
+  const [user, setUser] = useState<{ email: string; name: string | null } | null>(null);
+  const [showProfile, setShowProfile] = useState(false);
+
+  // Explore panel
+  const [activeTab, setActiveTab] = useState(TABS[0].id);
+
+  // Personalized board
+  const [interests, setInterests] = useState<string[]>([]);
+  const [boardReady, setBoardReady] = useState(false);
 
   // Chatbot state
   const [showChat, setShowChat] = useState(false);
@@ -38,62 +117,89 @@ export default function Home() {
   const [chatInput, setChatInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
 
-  // Scroll progress and parallax tracking
+  // Load saved interests once on mount
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-
-      // Calculate scroll progress
-      const windowHeight = window.innerHeight;
-      const docHeight = document.documentElement.scrollHeight - windowHeight;
-      const progress = docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
-      setScrollProgress(progress);
-
-      // Parallax effect for floating elements
-      const parallaxElements = document.querySelectorAll('.floating-element');
-      parallaxElements.forEach((el) => {
-        const offset = window.scrollY * 0.5;
-        (el as HTMLElement).style.transform = `translateY(${offset}px)`;
-      });
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      setCursorPos({ x: e.clientX, y: e.clientY });
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('mousemove', handleMouseMove);
-    };
+    try {
+      const saved = localStorage.getItem('sfe-interests');
+      if (saved) setInterests(JSON.parse(saved));
+    } catch {}
+    setBoardReady(true);
   }, []);
 
-  // Intersection Observer for scroll-triggered animations
+  // Track the Supabase auth session (email/password + OAuth all flow through here)
   useEffect(() => {
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const id = entry.target.getAttribute('data-scroll-id');
-          if (entry.isIntersecting && id) {
-            setVisibleElements((prev) => new Set([...prev, id]));
-            // Apply visible class to trigger animation
-            entry.target.classList.add('visible');
-          }
-        });
-      },
-      {
-        threshold: 0.1,
-        rootMargin: '0px 0px -100px 0px',
-      }
-    );
+    const toUser = (su: any) =>
+      su ? { email: su.email ?? '', name: su.user_metadata?.name ?? su.user_metadata?.full_name ?? null } : null;
 
-    const elementsToObserve = document.querySelectorAll('[data-scroll-id]');
-    elementsToObserve.forEach((el) => observerRef.current?.observe(el));
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session?.user) setUser(toUser(data.session.user));
+    });
 
-    return () => {
-      observerRef.current?.disconnect();
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ? toUser(session.user) : null);
+      if (session?.user) setShowModal(false);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  const signOut = async () => {
+    setShowProfile(false);
+    await supabase.auth.signOut();
+    setUser(null);
+  };
+
+  const handleOAuth = async (provider: OAuthProvider) => {
+    setMessage('');
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: typeof window !== 'undefined' ? window.location.origin : undefined },
+    });
+    if (error) {
+      setMsgOk(false);
+      setMessage(
+        /provider is not enabled/i.test(error.message)
+          ? `${provider[0].toUpperCase() + provider.slice(1)} sign-in isn't enabled yet in Supabase.`
+          : error.message
+      );
+    }
+  };
+
+  // Persist interests
+  useEffect(() => {
+    if (boardReady) {
+      try { localStorage.setItem('sfe-interests', JSON.stringify(interests)); } catch {}
+    }
+  }, [interests, boardReady]);
+
+  // Scroll → drive a CSS variable directly (NO React re-render = no jank)
+  useEffect(() => {
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const docH = document.documentElement.scrollHeight - window.innerHeight;
+        const p = docH > 0 ? Math.min(y / docH, 1) : 0;
+        pageRef.current?.style.setProperty('--sk', String(p));
+        const s = y > 24;
+        setScrolled((prev) => (prev === s ? prev : s));
+        ticking = false;
+      });
     };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Gentle one-time reveal — content visible by default, animates in once
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('in'); }),
+      { threshold: 0.12, rootMargin: '0px 0px -80px 0px' }
+    );
+    document.querySelectorAll('.reveal').forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
   }, []);
 
   // Auto-scroll to bottom of chat when new messages arrive
@@ -106,42 +212,64 @@ export default function Home() {
     }
   }, [chatMessages]);
 
-  const handleJoinSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !name) return;
+  const openModal = (mode: AuthMode) => { setAuthMode(mode); setMessage(''); setShowModal(true); };
 
+  const handleAuthSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password || (authMode === 'signup' && !name)) return;
     setLoading(true);
     setMessage('');
-
+    const cleanEmail = email.trim().toLowerCase();
     try {
-      const res = await fetch('/api/signups', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          name,
-          reason: reason || null
-        }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        setMessage('Welcome! Check your email for next steps.');
-        setEmail('');
-        setName('');
-        setReason('');
-        setTimeout(() => setShowModal(false), 2000);
+      if (authMode === 'signup') {
+        const { data, error } = await supabase.auth.signUp({
+          email: cleanEmail,
+          password,
+          options: {
+            data: { name, reason: reason || null },
+            emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
+          },
+        });
+        if (error) {
+          setMsgOk(false);
+          setMessage(/registered|already/i.test(error.message)
+            ? 'This email is already registered. Try signing in instead.'
+            : error.message);
+        } else if (data.user && data.user.identities && data.user.identities.length === 0) {
+          setMsgOk(false);
+          setMessage('This email is already registered. Try signing in instead.');
+        } else {
+          // best-effort: add to mailing list table for the admin page
+          supabase.from('signups').insert({ email: cleanEmail, name, reason: reason || null }).then(() => {}, () => {});
+          setMsgOk(true);
+          setMessage(data.session
+            ? 'Account created! You are signed in.'
+            : 'Account created! Check your email for a verification link to activate your account.');
+          setEmail(''); setPassword(''); setName(''); setReason('');
+        }
       } else {
-        setMessage(data.error || 'Something went wrong');
+        const { error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
+        if (error) {
+          setMsgOk(false);
+          setMessage(/not confirmed/i.test(error.message)
+            ? 'Please verify your email first — check your inbox for the confirmation link.'
+            : 'Incorrect email or password.');
+        } else {
+          setMsgOk(true);
+          setMessage('Signed in!');
+          setEmail(''); setPassword('');
+          // onAuthStateChange closes the modal
+        }
       }
-    } catch (error) {
-      setMessage('Failed to join. Please try again.');
+    } catch {
+      setMsgOk(false);
+      setMessage('Failed to connect. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  // ─────────── CHATBOT (do not modify) ───────────
   const handleChatSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!chatInput.trim()) return;
@@ -149,7 +277,6 @@ export default function Home() {
     const userMessage = chatInput;
     setChatInput('');
 
-    // Add user message to chat
     const userMsg: ChatMessage = { role: 'user', content: userMessage };
     const updatedMessages = [...chatMessages, userMsg];
     setChatMessages(updatedMessages);
@@ -170,11 +297,24 @@ export default function Home() {
       const data = await res.json();
 
       if (res.ok) {
-        const assistantMsg: ChatMessage = {
-          role: 'assistant',
-          content: data.content,
-          suggestions: data.suggestions || []
-        };
+        // Avoid repeating an identical answer: if we just said this, ask if they need anything else.
+        const lastAssistant = [...chatMessages].reverse().find((m) => m.role === 'assistant');
+        const isRepeat = lastAssistant && lastAssistant.content.trim() === String(data.content).trim();
+        // Drop suggestions the user has already asked about
+        const askedLower = new Set(updatedMessages.filter((m) => m.role === 'user').map((m) => m.content.trim().toLowerCase()));
+        const freshSuggestions = (data.suggestions || []).filter((s: string) => !askedLower.has(s.trim().toLowerCase()));
+
+        const assistantMsg: ChatMessage = isRepeat
+          ? {
+              role: 'assistant',
+              content: 'I think I already covered that! Is there anything else I can help you with?',
+              suggestions: ['How do I join?', 'Upcoming events', 'About hackathons', 'Talk to a human'],
+            }
+          : {
+              role: 'assistant',
+              content: data.content,
+              suggestions: freshSuggestions.length ? freshSuggestions : ['Anything else I can help with?'],
+            };
         setChatMessages([...updatedMessages, assistantMsg]);
       } else {
         const errorMsg: ChatMessage = { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' };
@@ -187,1011 +327,548 @@ export default function Home() {
       setChatLoading(false);
     }
   };
+  // ─────────── END CHATBOT logic ───────────
+
+  // Instant jump (no smooth lag) so a top-nav click shows the section immediately
+  const jumpTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'auto', block: 'start' });
+  const goToTab = (id: string) => { setActiveTab(id); requestAnimationFrame(() => jumpTo('explore')); };
+  const toggleInterest = (i: string) =>
+    setInterests((prev) => prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]);
+
+  const activeTabData = TABS.find((t) => t.id === activeTab) ?? TABS[0];
+  const visiblePins = interests.length === 0 ? PINS : PINS.filter((p) => interests.includes(p.cat));
 
   return (
-    <div className="bg-[#EEF2F7] text-[#1D3557] overflow-x-hidden">
+    <div className="page" ref={pageRef}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&display=swap');
 
-        html {
-          scroll-behavior: smooth;
-          cursor: none;
-        }
+        *, *::before, *::after { box-sizing: border-box; }
+        body, h1, h2, h3, h4, h5, h6, p, figure, blockquote { margin: 0; }
+        html { scroll-behavior: smooth; }
+        .page { --sk: 0; background: #F8FAFC; color: #0F172A; font-family: 'Inter', sans-serif; overflow-x: hidden; position: relative; }
+        h1,h2,h3,h4 { font-family: 'Outfit', sans-serif; letter-spacing: -0.025em; }
+        ::selection { background: rgba(37,99,235,0.18); }
 
-        * {
-          font-family: 'Inter', sans-serif;
-          cursor: none !important;
-        }
+        /* Progress bar — width driven purely by CSS var */
+        .progress { position: fixed; top: 0; left: 0; height: 3px; background: #2563EB; z-index: 300; width: calc(var(--sk) * 100%); }
 
-        /* Scroll Progress Bar */
-        .scroll-progress-bar {
-          position: fixed;
-          top: 0;
-          left: 0;
-          height: 4px;
-          background: linear-gradient(90deg, #4DA8FF, #06D6A0, #FF6B35);
-          z-index: 1000;
-          width: 0%;
-          transition: width 0.1s ease-out;
+        /* Floating 3D wireframe shapes — outer = scroll pop, inner = 3D tumble */
+        .fw {
+          position: fixed; pointer-events: none; z-index: 0; perspective: 700px;
+          opacity: calc(0.10 + 0.6 * var(--sk));
+          transform: scale(calc(0.78 + 0.5 * var(--sk)));
+          will-change: transform, opacity;
         }
+        .fw svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 8px 18px rgba(37,99,235,0.30)); }
+        .fw-3d { width: 100%; height: 100%; transform-style: preserve-3d; }
+        @keyframes tumbleA { 0%{transform:rotateY(0) rotateX(0) translateY(0);} 50%{transform:rotateY(180deg) rotateX(14deg) translateY(-20px);} 100%{transform:rotateY(360deg) rotateX(0) translateY(0);} }
+        @keyframes tumbleB { 0%{transform:rotateX(0) rotateZ(0) translateY(0);} 50%{transform:rotateX(180deg) rotateZ(10deg) translateY(16px);} 100%{transform:rotateX(360deg) rotateZ(0) translateY(0);} }
+        @keyframes tumbleC { 0%{transform:rotateY(0) rotateZ(0);} 100%{transform:rotateY(360deg) rotateZ(360deg);} }
+        .t-a { animation: tumbleA 15s linear infinite; }
+        .t-b { animation: tumbleB 19s linear infinite; }
+        .t-c { animation: tumbleC 24s linear infinite; }
 
-        ::selection {
-          background: rgba(77, 168, 255, 0.3);
-        }
+        /* Scroll-driven sketch → professional (CSS var, off render path) */
+        .sketch { position: fixed; right: 4%; bottom: 9%; width: 300px; height: 300px; z-index: 0; pointer-events: none; }
+        @media (max-width: 900px){ .sketch{ width: 190px; height: 190px; } }
+        .sketch .rough { opacity: calc(0.20 * (1 - var(--sk))); }
+        .sketch .clean { opacity: calc(0.6 * var(--sk)); }
 
-        h1, h2, h3, h4, h5, h6 {
-          font-family: 'Fredoka', sans-serif;
-          font-weight: 700;
-        }
+        /* Nav */
+        .navbar { position: sticky; top: 0; z-index: 50; padding: 14px 28px; transition: background .3s, box-shadow .3s; }
+        .navbar.scrolled { background: rgba(255,255,255,0.9); backdrop-filter: blur(14px); box-shadow: 0 1px 0 rgba(15,23,42,0.07); }
+        .nav-inner { max-width: 1160px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .brand img { width: 34px; height: 34px; }
+        .brand-text { font-family: 'Outfit'; font-weight: 800; font-size: 1.2rem; color: #0F2A5C; letter-spacing: -0.03em; }
+        .nav-links { display: flex; gap: 26px; }
+        .nav-link { background: none; border: none; cursor: pointer; font-family: 'Inter'; font-size: .875rem; font-weight: 500; color: #64748B; transition: color .2s; }
+        .nav-link:hover { color: #2563EB; }
+        .nav-actions { display: flex; gap: 8px; align-items: center; }
 
-        .handwritten {
-          font-family: 'Caveat', cursive;
-          font-weight: 700;
-        }
+        /* Profile avatar + menu */
+        .avatar-btn { width: 38px; height: 38px; border-radius: 50%; border: none; cursor: pointer; color: #fff; font-family: 'Outfit'; font-weight: 800; font-size: .95rem; background: linear-gradient(135deg,#1E3A8A,#2563EB); box-shadow: 0 2px 10px rgba(37,99,235,.35); display: flex; align-items: center; justify-content: center; transition: transform .2s, box-shadow .2s; }
+        .avatar-btn:hover { transform: translateY(-1px) scale(1.05); box-shadow: 0 6px 16px rgba(37,99,235,.45); }
+        .profile-menu { position: absolute; top: 50px; right: 0; width: 240px; background: #fff; border: 1px solid rgba(15,23,42,.08); border-radius: 14px; box-shadow: 0 18px 44px rgba(15,42,92,.16); padding: 8px; z-index: 70; animation: pop .2s cubic-bezier(.34,1.56,.64,1); }
+        .profile-head { display: flex; gap: 12px; align-items: center; padding: 12px; border-bottom: 1px solid #F1F5F9; margin-bottom: 6px; }
+        .profile-item { width: 100%; text-align: left; background: none; border: none; cursor: pointer; padding: 10px 12px; border-radius: 8px; font-family: 'Inter'; font-size: .88rem; font-weight: 600; color: #DC2626; transition: background .2s; }
+        .profile-item:hover { background: #FEF2F2; }
 
-        body {
-          background:
-            repeating-linear-gradient(
-              0deg,
-              transparent,
-              transparent 39px,
-              rgba(77, 168, 255, 0.03) 39px,
-              rgba(77, 168, 255, 0.03) 40px
-            ),
-            repeating-linear-gradient(
-              90deg,
-              transparent,
-              transparent 39px,
-              rgba(77, 168, 255, 0.03) 39px,
-              rgba(77, 168, 255, 0.03) 40px
-            ),
-            linear-gradient(135deg, #EEF2F7 0%, #F5F7FB 50%, #EEF2F7 100%);
-          background-attachment: fixed;
-          position: relative;
-        }
+        /* Chatbot launcher (cool, on-theme) */
+        .chat-fab { position: fixed; bottom: 24px; right: 24px; z-index: 40; width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer; color: #fff; background: linear-gradient(135deg,#1E3A8A 0%,#2563EB 60%,#3B82F6 100%); box-shadow: 0 10px 28px rgba(37,99,235,.45); display: flex; align-items: center; justify-content: center; transition: transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s; }
+        .chat-fab:hover { transform: translateY(-3px) scale(1.06); box-shadow: 0 16px 38px rgba(37,99,235,.55); }
+        .chat-fab svg { width: 28px; height: 28px; position: relative; z-index: 2; }
+        .chat-fab::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: inherit; animation: fabPulse 2.4s ease-out infinite; z-index: 0; }
+        @keyframes fabPulse { 0% { transform: scale(1); opacity: .55; } 70%,100% { transform: scale(1.7); opacity: 0; } }
+        @media (max-width: 640px){ .chat-fab { bottom: 16px; right: 16px; width: 54px; height: 54px; } }
 
-        /* Floating Elements Container */
-        .floating-element {
-          position: fixed;
-          pointer-events: none;
-          opacity: 0.85;
-          filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.08));
-          z-index: 1;
-        }
-
-        .floating-element:hover {
-          opacity: 1;
-          filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.12));
-          z-index: 15;
-        }
-
-        /* Floating Animations */
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(var(--rotation, 0deg)); }
-          50% { transform: translateY(-30px) rotate(var(--rotation, 0deg)); }
-        }
-
-        @keyframes drift {
-          0%, 100% { transform: translateX(0px) translateY(0px) rotate(var(--rotation, 0deg)); }
-          33% { transform: translateX(15px) translateY(-20px) rotate(var(--rotation, 0deg)); }
-          66% { transform: translateX(-10px) translateY(15px) rotate(var(--rotation, 0deg)); }
-        }
-
-        @keyframes slowSpin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-
-        .float-animation {
-          animation: float 6s ease-in-out infinite;
-        }
-
-        .drift-animation {
-          animation: drift 8s ease-in-out infinite;
-        }
-
-        .spin-animation {
-          animation: slowSpin 20s linear infinite;
-        }
-
-        /* SVG Styles */
-        svg {
-          width: 100%;
-          height: 100%;
-          filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.06));
-        }
-
-        /* Parallax Effect */
-        .parallax {
-          will-change: transform;
-          transition: transform 0.5s cubic-bezier(0.33, 0.66, 0.66, 1);
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          * {
-            animation: none !important;
-            transition: none !important;
-          }
-        }
-
-        /* Content Layer */
-        .content-wrapper {
-          position: relative;
-          z-index: 10;
-        }
-
-        /* Navigation */
-        nav {
-          background: rgba(255, 255, 255, 0.8);
-          backdrop-filter: blur(10px);
-          border-bottom: 1px solid rgba(77, 168, 255, 0.1);
-          position: sticky;
-          top: 0;
-          z-index: 50;
-        }
-
-        .nav-link {
-          color: #1D3557;
-          font-weight: 600;
-          transition: all 0.3s ease;
-          position: relative;
-        }
-
-        .nav-link::after {
-          content: '';
-          position: absolute;
-          bottom: -8px;
-          left: 0;
-          width: 0;
-          height: 2px;
-          background: linear-gradient(90deg, #4DA8FF, #06D6A0);
-          transition: width 0.3s ease;
-        }
-
-        .nav-link:hover {
-          color: #4DA8FF;
-        }
-
-        .nav-link:hover::after {
-          width: 100%;
-        }
+        /* Locked board state */
+        .locked { background:#fff; border:1px solid rgba(15,23,42,.08); border-radius:20px; padding:48px 28px; text-align:center; max-width:520px; margin:0 auto; box-shadow:0 10px 40px rgba(15,42,92,.05); }
+        .lock-icon { width:56px; height:56px; border-radius:14px; background:#EFF6FF; display:flex; align-items:center; justify-content:center; margin:0 auto 18px; }
 
         /* Buttons */
-        .btn {
-          font-family: 'Fredoka', sans-serif;
-          font-weight: 700;
-          border-radius: 12px;
-          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-          cursor: pointer;
-          position: relative;
-          overflow: hidden;
-          font-size: 1rem;
-          padding: 12px 28px;
-          border: 2px solid;
-        }
+        .btn { font-family: 'Outfit'; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s, background .2s, color .2s; }
+        .btn:active { transform: translateY(1px) !important; }
+        .btn-solid { background: #2563EB; color: #fff; padding: 9px 20px; border-radius: 9px; font-size: .875rem; box-shadow: 0 2px 10px rgba(37,99,235,0.28); }
+        .btn-solid:hover { background: #1D4ED8; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37,99,235,0.34); }
+        .btn-outline { background: transparent; color: #2563EB; padding: 9px 20px; border-radius: 9px; font-size: .875rem; border: 1.5px solid #BFDBFE; }
+        .btn-outline:hover { background: #EFF6FF; border-color: #93C5FD; transform: translateY(-2px); }
+        .btn-hero { padding: 13px 30px; border-radius: 11px; font-size: 1rem; }
+        .btn-ghost-dark { background: rgba(255,255,255,0.08); color: #fff; border: 1.5px solid rgba(255,255,255,0.18); padding: 13px 30px; border-radius: 11px; font-size: 1rem; }
+        .btn-ghost-dark:hover { background: rgba(255,255,255,0.16); transform: translateY(-2px); }
 
-        .btn-primary {
-          background: linear-gradient(135deg, #4DA8FF, #06D6A0);
-          color: white;
-          border-color: transparent;
-          box-shadow: 0 8px 20px rgba(77, 168, 255, 0.3);
-          position: relative;
-          overflow: hidden;
-        }
+        /* Layout */
+        .section { padding: 96px 28px; position: relative; z-index: 10; }
+        .inner { max-width: 1100px; margin: 0 auto; }
+        .eyebrow { display:inline-block; background:#EFF6FF; color:#2563EB; padding:5px 12px; border-radius:7px; font-size:.74rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
+        .h-title { font-weight: 800; font-size: clamp(1.8rem,4vw,2.6rem); color: #0F172A; margin-bottom: 12px; }
+        .h-sub { color: #64748B; font-size: 1rem; line-height: 1.6; max-width: 480px; }
 
-        .btn-primary::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: rgba(255, 255, 255, 0.2);
-          transition: left 0.4s ease;
-          z-index: -1;
-        }
+        /* Reveal — visible by default, animates in once */
+        .reveal { opacity: 1; }
+        .reveal.in { animation: rise .6s cubic-bezier(.34,1.56,.64,1) both; }
+        @keyframes rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
 
-        .btn-primary:hover::before {
-          left: 100%;
-        }
+        /* Cards with subtle 3D tilt */
+        .card { background:#fff; border:1px solid rgba(15,23,42,0.07); border-radius:16px; padding:26px; transition: transform .3s, box-shadow .3s; }
+        .card:hover { transform: translateY(-6px) perspective(800px) rotateX(2.5deg); box-shadow: 0 22px 50px rgba(37,99,235,0.10), 0 4px 12px rgba(0,0,0,.05); }
+        .num { font-family:'Outfit'; font-weight:900; font-size:2rem; color:#E2E8F0; line-height:1; margin-bottom:16px; }
+        .badge-num { width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Outfit';font-weight:800;color:#fff;background:linear-gradient(135deg,#1E3A8A,#2563EB);box-shadow:0 4px 12px rgba(37,99,235,.25);font-size:1.05rem; }
 
-        .btn-primary:hover {
-          transform: translateY(-3px) scale(1.02);
-          box-shadow: 0 16px 40px rgba(77, 168, 255, 0.5);
-        }
+        /* Explore tab panel */
+        .tabs { display:flex; gap:6px; background:#EEF2F8; padding:6px; border-radius:14px; flex-wrap:wrap; justify-content:center; max-width:560px; margin:0 auto 36px; }
+        .tab { flex:1; min-width:120px; padding:11px 14px; border:none; border-radius:9px; cursor:pointer; font-family:'Outfit'; font-weight:700; font-size:.9rem; color:#64748B; background:transparent; transition:all .2s; }
+        .tab.active { background:#fff; color:#0F2A5C; box-shadow:0 2px 8px rgba(15,42,92,.12); }
+        .panel { background:#fff; border:1px solid rgba(15,23,42,0.08); border-radius:20px; padding:36px; box-shadow:0 10px 40px rgba(15,42,92,.05); }
+        .panel-body { animation: swap .28s ease both; }
+        @keyframes swap { from { opacity:0; transform: translateY(8px);} to {opacity:1; transform:translateY(0);} }
+        .panel-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:18px; margin-top:26px; }
 
-        .btn-primary:active {
-          transform: translateY(-1px) scale(0.98);
-        }
+        /* Pinterest board */
+        .chips { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:38px; }
+        .chip-btn { padding:9px 16px; border-radius:999px; border:1.5px solid #CBD5E1; background:#fff; color:#475569; font-weight:600; font-size:.85rem; cursor:pointer; transition:all .2s; }
+        .chip-btn:hover { border-color:#93C5FD; transform: translateY(-1px); }
+        .chip-btn.on { background:#2563EB; border-color:#2563EB; color:#fff; box-shadow:0 4px 12px rgba(37,99,235,.28); }
+        .board { column-count: 4; column-gap: 16px; }
+        @media (max-width:1000px){ .board{ column-count:3; } }
+        @media (max-width:720px){ .board{ column-count:2; } }
+        @media (max-width:460px){ .board{ column-count:1; } }
+        .pin { break-inside:avoid; margin-bottom:16px; border-radius:16px; padding:18px; color:#fff; display:flex; flex-direction:column; justify-content:flex-end; background:linear-gradient(160deg,#1E3A8A,#2563EB); box-shadow:0 8px 24px rgba(15,42,92,.14); transition: transform .25s, box-shadow .25s; cursor:pointer; }
+        .pin:hover { transform: translateY(-5px) scale(1.01); box-shadow:0 16px 36px rgba(15,42,92,.24); }
+        .pin .pin-cat { font-size:.68rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; opacity:.8; margin-bottom:6px; }
+        .pin .pin-title { font-family:'Outfit'; font-weight:800; font-size:1.05rem; margin-bottom:6px; }
+        .pin .pin-blurb { font-size:.83rem; opacity:.9; line-height:1.5; }
+        .pin:nth-child(3n){ background:linear-gradient(160deg,#0F2A5C,#1E40AF); }
+        .pin:nth-child(4n){ background:linear-gradient(160deg,#1D4ED8,#3B82F6); }
 
-        .btn-secondary {
-          background: white;
-          color: #FF6B35;
-          border-color: #FF6B35;
-          position: relative;
-          overflow: hidden;
-        }
+        /* CTA */
+        .cta { background:#0F2A5C; padding:110px 28px; text-align:center; position:relative; z-index:10; }
 
-        .btn-secondary::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: #FF6B35;
-          transition: left 0.4s ease;
-          z-index: -1;
-        }
+        /* Footer */
+        footer { border-top:1px solid #F1F5F9; padding:50px 28px 34px; background:#fff; position:relative; z-index:10; }
+        .footer-grid { max-width:1100px; margin:0 auto 42px; display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:36px; }
+        .footer-link { display:block; color:#94A3B8; font-size:.875rem; text-decoration:none; margin-bottom:8px; transition:color .2s; background:none; border:none; cursor:pointer; padding:0; text-align:left; }
+        .footer-link:hover { color:#2563EB; }
 
-        .btn-secondary:hover::before {
-          left: 100%;
-        }
+        /* Auth modal */
+        .overlay { position:fixed; inset:0; background:rgba(15,23,42,0.55); display:flex; align-items:center; justify-content:center; z-index:200; animation:fade .2s ease; padding:16px; }
+        @keyframes fade { from{opacity:0;} to{opacity:1;} }
+        .modal { background:#fff; border-radius:20px; padding:38px; max-width:420px; width:100%; position:relative; box-shadow:0 28px 64px rgba(0,0,0,.2); animation:pop .3s cubic-bezier(.34,1.56,.64,1); }
+        @keyframes pop { from{opacity:0; transform:scale(.93) translateY(14px);} to{opacity:1; transform:scale(1) translateY(0);} }
+        .x { position:absolute; top:16px; right:16px; background:none; border:none; cursor:pointer; color:#94A3B8; font-size:1.4rem; line-height:1; padding:4px 8px; border-radius:6px; transition:.2s; }
+        .x:hover { background:#F1F5F9; color:#475569; }
+        .mtabs { display:flex; gap:4px; background:#F1F5F9; border-radius:10px; padding:4px; margin-bottom:26px; }
+        .mtab { flex:1; padding:9px 0; border:none; border-radius:7px; font-family:'Outfit'; font-weight:700; font-size:.9rem; cursor:pointer; background:transparent; color:#64748B; transition:.2s; }
+        .mtab.on { background:#fff; color:#0F2A5C; box-shadow:0 1px 3px rgba(0,0,0,.1); }
+        .input { width:100%; padding:11px 14px; border:1.5px solid #E2E8F0; border-radius:10px; font-family:'Inter'; font-size:.95rem; color:#0F172A; background:#F8FAFC; margin-bottom:12px; transition:.2s; }
+        .input:focus { outline:none; border-color:#3B82F6; background:#fff; box-shadow:0 0 0 3px rgba(59,130,246,.12); }
+        .msg-ok { background:#F0FDF4; color:#15803D; border-radius:8px; padding:10px 14px; font-size:.875rem; margin-bottom:14px; line-height:1.5; }
+        .msg-err { background:#FEF2F2; color:#DC2626; border-radius:8px; padding:10px 14px; font-size:.875rem; margin-bottom:14px; line-height:1.5; }
+        .hint { font-size:.78rem; color:#94A3B8; margin:-4px 0 12px 2px; }
 
-        .btn-secondary:hover {
-          background: #FF6B35;
-          color: white;
-          transform: translateY(-3px) scale(1.02);
-          box-shadow: 0 12px 32px rgba(255, 107, 53, 0.3);
-        }
+        /* OAuth buttons */
+        .oauth-row { display:flex; gap:8px; margin-bottom:18px; }
+        .oauth-btn { flex:1; display:flex; align-items:center; justify-content:center; gap:7px; padding:10px 6px; border:1.5px solid #E2E8F0; border-radius:10px; background:#fff; cursor:pointer; font-family:'Outfit'; font-weight:600; font-size:.82rem; color:#0F172A; transition:all .2s; }
+        .oauth-btn:hover { border-color:#93C5FD; background:#F8FAFC; transform:translateY(-1px); }
+        .oauth-btn:disabled { opacity:.5; cursor:default; }
+        .divider { display:flex; align-items:center; text-align:center; color:#94A3B8; font-size:.78rem; margin-bottom:18px; }
+        .divider::before, .divider::after { content:''; flex:1; height:1px; background:#E2E8F0; }
+        .divider span { padding:0 12px; }
 
-        .btn-secondary:active {
-          transform: translateY(-1px) scale(0.98);
-        }
+        /* Dashboard header */
+        .dash-head { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; flex-wrap:wrap; }
+        .dash-stats { display:flex; gap:28px; }
+        .dash-stat-n { font-family:'Outfit'; font-weight:900; font-size:1.7rem; color:#0F2A5C; line-height:1; }
+        .dash-stat-l { font-size:.72rem; color:#94A3B8; font-weight:600; letter-spacing:.06em; text-transform:uppercase; margin-top:4px; }
 
-        /* Cards */
-        .card {
-          background: white;
-          border: 2px solid rgba(77, 168, 255, 0.15);
-          border-radius: 20px;
-          padding: 28px;
-          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-          position: relative;
-          overflow: hidden;
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-        }
-
-        .card::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(77, 168, 255, 0.1), transparent);
-          transition: left 0.6s ease;
-        }
-
-        .card:hover::before {
-          left: 100%;
-        }
-
-        .card:hover {
-          transform: translateY(-8px);
-          border-color: rgba(77, 168, 255, 0.3);
-          box-shadow: 0 12px 40px rgba(77, 168, 255, 0.15);
-        }
-
-        /* Animations */
-        @keyframes slideInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .slide-in {
-          animation: slideInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-          opacity: 0;
-        }
-
-        .stagger-1 { animation-delay: 0.1s; }
-        .stagger-2 { animation-delay: 0.2s; }
-        .stagger-3 { animation-delay: 0.3s; }
-        .stagger-4 { animation-delay: 0.4s; }
-
-        /* Scroll-triggered animations */
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(40px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        [data-scroll-id]:not(.visible) {
-          opacity: 0;
-          transform: translateY(40px);
-        }
-
-        [data-scroll-id].visible {
-          animation: fadeInUp 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-
-        /* Section Styles */
-        section {
-          position: relative;
-          padding: 80px 0;
-        }
-
-        /* Handwritten elements */
-        .handwritten-note {
-          font-size: 1.5rem;
-          color: #FF6B35;
-          font-weight: 700;
-          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
-        }
-
-        /* Color accents */
-        .text-blue { color: #4DA8FF; }
-        .text-orange { color: #FF6B35; }
-        .text-yellow { color: #FFD166; }
-        .text-green { color: #06D6A0; }
-
-        .bg-blue-light { background: rgba(77, 168, 255, 0.1); }
-        .bg-orange-light { background: rgba(255, 107, 53, 0.1); }
-        .bg-yellow-light { background: rgba(255, 209, 102, 0.1); }
-        .bg-green-light { background: rgba(6, 214, 160, 0.1); }
-
-        /* Badge styles */
-        .badge {
-          display: inline-block;
-          background: white;
-          border: 2px solid #4DA8FF;
-          padding: 8px 16px;
-          border-radius: 20px;
-          font-weight: 600;
-          font-size: 0.9rem;
-          margin: 8px 8px 8px 0;
-          transition: all 0.3s ease;
-        }
-
-        .badge:hover {
-          background: #4DA8FF;
-          color: white;
-          transform: scale(1.05);
-        }
-
-        /* Modal Styles */
-        .modal-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          items: center;
-          justify: center;
-          z-index: 100;
-          animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        .modal-content {
-          background: white;
-          border-radius: 24px;
-          padding: 40px;
-          max-width: 500px;
-          width: 90%;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-          animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes slideUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .modal-content h2 {
-          font-size: 1.875rem;
-          margin-bottom: 12px;
-          color: #1D3557;
-        }
-
-        .modal-content p {
-          color: #1D3557;
-          opacity: 0.7;
-          margin-bottom: 24px;
-          line-height: 1.6;
-        }
-
-        .modal-input {
-          width: 100%;
-          padding: 12px 16px;
-          border: 2px solid rgba(77, 168, 255, 0.2);
-          border-radius: 12px;
-          font-family: 'Inter', sans-serif;
-          font-size: 1rem;
-          transition: all 0.3s ease;
-          margin-bottom: 16px;
-        }
-
-        .modal-input:focus {
-          outline: none;
-          border-color: #4DA8FF;
-          box-shadow: 0 0 0 3px rgba(77, 168, 255, 0.1);
-        }
-
-        .modal-buttons {
-          display: flex;
-          gap: 12px;
-        }
-
-        .modal-message {
-          text-align: center;
-          padding: 12px;
-          border-radius: 8px;
-          margin-bottom: 16px;
-          font-size: 0.95rem;
-        }
-
-        .modal-message.success {
-          background: rgba(6, 214, 160, 0.1);
-          color: #06D6A0;
-        }
-
-        .modal-message.error {
-          background: rgba(255, 107, 53, 0.1);
-          color: #FF6B35;
-        }
-
-        /* Custom Cursor */
-        .custom-cursor {
-          position: fixed;
-          pointer-events: none;
-          z-index: 9999;
-          width: 30px;
-          height: 40px;
-          transform: translate(0, 0);
-          background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 40" width="30" height="40"><path d="M 2 2 L 2 35 L 12 25 L 20 35 L 25 32 L 17 22 L 25 22 Z" fill="black"/></svg>');
-          background-repeat: no-repeat;
-          background-size: contain;
-        }
+        @media (max-width:640px){ .nav-links{ display:none; } .section{ padding:68px 18px; } .panel{ padding:24px; } }
+        @media (prefers-reduced-motion: reduce){ .t-a,.t-b,.t-c{ animation:none; } *,*::before,*::after{ animation-duration:.01ms !important; } }
       `}</style>
 
-      {/* Scroll Progress Bar */}
-      <div className="scroll-progress-bar" style={{ width: `${scrollProgress}%` }} />
+      {/* Progress bar */}
+      <div className="progress" />
 
-      {/* Floating Startup Elements */}
-      <div className="floating-element float-animation" style={{ top: '8%', right: '5%', width: '160px', height: '160px', '--rotation': '15deg' } as any}>
-        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Rocket */}
-          <g>
-            <path d="M100 30 L110 60 L90 60 Z" fill="#FF6B35" stroke="#FF6B35" strokeWidth="2"/>
-            <rect x="85" y="60" width="30" height="80" fill="#4DA8FF" stroke="#4DA8FF" strokeWidth="2" rx="4"/>
-            <circle cx="100" cy="150" r="12" fill="#FFD166" stroke="#FFD166" strokeWidth="2"/>
-            <path d="M80 130 L70 160 L80 155 Z" fill="#06D6A0"/>
-            <path d="M120 130 L130 160 L120 155 Z" fill="#06D6A0"/>
-          </g>
-        </svg>
+      {/* Floating 3D wireframe shapes (blue outline, pop + tumble) */}
+      <div className="fw" style={{ top: '8%', right: '5%', width: 120, height: 120 }}>
+        <div className="fw-3d t-a">
+          <svg viewBox="0 0 120 120" fill="none">
+            <polygon points="60,10 108,38 108,82 60,110 12,82 12,38" stroke="#2563EB" strokeWidth="3.5" />
+            <line x1="60" y1="10" x2="60" y2="60" stroke="#2563EB" strokeWidth="2" />
+            <line x1="12" y1="38" x2="60" y2="60" stroke="#2563EB" strokeWidth="2" />
+            <line x1="108" y1="38" x2="60" y2="60" stroke="#2563EB" strokeWidth="2" />
+          </svg>
+        </div>
+      </div>
+      <div className="fw" style={{ top: '24%', left: '3%', width: 100, height: 100 }}>
+        <div className="fw-3d t-b">
+          <svg viewBox="0 0 120 120" fill="none">
+            <circle cx="60" cy="60" r="34" stroke="#2563EB" strokeWidth="3.5" />
+            <circle cx="60" cy="60" r="18" stroke="#2563EB" strokeWidth="2.5" />
+          </svg>
+        </div>
+      </div>
+      <div className="fw" style={{ bottom: '26%', left: '7%', width: 92, height: 92 }}>
+        <div className="fw-3d t-c">
+          <svg viewBox="0 0 120 120" fill="none">
+            <rect x="18" y="18" width="84" height="84" rx="10" stroke="#2563EB" strokeWidth="3.5" />
+            <rect x="40" y="40" width="40" height="40" stroke="#2563EB" strokeWidth="2.5" />
+          </svg>
+        </div>
+      </div>
+      <div className="fw" style={{ top: '56%', right: '8%', width: 92, height: 92 }}>
+        <div className="fw-3d t-a">
+          <svg viewBox="0 0 120 120" fill="none">
+            <polygon points="60,12 104,96 16,96" stroke="#2563EB" strokeWidth="3.5" />
+            <line x1="60" y1="12" x2="60" y2="96" stroke="#2563EB" strokeWidth="2" />
+          </svg>
+        </div>
       </div>
 
-      <div className="floating-element drift-animation" style={{ top: '25%', left: '3%', width: '140px', height: '140px', '--rotation': '-20deg' } as any}>
-        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Laptop */}
-          <g>
-            <rect x="40" y="30" width="120" height="80" fill="#4DA8FF" stroke="#4DA8FF" strokeWidth="2" rx="6"/>
-            <rect x="45" y="35" width="110" height="65" fill="white" stroke="#1D3557" strokeWidth="1.5"/>
-            <rect x="30" y="110" width="140" height="8" fill="#1D3557" rx="2"/>
-            <line x1="70" y1="120" x2="130" y2="120" stroke="#FF6B35" strokeWidth="2"/>
-          </g>
-        </svg>
-      </div>
+      {/* Scroll-driven sketch → professional rocket */}
+      <svg className="sketch" viewBox="0 0 200 200" fill="none">
+        <g className="rough" stroke="#1E3A8A" strokeWidth="2" strokeLinecap="round" fill="none">
+          <path d="M101 28 C118 50 120 96 102 134 C84 96 84 50 101 28 Z" strokeDasharray="5 6" />
+          <path d="M86 110 C74 120 70 140 73 150 C84 142 90 130 92 122" strokeDasharray="5 6" />
+          <path d="M116 110 C128 120 132 140 129 150 C118 142 112 130 110 122" strokeDasharray="5 6" />
+          <circle cx="101" cy="78" r="11" strokeDasharray="4 5" />
+          <path d="M90 150 C95 168 107 168 112 150" strokeDasharray="4 6" />
+        </g>
+        <g className="clean" stroke="#2563EB" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" fill="none">
+          <path d="M100 26 C120 50 122 98 100 138 C78 98 80 50 100 26 Z"
+                strokeDasharray="320" style={{ strokeDashoffset: 'calc(320px * (1 - var(--sk)))' }} />
+          <path d="M84 112 C70 122 66 144 70 154 C82 146 90 132 92 124"
+                fill="rgba(37,99,235,0.08)" strokeDasharray="120" style={{ strokeDashoffset: 'calc(120px * (1 - var(--sk)))' }} />
+          <path d="M116 112 C130 122 134 144 130 154 C118 146 110 132 108 124"
+                fill="rgba(37,99,235,0.08)" strokeDasharray="120" style={{ strokeDashoffset: 'calc(120px * (1 - var(--sk)))' }} />
+          <circle cx="100" cy="76" r="12" fill="rgba(37,99,235,0.1)" strokeDasharray="80" style={{ strokeDashoffset: 'calc(80px * (1 - var(--sk)))' }} />
+        </g>
+      </svg>
 
-      <div className="floating-element float-animation" style={{ top: '50%', right: '8%', width: '150px', height: '150px', '--rotation': '10deg', animationDelay: '1s' } as any}>
-        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Trophy */}
-          <g>
-            <path d="M50 80 L50 40 Q50 20 70 20 L130 20 Q150 20 150 40 L150 80" fill="none" stroke="#FFD166" strokeWidth="3"/>
-            <rect x="60" y="80" width="80" height="40" fill="#FFD166" stroke="#FFD166" strokeWidth="2" rx="4"/>
-            <path d="M85 120 L85 140 L50 140 L50 150 L150 150 L150 140 L115 140 L115 120" fill="#FFD166" stroke="#FFD166" strokeWidth="2"/>
-            <circle cx="100" cy="50" r="15" fill="#FF6B35" opacity="0.3"/>
-          </g>
-        </svg>
-      </div>
-
-      <div className="floating-element spin-animation" style={{ bottom: '20%', left: '10%', width: '130px', height: '130px' }}>
-        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Lightbulb */}
-          <g>
-            <circle cx="100" cy="70" r="40" fill="#06D6A0" stroke="#06D6A0" strokeWidth="2"/>
-            <path d="M80 110 L120 110 L115 140 L85 140 Z" fill="#1D3557" stroke="#1D3557" strokeWidth="2"/>
-            <line x1="90" y1="150" x2="110" y2="150" stroke="#4DA8FF" strokeWidth="3"/>
-            <line x1="88" y1="165" x2="112" y2="165" stroke="#4DA8FF" strokeWidth="3"/>
-          </g>
-        </svg>
-      </div>
-
-      <div className="floating-element drift-animation" style={{ top: '45%', left: '85%', width: '120px', height: '120px', '--rotation': '25deg', animationDelay: '2s' } as any}>
-        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Sticky Note */}
-          <g>
-            <rect x="30" y="20" width="140" height="140" fill="#FFD166" stroke="#FFD166" strokeWidth="2" rx="4"/>
-            <line x1="40" y1="50" x2="160" y2="50" stroke="#1D3557" strokeWidth="1.5" opacity="0.5"/>
-            <line x1="40" y1="70" x2="160" y2="70" stroke="#1D3557" strokeWidth="1.5" opacity="0.5"/>
-            <line x1="40" y1="90" x2="160" y2="90" stroke="#1D3557" strokeWidth="1.5" opacity="0.5"/>
-            <circle cx="150" cy="35" r="8" fill="#FF6B35"/>
-          </g>
-        </svg>
-      </div>
-
-      <div className="floating-element float-animation" style={{ top: '65%', right: '12%', width: '140px', height: '140px', '--rotation': '-15deg', animationDelay: '1.5s' } as any}>
-        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Robot */}
-          <g>
-            <rect x="50" y="40" width="100" height="80" fill="#4DA8FF" stroke="#4DA8FF" strokeWidth="2" rx="6"/>
-            <circle cx="70" cy="60" r="8" fill="#FF6B35"/>
-            <circle cx="130" cy="60" r="8" fill="#FF6B35"/>
-            <rect x="75" y="80" width="50" height="20" fill="#06D6A0" stroke="#06D6A0" strokeWidth="1.5" rx="3"/>
-            <rect x="45" y="130" width="20" height="40" fill="#FFD166" stroke="#FFD166" strokeWidth="2"/>
-            <rect x="135" y="130" width="20" height="40" fill="#FFD166" stroke="#FFD166" strokeWidth="2"/>
-          </g>
-        </svg>
-      </div>
-
-      <div className="floating-element drift-animation" style={{ bottom: '35%', right: '5%', width: '150px', height: '150px', '--rotation': '20deg', animationDelay: '0.5s' } as any}>
-        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Pitch Deck */}
-          <g>
-            <rect x="35" y="30" width="130" height="95" fill="white" stroke="#FF6B35" strokeWidth="2.5" rx="4"/>
-            <rect x="42" y="38" width="50" height="30" fill="#4DA8FF" opacity="0.7" rx="3"/>
-            <rect x="100" y="38" width="50" height="30" fill="#06D6A0" opacity="0.7" rx="3"/>
-            <rect x="42" y="75" width="108" height="8" fill="#FFD166" opacity="0.7" rx="2"/>
-            <rect x="35" y="130" width="130" height="8" fill="#1D3557" rx="2"/>
-            <circle cx="170" cy="170" r="12" fill="#FF6B35"/>
-          </g>
-        </svg>
-      </div>
-
-      <div className="floating-element float-animation" style={{ top: '15%', left: '70%', width: '140px', height: '140px', '--rotation': '-10deg', animationDelay: '2.5s' } as any}>
-        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Dashboard */}
-          <g>
-            <rect x="30" y="25" width="140" height="150" fill="white" stroke="#4DA8FF" strokeWidth="2" rx="6"/>
-            <rect x="40" y="35" width="30" height="20" fill="#FF6B35" rx="2"/>
-            <rect x="80" y="35" width="30" height="20" fill="#06D6A0" rx="2"/>
-            <rect x="120" y="35" width="30" height="20" fill="#FFD166" rx="2"/>
-            <path d="M45 70 L55 65 L65 75 L75 60 L85 70" stroke="#4DA8FF" strokeWidth="2" fill="none"/>
-            <line x1="40" y1="95" x2="130" y2="95" stroke="#1D3557" strokeWidth="1" opacity="0.3"/>
-            <line x1="40" y1="110" x2="130" y2="110" stroke="#1D3557" strokeWidth="1" opacity="0.3"/>
-            <line x1="40" y1="125" x2="130" y2="125" stroke="#1D3557" strokeWidth="1" opacity="0.3"/>
-            <line x1="40" y1="140" x2="130" y2="140" stroke="#1D3557" strokeWidth="1" opacity="0.3"/>
-          </g>
-        </svg>
-      </div>
-
-      <div className="floating-element drift-animation" style={{ bottom: '8%', left: '75%', width: '130px', height: '130px', '--rotation': '-25deg', animationDelay: '1.2s' } as any}>
-        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Medal */}
-          <g>
-            <circle cx="100" cy="60" r="35" fill="#FFD166" stroke="#FFD166" strokeWidth="2.5"/>
-            <circle cx="100" cy="60" r="28" fill="white" stroke="#FFD166" strokeWidth="1.5"/>
-            <text x="100" y="70" fontSize="40" textAnchor="middle" fill="#FFD166">★</text>
-            <path d="M90 95 Q100 105 110 95 L110 120 Q100 130 90 120 Z" fill="#FF6B35" stroke="#FF6B35" strokeWidth="1.5"/>
-            <line x1="80" y1="95" x2="120" y2="95" stroke="#4DA8FF" strokeWidth="2"/>
-          </g>
-        </svg>
-      </div>
-
-      <div className="floating-element spin-animation" style={{ top: '72%', left: '12%', width: '120px', height: '120px' }}>
-        <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          {/* Code Window */}
-          <g>
-            <rect x="30" y="30" width="140" height="140" fill="white" stroke="#1D3557" strokeWidth="2" rx="4"/>
-            <rect x="30" y="30" width="140" height="25" fill="#1D3557" rx="4"/>
-            <circle cx="45" cy="42" r="3" fill="#FF6B35"/>
-            <circle cx="60" cy="42" r="3" fill="#FFD166"/>
-            <circle cx="75" cy="42" r="3" fill="#06D6A0"/>
-            <line x1="40" y1="65" x2="160" y2="65" stroke="#4DA8FF" strokeWidth="1.5" opacity="0.6"/>
-            <line x1="40" y1="80" x2="160" y2="80" stroke="#4DA8FF" strokeWidth="1.5" opacity="0.6"/>
-            <line x1="40" y1="95" x2="160" y2="95" stroke="#4DA8FF" strokeWidth="1.5" opacity="0.6"/>
-            <line x1="40" y1="110" x2="160" y2="110" stroke="#4DA8FF" strokeWidth="1.5" opacity="0.6"/>
-            <line x1="40" y1="125" x2="160" y2="125" stroke="#4DA8FF" strokeWidth="1.5" opacity="0.6"/>
-            <line x1="40" y1="140" x2="160" y2="140" stroke="#4DA8FF" strokeWidth="1.5" opacity="0.6"/>
-          </g>
-        </svg>
-      </div>
-
-      {/* Content Wrapper */}
-      <div className="content-wrapper">
-        {/* Navigation */}
-        <nav className="px-8 py-4 sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <div className="text-3xl font-bold handwritten text-text-orange">SFE Foundry</div>
-            <div className="hidden md:flex gap-10">
-              <a href="#competitions" className="nav-link">Competitions</a>
-              <a href="#events" className="nav-link">Events</a>
-              <a href="#projects" className="nav-link">Projects</a>
-              <a href="#team" className="nav-link">Team</a>
-              <a href="/faq" className="nav-link">FAQ</a>
-            </div>
-            <button className="btn btn-primary px-6 py-3" onClick={() => setShowModal(true)}>
-              Join Us
-            </button>
+      {/* Nav */}
+      <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
+        <div className="nav-inner">
+          <a href="#top" className="brand">
+            <img src="/logo.svg" alt="SFE Foundry logo" />
+            <span className="brand-text">SFE Foundry</span>
+          </a>
+          <div className="nav-links">
+            {TABS.map((t) => (
+              <button key={t.id} className="nav-link" onClick={() => goToTab(t.id)}>{t.label}</button>
+            ))}
+            <a href="/faq" className="nav-link" style={{ textDecoration: 'none' }}>FAQ</a>
           </div>
-        </nav>
-
-        {/* Hero Section */}
-        <section className="relative min-h-screen flex items-center justify-center pt-20 px-8 overflow-hidden" data-scroll-id="hero">
-          <div className="relative z-10 max-w-4xl mx-auto text-center">
-            <h1 className="text-8xl md:text-9xl font-bold handwritten mb-6 text-blue slide-in" style={{ lineHeight: '1.2' }}>
-              Build cool
-              <br />
-              <span className="text-orange">things.</span>
-            </h1>
-
-            <p className="slide-in stagger-1 text-2xl md:text-3xl font-semibold text-[#1D3557] mb-12 leading-relaxed max-w-2xl mx-auto">
-              Join students building startups, winning hackathons, launching projects, and turning ideas into reality.
-            </p>
-
-            <div className="slide-in stagger-2 flex flex-col sm:flex-row gap-6 justify-center">
-              <button className="btn btn-primary" onClick={() => setShowModal(true)}>Join SFE Foundry</button>
-              <button className="btn btn-secondary" onClick={() => window.location.href = '#events'}>Upcoming Events</button>
-            </div>
-
-            {/* Stats */}
-            <div className="slide-in stagger-3 mt-16 flex justify-center gap-12">
-              <div className="flex flex-col items-center">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center mb-3 shadow-lg hover:shadow-xl transition-shadow">
-                  <span className="text-2xl font-bold text-white">01</span>
-                </div>
-                <div className="font-bold text-lg text-blue">50+ Members</div>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-400 to-emerald-400 flex items-center justify-center mb-3 shadow-lg hover:shadow-xl transition-shadow">
-                  <span className="text-2xl font-bold text-white">02</span>
-                </div>
-                <div className="font-bold text-lg text-blue">Building Daily</div>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 to-red-400 flex items-center justify-center mb-3 shadow-lg hover:shadow-xl transition-shadow">
-                  <span className="text-2xl font-bold text-white">03</span>
-                </div>
-                <div className="font-bold text-lg text-blue">Super Ambitious</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Startup Competitions Section */}
-        <section id="competitions" className="py-32 px-8 relative" data-scroll-id="competitions-section">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-6xl font-bold handwritten text-center mb-4 text-blue slide-in" style={{ animationDelay: '0s' }}>
-              Startup <span className="text-orange">Competitions</span>
-            </h2>
-            <p className="text-center text-lg text-[#1D3557]/70 mb-16 max-w-2xl mx-auto slide-in" style={{ animationDelay: '0.1s' }}>
-              Pitch your ideas, get feedback from mentors, compete for prizes, and launch your next big thing.
-            </p>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              {[
-                { title: 'Pitch Competition', num: '01' },
-                { title: 'Demo Day', num: '02' },
-                { title: 'Founders Summit', num: '03' }
-              ].map((item, idx) => (
-                <div key={idx} className="card slide-in" style={{ animationDelay: `${idx * 0.2}s` }} data-scroll-id={`comp-${idx}`}>
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-orange-400 to-red-400 flex items-center justify-center mb-4 shadow-lg">
-                    <span className="text-xl font-bold text-white">{item.num}</span>
-                  </div>
-                  <h3 className="text-3xl font-bold handwritten mb-4 text-orange">{item.title}</h3>
-                  <p className="text-[#1D3557]/70 mb-6 leading-relaxed">
-                    Monthly competitions where student founders pitch ideas to judges and win prizes.
-                  </p>
-                  <button className="btn btn-secondary w-full" onClick={() => window.location.href = '#events'}>Learn More</button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Hackathons Section */}
-        <section id="events" className="py-32 px-8 relative" data-scroll-id="hackathons-section">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-6xl font-bold handwritten text-center mb-4 text-blue slide-in" style={{ animationDelay: '0s' }}>
-              <span className="text-green">Hackathons</span> & Build Challenges
-            </h2>
-            <p className="text-center text-lg text-[#1D3557]/70 mb-16 max-w-2xl mx-auto slide-in" style={{ animationDelay: '0.1s' }}>
-              Build projects, compete with friends, and show off your creations.
-            </p>
-
-            <div className="space-y-8">
-              {[
-                { title: '24-Hour Hackathons', num: '01', bg: 'bg-yellow-light' },
-                { title: 'Weekly Challenges', num: '02', bg: 'bg-blue-light' },
-                { title: 'AI/ML Hackathons', num: '03', bg: 'bg-green-light' },
-              ].map((hack, idx) => (
-                <div key={idx} className={`${hack.bg} border-2 border-[#4DA8FF] rounded-3xl p-10 slide-in`} style={{ animationDelay: `${idx * 0.15}s` }} data-scroll-id={`hack-${idx}`}>
-                  <div className="flex items-center gap-6">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-400 to-red-400 flex items-center justify-center flex-shrink-0 shadow-lg">
-                      <span className="text-3xl font-bold text-white">{hack.num}</span>
+          <div className="nav-actions">
+            {user ? (
+              <div style={{ position: 'relative' }}>
+                <button
+                  className="avatar-btn"
+                  onClick={() => setShowProfile((s) => !s)}
+                  title={user.email}
+                  aria-label="Profile"
+                >
+                  {(user.name?.trim()?.[0] || user.email[0]).toUpperCase()}
+                </button>
+                {showProfile && (
+                  <>
+                    <div style={{ position: 'fixed', inset: 0, zIndex: 60 }} onClick={() => setShowProfile(false)} />
+                    <div className="profile-menu">
+                      <div className="profile-head">
+                        <div className="avatar-btn" style={{ width: 40, height: 40, fontSize: '1rem', cursor: 'default' }}>
+                          {(user.name?.trim()?.[0] || user.email[0]).toUpperCase()}
+                        </div>
+                        <div style={{ overflow: 'hidden' }}>
+                          {user.name && <div style={{ fontWeight: 700, fontSize: '.9rem', color: '#0F172A' }}>{user.name}</div>}
+                          <div style={{ fontSize: '.78rem', color: '#94A3B8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user.email}</div>
+                        </div>
+                      </div>
+                      <button className="profile-item" onClick={signOut}>Sign out</button>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-3xl font-bold text-[#1D3557] mb-2">{hack.title}</h3>
-                      <p className="text-[#1D3557]/70">Build something amazing and compete with the community.</p>
-                    </div>
-                    <button className="btn btn-primary" onClick={() => setShowModal(true)}>Register</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Community Projects Section */}
-        <section id="projects" className="py-32 px-8 relative" data-scroll-id="projects-section">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-6xl font-bold handwritten text-center mb-4 text-blue slide-in" style={{ animationDelay: '0s' }}>
-              Projects Built by <span className="text-green">Our Community</span>
-            </h2>
-            <p className="text-center text-lg text-[#1D3557]/70 mb-16 max-w-2xl mx-auto slide-in" style={{ animationDelay: '0.1s' }}>
-              Check out the amazing things our members are building.
-            </p>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[
-                { title: 'AI Study Assistant', num: '01', members: '3 members', color: 'from-blue-400 to-cyan-400' },
-                { title: 'E-Commerce Platform', num: '02', members: '5 members', color: 'from-green-400 to-emerald-400' },
-                { title: 'Social App', num: '03', members: '2 members', color: 'from-purple-400 to-pink-400' },
-                { title: 'Mobile Game', num: '04', members: '4 members', color: 'from-orange-400 to-red-400' },
-                { title: 'Weather Dashboard', num: '05', members: '2 members', color: 'from-yellow-400 to-orange-400' },
-                { title: 'Finance Tracker', num: '06', members: '3 members', color: 'from-indigo-400 to-blue-400' },
-              ].map((proj, idx) => (
-                <div key={idx} className="card slide-in" style={{ animationDelay: `${idx * 0.1}s` }} data-scroll-id={`proj-${idx}`}>
-                  <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${proj.color} flex items-center justify-center mb-4 shadow-lg`}>
-                    <span className="text-lg font-bold text-white">{proj.num}</span>
-                  </div>
-                  <h3 className="text-2xl font-bold text-[#1D3557] mb-2">{proj.title}</h3>
-                  <p className="text-[#1D3557]/60 text-sm mb-4">{proj.members}</p>
-                  <button className="btn btn-secondary w-full text-sm" onClick={() => alert(`${proj.title} project details coming soon!`)}>View Project</button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Hall of Fame */}
-        <section className="py-32 px-8 relative" data-scroll-id="hall-of-fame">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center shadow-lg">
-                <span className="text-2xl">⭐</span>
+                  </>
+                )}
               </div>
-              <h2 className="text-6xl font-bold handwritten text-center">
-                Hall of <span className="text-orange">Fame</span>
-              </h2>
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center shadow-lg">
-                <span className="text-2xl">⭐</span>
-              </div>
-            </div>
-            <p className="text-center text-lg text-[#1D3557]/70 mb-16 max-w-2xl mx-auto">
-              Celebrating our amazing builders and innovators.
-            </p>
-
-            <div className="grid md:grid-cols-4 gap-8">
-              {[
-                { name: 'Sarah Chen', achievement: 'Hackathon Winner' },
-                { name: 'Marcus Johnson', achievement: 'Top Pitcher' },
-                { name: 'Lisa Wong', achievement: 'Best Project' },
-                { name: 'Alex Rodriguez', achievement: 'Community MVP' },
-              ].map((person, idx) => (
-                <div key={idx} className="card text-center slide-in" style={{ animationDelay: `${idx * 0.1}s` }}>
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-400 to-green-400 mx-auto mb-4"></div>
-                  <h3 className="text-2xl font-bold text-[#1D3557] mb-1">{person.name}</h3>
-                  <p className="text-orange font-bold mb-2">{person.achievement}</p>
-                </div>
-              ))}
-            </div>
+            ) : (
+              <>
+                <button className="btn btn-solid" onClick={() => openModal('signup')}>Sign Up</button>
+                <button className="btn btn-outline" onClick={() => openModal('signin')}>Sign In</button>
+              </>
+            )}
           </div>
-        </section>
+        </div>
+      </nav>
 
-        {/* Sponsors */}
-        <section className="py-32 px-8 bg-gradient-to-br from-blue-light to-green-light relative" data-scroll-id="sponsors">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-6xl font-bold handwritten text-center mb-4 text-blue">
-              Supported By <span className="text-orange">Amazing Partners</span>
-            </h2>
-            <p className="text-center text-lg text-[#1D3557]/70 mb-16">
-              Thanks to our sponsors who believe in student builders.
-            </p>
+      <span id="top" />
 
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-                <div key={i} className="h-32 rounded-3xl flex items-center justify-center cursor-pointer transition-all slide-in card hover:shadow-xl" style={{ animationDelay: `${i * 0.1}s` }} data-scroll-id={`partner-${i}`}>
-                  <div className="text-center">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 flex items-center justify-center mx-auto mb-2 shadow-lg">
-                      <span className="text-lg font-bold text-white">{String(i).padStart(2, '0')}</span>
-                    </div>
-                    <div className="text-sm font-bold text-[#1D3557]">Partner {i}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Team */}
-        <section id="team" className="py-32 px-8 relative" data-scroll-id="team-section">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-6xl font-bold handwritten text-center mb-4 text-blue slide-in" style={{ animationDelay: '0s' }}>
-              Meet the <span className="text-green">Builders</span>
-            </h2>
-            <p className="text-center text-lg text-[#1D3557]/70 mb-16 max-w-2xl mx-auto slide-in" style={{ animationDelay: '0.1s' }}>
-              The amazing students leading SFE Foundry.
-            </p>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              {[
-                { role: 'Founder & President', name: 'Jamie Lee', color: 'from-blue-400 to-orange-400' },
-                { role: 'VP of Events', name: 'Alex Kim', color: 'from-green-400 to-blue-400' },
-                { role: 'Community Lead', name: 'Jordan Smith', color: 'from-yellow-400 to-orange-400' },
-              ].map((member, idx) => (
-                <div key={idx} className="card text-center slide-in" style={{ animationDelay: `${idx * 0.15}s` }}>
-                  <div className={`w-32 h-32 rounded-full bg-gradient-to-br ${member.color} mx-auto mb-6`}></div>
-                  <h3 className="text-2xl font-bold text-[#1D3557] mb-2">{member.name}</h3>
-                  <p className="text-orange font-bold">{member.role}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Achievements */}
-        <section className="py-32 px-8 relative" data-scroll-id="achievements">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-5xl font-bold handwritten text-center mb-12 text-blue">
-              Your <span className="text-orange">Achievements</span>
-            </h2>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 justify-items-center">
-              {[
-                { label: 'Launched', color: 'from-blue-400 to-cyan-400' },
-                { label: 'Building', color: 'from-green-400 to-emerald-400' },
-                { label: 'Winner', color: 'from-yellow-400 to-orange-400' },
-                { label: 'Pitched', color: 'from-orange-400 to-red-400' },
-                { label: 'Community', color: 'from-purple-400 to-pink-400' },
-                { label: 'Innovator', color: 'from-indigo-400 to-blue-400' },
-                { label: 'Leader', color: 'from-rose-400 to-red-400' },
-                { label: 'Star', color: 'from-yellow-400 to-yellow-500' },
-              ].map((achievement, idx) => (
-                <div key={idx} className="w-20 h-20 rounded-full bg-white border-2 border-[#4DA8FF] flex items-center justify-center text-sm font-bold slide-in hover:scale-110 hover:shadow-xl transition-all cursor-pointer shadow-md" style={{ animationDelay: `${idx * 0.05}s` }} data-scroll-id={`achievement-${idx}`}>
-                  <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${achievement.color} flex items-center justify-center text-white text-xs font-bold text-center px-1`}>
-                    {achievement.label}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Final CTA */}
-        <section className="py-32 px-8 bg-gradient-to-r from-blue-light via-transparent to-green-light relative">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-6xl md:text-7xl font-bold handwritten text-blue mb-6 slide-in">
-              Ready to build something cool?
-            </h2>
-            <p className="text-xl text-[#1D3557] mb-12 slide-in stagger-1 leading-relaxed">
-              Join SFE Foundry and become part of a movement of ambitious students turning ideas into reality.
-            </p>
-            <div className="slide-in stagger-2 flex flex-col sm:flex-row gap-6 justify-center">
-              <button className="btn btn-primary" onClick={() => setShowModal(true)}>Join the Community</button>
-              <button className="btn btn-secondary" onClick={() => window.location.href = '#events'}>See Events →</button>
-            </div>
-          </div>
-        </section>
-
-        {/* Footer */}
-        <footer className="border-t border-[#4DA8FF]/20 py-12 px-8 bg-white/50 backdrop-blur-sm">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-4 gap-12 mb-12">
+      {/* ══════════ SIGNED-IN DASHBOARD ══════════ */}
+      {user && (
+        <section className="section" style={{ paddingTop: 56, paddingBottom: 30 }}>
+          <div className="inner">
+            <div className="dash-head reveal in">
               <div>
-                <h3 className="text-2xl font-bold handwritten text-orange mb-4">SFE Foundry</h3>
-                <p className="text-[#1D3557]/70">Building cool things together.</p>
+                <div className="eyebrow" style={{ marginBottom: 12 }}>Your Dashboard</div>
+                <h1 className="h-title" style={{ fontSize: 'clamp(1.9rem,4vw,2.8rem)', marginBottom: 8 }}>
+                  Welcome back{user.name ? ', ' + user.name.split(' ')[0] : ''}
+                </h1>
+                <p className="h-sub">Your personalized feed of events, hackathons, and workshops.</p>
               </div>
-              <div>
-                <h4 className="font-bold text-[#1D3557] mb-4">Navigation</h4>
-                <ul className="space-y-2 text-[#1D3557]/70">
-                  <li><a href="#competitions" className="hover:text-blue transition">Competitions</a></li>
-                  <li><a href="#events" className="hover:text-blue transition">Events</a></li>
-                  <li><a href="#projects" className="hover:text-blue transition">Projects</a></li>
-                </ul>
+              <div className="dash-stats">
+                {[['50+', 'Members'], ['12+', 'Projects'], ['4', 'Hackathons']].map(([n, l]) => (
+                  <div key={l} className="dash-stat"><div className="dash-stat-n">{n}</div><div className="dash-stat-l">{l}</div></div>
+                ))}
               </div>
-              <div>
-                <h4 className="font-bold text-[#1D3557] mb-4">Community</h4>
-                <ul className="space-y-2 text-[#1D3557]/70">
-                  <li><a href="#" className="hover:text-blue transition">Discord</a></li>
-                  <li><a href="#" className="hover:text-blue transition">Instagram</a></li>
-                  <li><a href="#" className="hover:text-blue transition">Twitter</a></li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-bold text-[#1D3557] mb-4">Contact</h4>
-                <p className="text-[#1D3557]/70">hello@sfefoundry.com</p>
-                <p className="text-orange font-bold mt-2">Building cool things.</p>
-              </div>
-            </div>
-            <div className="border-t border-[#1D3557]/10 pt-8 text-center text-[#1D3557]/60">
-              <p>© 2024 SFE Foundry • Build. Compete. Launch.</p>
             </div>
           </div>
-        </footer>
-      </div>
+        </section>
+      )}
 
-      {/* Join Modal */}
-      {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2>Join SFE Foundry</h2>
-            <p>Be part of a community building the future. Get updates on competitions, hackathons, and events.</p>
+      {/* Personalized board — dashboard only */}
+      {user && (
+        <section id="board" className="section" style={{ paddingTop: 10 }}>
+          <div className="inner">
+            <div className="reveal" style={{ marginBottom: 22 }}>
+              <h2 style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.3rem', color: '#0F2A5C', marginBottom: 6 }}>For you</h2>
+              <p style={{ color: '#64748B', fontSize: '.92rem' }}>Pick what you’re into and we’ll tailor your board.</p>
+            </div>
 
-            {message && (
-              <div className={`modal-message ${message.includes('Welcome') || message.includes('successful') ? 'success' : 'error'}`}>
-                {message}
-              </div>
+            <div className="chips reveal" style={{ justifyContent: 'flex-start' }}>
+              {INTERESTS.map((i) => (
+                <button key={i} className={`chip-btn${interests.includes(i) ? ' on' : ''}`} onClick={() => toggleInterest(i)}>
+                  {interests.includes(i) ? '✓ ' : ''}{i}
+                </button>
+              ))}
+            </div>
+
+            {interests.length > 0 && (
+              <p style={{ color: '#94A3B8', fontSize: '.82rem', marginBottom: 24 }}>
+                Showing {visiblePins.length} pins for {interests.length} interest{interests.length > 1 ? 's' : ''} ·{' '}
+                <button className="footer-link" style={{ display: 'inline', color: '#2563EB' }} onClick={() => setInterests([])}>clear</button>
+              </p>
             )}
 
-            <form onSubmit={handleJoinSubmit}>
-              <input
-                type="text"
-                className="modal-input"
-                placeholder="Your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                disabled={loading}
-              />
+            <div className="board reveal">
+              {visiblePins.map((p, i) => (
+                <div key={p.title + i} className="pin" style={{ minHeight: p.h }} onClick={() => jumpTo('explore')}>
+                  <div className="pin-cat">{p.cat}</div>
+                  <div className="pin-title">{p.title}</div>
+                  <div className="pin-blurb">{p.blurb}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
-              <input
-                type="email"
-                className="modal-input"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={loading}
-              />
-
-              <textarea
-                className="modal-input"
-                placeholder="Why do you want to join? (optional)"
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                disabled={loading}
-                rows={3}
-                style={{ resize: 'none', fontFamily: 'Inter, sans-serif' }}
-              />
-
-              <div className="modal-buttons">
-                <button
-                  type="submit"
-                  className="btn btn-primary flex-1"
-                  disabled={loading || !email || !name}
-                >
-                  {loading ? 'Joining...' : 'Join Now'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="btn btn-secondary flex-1"
-                  disabled={loading}
-                >
-                  Close
-                </button>
+      {/* ══════════ LANDING HERO (signed out) ══════════ */}
+      {!user && (
+      <section className="section" style={{ minHeight: '84vh', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', paddingTop: 70 }}>
+        <div style={{ maxWidth: 760 }}>
+          <div className="reveal in eyebrow" style={{ marginBottom: 26 }}>Student Innovation &amp; Entrepreneurship</div>
+          <h1 className="reveal in" style={{ fontWeight: 900, fontSize: 'clamp(3rem,8vw,5.4rem)', lineHeight: 1.04, marginBottom: 24, color: '#0F172A' }}>
+            Build cool things.<br /><span style={{ color: '#2563EB' }}>Ship them.</span>
+          </h1>
+          <p className="reveal in" style={{ fontSize: '1.1rem', color: '#64748B', lineHeight: 1.7, maxWidth: 520, margin: '0 auto 42px' }}>
+            Join students building startups, winning hackathons, and turning ideas into products people actually use.
+          </p>
+          <div className="reveal in" style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button className="btn btn-solid btn-hero" onClick={() => openModal('signup')}>Sign Up</button>
+            <button className="btn btn-outline btn-hero" onClick={() => jumpTo('explore')}>Explore Programs</button>
+          </div>
+          <div className="reveal in" style={{ marginTop: 76, display: 'flex', justifyContent: 'center', gap: 54, flexWrap: 'wrap' }}>
+            {[['50+', 'Members'], ['12+', 'Projects Shipped'], ['4', 'Hackathons / yr']].map(([n, l]) => (
+              <div key={l} style={{ textAlign: 'center' }}>
+                <div style={{ fontFamily: 'Outfit', fontWeight: 900, fontSize: '2.1rem', color: '#0F2A5C' }}>{n}</div>
+                <div style={{ fontSize: '.76rem', color: '#94A3B8', fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', marginTop: 4 }}>{l}</div>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      )}
+
+      {/* Explore — tabbed panel (both views) */}
+      <section id="explore" className="section" style={{ background: '#fff' }}>
+        <div className="inner">
+          <div className="reveal" style={{ textAlign: 'center', marginBottom: 36 }}>
+            <div className="eyebrow" style={{ marginBottom: 12 }}>Explore</div>
+            <h2 className="h-title">{user ? 'Browse programs' : 'Everything in one place'}</h2>
+            <p className="h-sub" style={{ margin: '0 auto' }}>Switch tabs to browse — the panel updates instantly, no scrolling around.</p>
+          </div>
+
+          <div className="tabs reveal">
+            {TABS.map((t) => (
+              <button key={t.id} className={`tab${activeTab === t.id ? ' active' : ''}`} onClick={() => setActiveTab(t.id)}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="panel reveal">
+            <div className="panel-body" key={activeTab}>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0F2A5C', marginBottom: 8 }}>{activeTabData.title}</h3>
+              <p style={{ color: '#64748B', fontSize: '.95rem', lineHeight: 1.6 }}>{activeTabData.blurb}</p>
+              <div className="panel-grid">
+                {activeTabData.items.map((it) => (
+                  <div key={it.h} className="card">
+                    {activeTab === 'team'
+                      ? <div className="badge-num" style={{ marginBottom: 16 }}>{it.n}</div>
+                      : <div className="num">{it.n}</div>}
+                    <h4 style={{ fontWeight: 700, fontSize: '1.05rem', color: '#0F172A', marginBottom: 8 }}>{it.h}</h4>
+                    <p style={{ color: '#64748B', fontSize: '.88rem', lineHeight: 1.6 }}>{it.p}</p>
+                  </div>
+                ))}
+              </div>
+              {!user && (
+                <div style={{ marginTop: 28, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                  <button className="btn btn-solid" onClick={() => openModal('signup')}>Sign Up to Join</button>
+                  <button className="btn btn-outline" onClick={() => openModal('signin')}>Sign In</button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Hall of Fame (signed out) */}
+      {!user && (
+      <section className="section" style={{ background: '#F8FAFC' }}>
+        <div className="inner">
+          <div className="reveal" style={{ textAlign: 'center', marginBottom: 44 }}>
+            <div className="eyebrow" style={{ marginBottom: 12 }}>Hall of Fame</div>
+            <h2 className="h-title">Top builders this year</h2>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 18 }}>
+            {[['Sarah Chen', 'Hackathon Winner'], ['Marcus Johnson', 'Top Pitcher'], ['Lisa Wong', 'Best Project'], ['Alex Rodriguez', 'Community MVP']].map(([n, a]) => (
+              <div key={n} className="card reveal" style={{ textAlign: 'center', padding: '30px 22px' }}>
+                <div className="badge-num" style={{ width: 66, height: 66, fontSize: '1.5rem', margin: '0 auto 16px' }}>{n.charAt(0)}</div>
+                <div style={{ fontWeight: 700, fontSize: '1rem', color: '#0F172A', marginBottom: 6 }}>{n}</div>
+                <div className="eyebrow" style={{ background: '#F1F5F9', color: '#64748B' }}>{a}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      )}
+
+      {/* CTA (signed out) */}
+      {!user && (
+      <section className="cta">
+        <div style={{ maxWidth: 600, margin: '0 auto' }}>
+          <h2 style={{ fontWeight: 900, fontSize: 'clamp(2rem,5.5vw,3.1rem)', color: '#fff', marginBottom: 18, lineHeight: 1.1 }}>
+            Ready to build something?
+          </h2>
+          <p style={{ color: '#A9BEDC', fontSize: '1.05rem', lineHeight: 1.7, marginBottom: 42 }}>
+            Sign up free and get access to all events, hackathons, and the community.
+          </p>
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button className="btn btn-hero" style={{ background: '#fff', color: '#0F2A5C' }} onClick={() => openModal('signup')}>Sign Up</button>
+            <button className="btn btn-ghost-dark btn-hero" onClick={() => openModal('signin')}>Sign In</button>
+          </div>
+        </div>
+      </section>
+      )}
+
+      {/* Footer */}
+      <footer>
+        <div className="footer-grid">
+          <div>
+            <div className="brand" style={{ marginBottom: 12 }}>
+              <img src="/logo.svg" alt="" style={{ width: 30, height: 30 }} />
+              <span className="brand-text" style={{ fontSize: '1.1rem' }}>SFE Foundry</span>
+            </div>
+            <p style={{ color: '#94A3B8', fontSize: '.875rem', lineHeight: 1.6 }}>Build. Compete. Launch.</p>
+          </div>
+          <div>
+            <div style={{ fontWeight: 600, color: '#0F172A', marginBottom: 14, fontSize: '.875rem' }}>Explore</div>
+            {TABS.map((t) => <button key={t.id} className="footer-link" onClick={() => goToTab(t.id)}>{t.label}</button>)}
+          </div>
+          <div>
+            <div style={{ fontWeight: 600, color: '#0F172A', marginBottom: 14, fontSize: '.875rem' }}>Community</div>
+            {['Discord', 'Instagram', 'LinkedIn'].map((l) => <a key={l} href="#" className="footer-link">{l}</a>)}
+          </div>
+          <div>
+            <div style={{ fontWeight: 600, color: '#0F172A', marginBottom: 14, fontSize: '.875rem' }}>Contact</div>
+            <a href="mailto:sfefoundery@gmail.com" className="footer-link">sfefoundery@gmail.com</a>
+          </div>
+        </div>
+        <div style={{ maxWidth: 1100, margin: '0 auto', borderTop: '1px solid #F1F5F9', paddingTop: 22, display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+          <span style={{ color: '#CBD5E1', fontSize: '.82rem' }}>© 2025 SFE Foundry</span>
+          <span style={{ color: '#CBD5E1', fontSize: '.82rem' }}>Build. Compete. Launch.</span>
+        </div>
+      </footer>
+
+      {/* Auth Modal (Sign In / Sign Up) */}
+      {showModal && (
+        <div className="overlay" onClick={() => setShowModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <button className="x" onClick={() => setShowModal(false)} aria-label="Close">×</button>
+            <div className="mtabs">
+              <button className={`mtab${authMode === 'signup' ? ' on' : ''}`} onClick={() => { setAuthMode('signup'); setMessage(''); }}>Sign Up</button>
+              <button className={`mtab${authMode === 'signin' ? ' on' : ''}`} onClick={() => { setAuthMode('signin'); setMessage(''); }}>Sign In</button>
+            </div>
+            <div style={{ marginBottom: 20 }}>
+              <h2 style={{ fontWeight: 800, fontSize: '1.4rem', color: '#0F172A', marginBottom: 6 }}>
+                {authMode === 'signup' ? 'Create your account' : 'Welcome back'}
+              </h2>
+              <p style={{ color: '#94A3B8', fontSize: '.875rem', lineHeight: 1.55 }}>
+                {authMode === 'signup'
+                  ? 'Join SFE Foundry — we\'ll send a verification link to your email.'
+                  : 'Sign in to your SFE Foundry account.'}
+              </p>
+            </div>
+
+            {message && <div className={msgOk ? 'msg-ok' : 'msg-err'}>{message}</div>}
+
+            {/* OAuth providers */}
+            <div className="oauth-row">
+              <button type="button" className="oauth-btn" onClick={() => handleOAuth('google')} disabled={loading} title="Continue with Google">
+                <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.71-1.57 2.68-3.89 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+                Google
+              </button>
+            </div>
+            <div className="divider"><span>or</span></div>
+
+            <form onSubmit={handleAuthSubmit}>
+              {authMode === 'signup' && (
+                <input className="input" type="text" placeholder="Full name" value={name}
+                       onChange={(e) => setName(e.target.value)} required disabled={loading} />
+              )}
+              <input className="input" type="email" placeholder="Email address" value={email}
+                     onChange={(e) => setEmail(e.target.value)} required disabled={loading} />
+              <input className="input" type="password" placeholder="Password" value={password}
+                     onChange={(e) => setPassword(e.target.value)} required disabled={loading}
+                     minLength={6} autoComplete={authMode === 'signup' ? 'new-password' : 'current-password'} />
+              {authMode === 'signup' && <div className="hint">At least 6 characters.</div>}
+              {authMode === 'signup' && (
+                <textarea className="input" placeholder="Why do you want to join? (optional)" value={reason}
+                          onChange={(e) => setReason(e.target.value)} disabled={loading} rows={3}
+                          style={{ resize: 'none', fontFamily: 'Inter, sans-serif' }} />
+              )}
+              <button type="submit" className="btn btn-solid" style={{ width: '100%', padding: 13, fontSize: '.95rem', borderRadius: 10, marginTop: 4 }}
+                      disabled={loading || !email || !password || (authMode === 'signup' && !name)}>
+                {loading
+                  ? (authMode === 'signup' ? 'Creating account…' : 'Signing in…')
+                  : (authMode === 'signup' ? 'Sign Up' : 'Sign In')}
+              </button>
             </form>
           </div>
         </div>
@@ -1201,10 +878,11 @@ export default function Home() {
       {!showChat && (
         <button
           onClick={() => setShowChat(true)}
-          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-blue-400 to-green-400 text-white shadow-lg hover:shadow-2xl transition-all transform hover:scale-110 flex items-center justify-center z-40 cursor-pointer"
+          className="chat-fab"
           title="Chat with us"
+          aria-label="Open chat"
         >
-          <svg className="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
         </button>
@@ -1217,41 +895,54 @@ export default function Home() {
             className="fixed inset-0 bg-black/20 z-30"
             onClick={() => setShowChat(false)}
           />
-          {/* Chat Modal - Fixed and Properly Structured */}
-          <div className="fixed bottom-4 right-4 w-full sm:w-96 h-[calc(100vh-2rem)] sm:h-[550px] bg-gradient-to-b from-blue-50 via-cyan-50 to-green-50 rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col z-40 overflow-hidden border border-blue-100 max-w-sm">
-            {/* Header - Fixed Height */}
-            <div className="h-14 px-6 py-3 flex justify-between items-center border-b border-blue-100 flex-shrink-0 bg-gradient-to-r from-blue-100 to-cyan-100">
-              <h3 className="font-bold text-sm text-gray-800">SFE Foundry Assistant</h3>
+          {/* Chat Modal — airy layout, navy/blue/white theme */}
+          <div
+            className="fixed bg-white rounded-3xl shadow-2xl flex flex-col z-40 overflow-hidden border border-slate-200"
+            style={{
+              bottom: 16,
+              right: 16,
+              left: 'auto',
+              width: 'min(384px, calc(100vw - 32px))',
+              height: 'min(560px, calc(100dvh - 32px))',
+            }}
+          >
+            {/* Header */}
+            <div className="px-6 py-4 flex justify-between items-center flex-shrink-0 border-b border-slate-100" style={{ background: 'linear-gradient(135deg,#EFF6FF,#DBEAFE)' }}>
+              <h3 className="font-extrabold text-lg leading-tight" style={{ color: '#0F2A5C', fontFamily: 'Outfit, sans-serif' }}>
+                SFE Foundry<br />Assistant
+              </h3>
               <button
                 onClick={() => setShowChat(false)}
-                className="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-200 transition"
+                className="w-9 h-9 rounded-full flex items-center justify-center transition flex-shrink-0"
+                style={{ background: '#2563EB' }}
                 title="Minimize"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 12H4" />
                 </svg>
               </button>
             </div>
 
-            {/* Messages Container - Takes remaining space */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-blue-50 via-cyan-50 to-green-50" data-chat-messages>
+            {/* Messages Container */}
+            <div className="flex-1 overflow-y-auto px-5 py-5 space-y-5 bg-white" data-chat-messages>
               {chatMessages.map((msg, idx) => (
                 <div key={idx} className="space-y-3">
                   <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div
-                      className={`max-w-xs px-4 py-2 rounded-2xl text-sm ${
+                      className={`px-5 py-4 text-[15px] leading-relaxed ${
                         msg.role === 'user'
-                          ? 'bg-gradient-to-r from-blue-400 to-cyan-400 text-white shadow-md'
-                          : 'bg-white text-gray-800 shadow-sm border border-blue-100'
+                          ? 'text-white rounded-3xl rounded-br-lg shadow-md max-w-[80%]'
+                          : 'bg-white text-slate-800 rounded-3xl rounded-tl-lg shadow-sm border border-slate-200 w-full'
                       }`}
+                      style={msg.role === 'user' ? { background: '#2563EB' } : undefined}
                     >
                       <p className="break-words">{msg.content}</p>
                     </div>
                   </div>
 
-                  {/* Suggestions */}
+                  {/* Suggestions — full-width pills */}
                   {msg.suggestions && msg.suggestions.length > 0 && (
-                    <div className="flex flex-col gap-2 justify-start pl-2">
+                    <div className="flex flex-col gap-2.5">
                       {msg.suggestions.map((suggestion, sidx) => (
                         <button
                           key={sidx}
@@ -1262,7 +953,7 @@ export default function Home() {
                               if (form) form.dispatchEvent(new Event('submit', { bubbles: true }));
                             }, 50);
                           }}
-                          className="px-4 py-2 bg-white text-gray-700 rounded-full text-xs hover:bg-blue-100 transition border border-blue-200 text-left shadow-sm font-medium"
+                          className="w-full px-5 py-3.5 bg-white text-slate-700 rounded-full text-[15px] hover:bg-[#EFF6FF] hover:text-[#2563EB] hover:border-[#93C5FD] transition border border-slate-200 text-left shadow-sm font-medium"
                         >
                           {suggestion}
                         </button>
@@ -1274,33 +965,34 @@ export default function Home() {
 
               {chatLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-white text-gray-700 px-4 py-2 rounded-2xl text-sm shadow-sm border border-blue-100">
-                    Typing...
+                  <div className="bg-white text-slate-400 px-5 py-3 rounded-3xl rounded-tl-lg text-sm shadow-sm border border-slate-200">
+                    Typing…
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Input Area - Fixed at bottom */}
+            {/* Input Area */}
             <form
               onSubmit={handleChatSubmit}
               data-chat-form
-              className="h-auto px-3 sm:px-4 py-2 sm:py-3 border-t border-blue-100 flex gap-2 items-center flex-shrink-0 bg-gradient-to-b from-cyan-50 to-green-50"
+              className="px-4 py-4 border-t border-slate-100 flex gap-2.5 items-center flex-shrink-0 bg-white"
             >
               <input
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Message..."
-                className="flex-1 px-3 sm:px-4 py-2 bg-white rounded-full text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 border border-blue-100 shadow-sm"
+                placeholder="Message…"
+                className="flex-1 px-5 py-3.5 bg-white rounded-full text-[15px] text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB] border border-slate-200 shadow-sm"
                 disabled={chatLoading}
               />
               <button
                 type="submit"
-                className="w-8 h-8 sm:w-8 sm:h-8 bg-gradient-to-r from-blue-400 to-cyan-400 hover:from-blue-500 hover:to-cyan-500 disabled:bg-gray-400 text-white rounded-full flex items-center justify-center transition flex-shrink-0 shadow-md"
+                className="w-12 h-12 disabled:opacity-40 text-white rounded-full flex items-center justify-center transition flex-shrink-0 shadow-md hover:brightness-110"
+                style={{ background: '#2563EB' }}
                 disabled={chatLoading || !chatInput.trim()}
               >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5.951-1.429 5.951 1.429a1 1 0 001.169-1.409l-7-14z" />
                 </svg>
               </button>
@@ -1308,15 +1000,6 @@ export default function Home() {
           </div>
         </>
       )}
-
-      {/* Custom Cursor */}
-      <div
-        className="custom-cursor"
-        style={{
-          left: `${cursorPos.x}px`,
-          top: `${cursorPos.y}px`
-        }}
-      />
     </div>
   );
 }
