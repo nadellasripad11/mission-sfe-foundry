@@ -39,7 +39,7 @@ const STATS = [
   ['100+', 'Students'], ['15+', 'Projects'], ['7+', 'Hackathons'], ['10+', 'Guest Speakers'], ['1', 'Mission'],
 ];
 
-const PARTNERS = ['GitHub', 'Vercel', 'Replit', 'Figma', 'MongoDB'];
+const SPONSORS = ['GitHub', 'Vercel', 'Replit', 'Figma', 'MongoDB'];
 
 const FAQ = [
   { q: "Do I need experience?", a: "No. Anyone willing to learn and build is welcome." },
@@ -168,17 +168,58 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Partners ── */}
-      <section id="partners" className="lp-sec">
-        <div className="sec-label">Partners</div>
+      {/* ── Sponsors ── */}
+      <section id="sponsors" className="lp-sec">
+        <div className="sec-label">Sponsors</div>
         <div className="hero-grid">
-          <p style={{ color: 'var(--muted)', fontSize: '.95rem', lineHeight: 1.7 }}>
-            We&apos;re building relationships with local companies, founders, and organizations that believe in student innovation.
-          </p>
-          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(120px,1fr))', gap: 12 }}>
-            {PARTNERS.map((p) => <div key={p} className="partner-logo">{p}</div>)}
-            <button className="partner-logo mono-accent" style={{ cursor: 'pointer', fontSize: '.7rem', letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--muted)' }} onClick={() => openAuth('signup')}>Become a Partner</button>
+          <div>
+            <p style={{ color: 'var(--muted)', fontSize: '.95rem', lineHeight: 1.7, marginBottom: 20 }}>
+              We&apos;re building relationships with local companies, founders, and organizations that believe in student innovation.
+            </p>
+            <a
+              href="https://forms.cloud.microsoft/r/uMqhCpd6Bm"
+              target="_blank" rel="noopener noreferrer"
+              className="btn btn-outline"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: '.78rem', padding: '10px 20px' }}
+            >
+              &gt; Become a Sponsor
+            </a>
           </div>
+          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(120px,1fr))', gap: 12 }}>
+            {SPONSORS.map((p) => <div key={p} className="partner-logo">{p}</div>)}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Join + Staff Application ── */}
+      <section className="lp-sec">
+        <div className="sec-label">Get Involved</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, maxWidth: 760 }}>
+          <a
+            href="https://forms.cloud.microsoft/r/D92tQqsRta"
+            target="_blank" rel="noopener noreferrer"
+            style={{ display: 'block', padding: '28px 24px', background: 'var(--orange)', borderRadius: 12, textDecoration: 'none', transition: 'filter .18s, transform .18s' }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.filter = 'brightness(1.08)'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-3px)'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.filter = ''; (e.currentTarget as HTMLAnchorElement).style.transform = ''; }}
+          >
+            <div style={{ fontFamily: 'var(--mono)', fontSize: '.66rem', letterSpacing: '.12em', color: 'rgba(255,255,255,.7)', textTransform: 'uppercase', marginBottom: 10 }}>// Staff Application</div>
+            <div style={{ fontFamily: 'Outfit', fontWeight: 900, fontSize: '1.3rem', color: '#fff', marginBottom: 8 }}>Join as Staff</div>
+            <div style={{ color: 'rgba(255,255,255,.8)', fontSize: '.84rem', lineHeight: 1.55, marginBottom: 16 }}>Apply to be part of the SFE Foundry leadership team and help run events, workshops, and the community.</div>
+            <div style={{ fontFamily: 'var(--mono)', fontSize: '.72rem', color: '#fff', letterSpacing: '.08em', textTransform: 'uppercase' }}>Apply now &gt;</div>
+          </a>
+
+          <a
+            href="https://forms.cloud.microsoft/r/uMqhCpd6Bm"
+            target="_blank" rel="noopener noreferrer"
+            style={{ display: 'block', padding: '28px 24px', background: 'var(--white)', border: '1px solid var(--line)', borderRadius: 12, textDecoration: 'none', transition: 'box-shadow .18s, transform .18s, border-color .18s' }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 8px 24px rgba(0,0,0,.08)'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-3px)'; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'var(--orange)'; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.boxShadow = ''; (e.currentTarget as HTMLAnchorElement).style.transform = ''; (e.currentTarget as HTMLAnchorElement).style.borderColor = 'var(--line)'; }}
+          >
+            <div style={{ fontFamily: 'var(--mono)', fontSize: '.66rem', letterSpacing: '.12em', color: 'var(--orange)', textTransform: 'uppercase', marginBottom: 10 }}>// Sponsors</div>
+            <div style={{ fontFamily: 'Outfit', fontWeight: 900, fontSize: '1.3rem', color: 'var(--ink)', marginBottom: 8 }}>Sponsor SFE Foundry</div>
+            <div style={{ color: 'var(--muted)', fontSize: '.84rem', lineHeight: 1.55, marginBottom: 16 }}>Support the next generation of student builders and founders at Alpharetta High School.</div>
+            <div style={{ fontFamily: 'var(--mono)', fontSize: '.72rem', color: 'var(--orange)', letterSpacing: '.08em', textTransform: 'uppercase' }}>Learn more &gt;</div>
+          </a>
         </div>
       </section>
 
