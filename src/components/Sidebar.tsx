@@ -15,12 +15,6 @@ const NAV = [
   { href: '/faq', label: 'FAQ' },
 ];
 
-const APP = [
-  { href: '/projects', label: 'Projects' },
-  { href: '/rate', label: 'Rate' },
-  { href: '/my-projects', label: 'My Projects' },
-];
-
 const SOCIALS = [
   { label: 'Instagram', href: 'https://www.instagram.com/sfefoundry' },
   { label: 'Discord', href: 'https://discord.gg/3gjCGadM9a' },
@@ -69,16 +63,13 @@ export default function Sidebar() {
           <button className="join-btn" onClick={() => { openAuth('signup'); close(); }}>&gt; Join SFE</button>
         )}
 
-        <div className="side-divider" />
-        <nav>
-          {APP.map((n) => (
-            <Link key={n.href} href={n.href} onClick={close}
-              className={`side-link${pathname.startsWith(n.href) ? ' active' : ''}`}>
-              {n.label}
-            </Link>
-          ))}
-          {user && <button className="side-link" onClick={() => { signOut(); close(); }}>Sign out</button>}
-        </nav>
+        {user && (
+          <>
+            <div className="side-divider" />
+            <Link href="/home" onClick={close} className="side-link" style={{ color: 'var(--orange)', fontWeight: 700 }}>&gt; Go to App</Link>
+            <button className="side-link" onClick={() => { signOut(); close(); }}>Sign out</button>
+          </>
+        )}
 
         <div className="side-spacer" />
 

@@ -39,8 +39,11 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       setReady(true);
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      setUser(toUser(session?.user));
-      if (session?.user) setShowModal(false);
+      const u = toUser(session?.user);
+      const wasNull = !user;
+      setUser(u);
+      if (u && wasNull) { setShowModal(false); window.location.href = '/home'; }
+      else if (u) setShowModal(false);
     });
     return () => sub.subscription.unsubscribe();
   }, []);
