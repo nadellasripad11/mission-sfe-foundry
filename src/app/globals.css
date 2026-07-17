@@ -179,7 +179,7 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 .exp-card { background:var(--white); border:1px solid var(--line); border-radius:10px; overflow:hidden; transition: transform .22s, box-shadow .22s; }
 .exp-card:hover { transform: translateY(-4px); box-shadow: 0 16px 34px rgba(26,26,26,.10); }
 .exp-num { font-family:var(--mono); font-size:.72rem; color:var(--orange); }
-.journey-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap:14px; }
+.journey-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 200px)); gap:14px; justify-content: center; }
 .journey-step { border:1px solid var(--line); border-radius:9px; padding:16px; background:var(--white); }
 .journey-step .jn { font-family:var(--mono); font-size:.68rem; color:var(--blue); margin-bottom:8px; }
 .journey-step h4 { font-family:'Outfit'; font-weight:800; font-size:.92rem; text-transform:uppercase; letter-spacing:.02em; margin-bottom:6px; }

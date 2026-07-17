@@ -194,7 +194,7 @@ export default function HomePage() {
       {/* ── Join + Staff Application ── */}
       <section className="lp-sec">
         <div className="sec-label">Get Involved</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, maxWidth: 760 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 380px))', gap: 16, justifyContent: 'center', width: '100%' }}>
           <a
             href="https://forms.cloud.microsoft/r/D92tQqsRta"
             target="_blank" rel="noopener noreferrer"
