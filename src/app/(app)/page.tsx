@@ -42,11 +42,16 @@ const STATS = [
 const PARTNERS = ['GitHub', 'Vercel', 'Replit', 'Figma', 'MongoDB'];
 
 const FAQ = [
-  { q: 'Do I need experience?', a: 'No. Anyone willing to learn and build is welcome.' },
-  { q: 'Do I need to know how to code?', a: 'No. We need designers, marketers, founders, developers, and more.' },
-  { q: 'How much does membership cost?', a: 'Free for the school year.' },
-  { q: 'Can beginners join?', a: 'Absolutely. We’ll help you learn and grow.' },
-  { q: 'When do meetings happen?', a: 'Every other week after school.' },
+  { q: ‘Do I need experience?’, a: ‘No. Anyone willing to learn and build is welcome.’ },
+  { q: ‘Do I need to know how to code?’, a: ‘No. We need designers, marketers, founders, developers, and more.’ },
+  { q: ‘How much does membership cost?’, a: ‘Free for the school year.’ },
+  { q: ‘Can beginners join?’, a: ‘Absolutely. We\’ll help you learn and grow.’ },
+  { q: ‘When do meetings happen?’, a: ‘Every other week after school.’ },
+  { q: ‘What happens at a hackathon?’, a: ‘You\’ll form a team, pick a problem, and build a project in 24–48 hours. There are prizes, mentors, and plenty of food.’ },
+  { q: ‘Can I join mid-year?’, a: ‘Yes! We welcome new members at any point during the school year.’ },
+  { q: ‘What kinds of projects do members build?’, a: ‘Apps, websites, AI tools, hardware prototypes, startup pitches — anything goes. If you can build it, bring it.’ },
+  { q: ‘Do I need a team to participate?’, a: ‘Nope. You can join solo and we\’ll help you find teammates, or you can come in with your own crew.’ },
+  { q: ‘How do I contact SFE Foundry?’, a: ‘Email us at sfefoundery@gmail.com or reach out on Instagram or Discord.’ },
 ];
 
 export default function HomePage() {
@@ -114,9 +119,9 @@ export default function HomePage() {
       </section>
 
       {/* ── Your Journey (text only, no icons) ── */}
-      <section className="lp-sec">
-        <div className="sec-label">Your Journey</div>
-        <div className="journey-grid">
+      <section className="lp-sec" style={{ textAlign: 'center' }}>
+        <div className="sec-label" style={{ justifyContent: 'center' }}>Your Journey</div>
+        <div className="journey-grid" style={{ justifyItems: 'center' }}>
           {JOURNEY.map((s) => (
             <div key={s.n} className="journey-step">
               <div className="jn">{s.n}</div>
@@ -128,9 +133,9 @@ export default function HomePage() {
       </section>
 
       {/* ── Events / This Year ── */}
-      <section id="events" className="lp-sec">
-        <div className="sec-label">This Year</div>
-        <div className="grid grid-3">
+      <section id="events" className="lp-sec" style={{ textAlign: 'center' }}>
+        <div className="sec-label" style={{ justifyContent: 'center' }}>This Year</div>
+        <div className="grid grid-3" style={{ justifyItems: 'center' }}>
           {EVENTS.map((e) => (
             <div key={e.t} className="event-card reveal">
               <Ph label={`Photo — ${e.t}`} h={120} />
@@ -178,9 +183,9 @@ export default function HomePage() {
       </section>
 
       {/* ── FAQ / Questions ── */}
-      <section id="faq" className="lp-sec">
-        <div className="sec-label">Questions</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxWidth: 680 }}>
+      <section id="faq" className="lp-sec" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div className="sec-label" style={{ justifyContent: 'center' }}>Questions</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxWidth: 680, width: '100%' }}>
           {FAQ.map((f, idx) => {
             const isOpen = faqOpen === idx;
             return (
