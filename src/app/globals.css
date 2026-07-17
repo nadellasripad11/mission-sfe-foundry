@@ -29,9 +29,9 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 .sidebar {
   width: 244px; flex-shrink: 0; background: var(--cream); color: var(--ink);
   display: flex; flex-direction: column; padding: 22px 16px;
-  position: fixed; top: 0; left: 0; height: 100vh; z-index: 95;
-  border-right: 1px solid var(--line);
-  transform: translateX(-100%); transition: transform .25s ease;
+  position: fixed; top: 0; right: 0; left: auto; height: 100vh; z-index: 95;
+  border-left: 1px solid var(--line); border-right: none;
+  transform: translateX(100%); transition: transform .25s ease;
   box-shadow: 0 0 44px rgba(0,0,0,.18); overflow-y: auto;
 }
 .sidebar.open { transform: none; }
