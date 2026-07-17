@@ -37,7 +37,7 @@ export default function Sidebar() {
   return (
     <>
       <button className="hamburger" onClick={() => setOpen((o) => !o)} aria-label="Menu">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
       </button>
       {open && <div onClick={close} style={{ position: 'fixed', inset: 0, background: 'rgba(26,26,26,.35)', zIndex: 94 }} />}
 
