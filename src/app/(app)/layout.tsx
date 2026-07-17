@@ -5,8 +5,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <TechBackground />
-      <Sidebar />
-      <main className="main">{children}</main>
+      <div className="shell">
+        <Sidebar />
+        <main className="main">{children}</main>
+      </div>
     </>
   );
 }
