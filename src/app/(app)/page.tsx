@@ -119,9 +119,9 @@ export default function HomePage() {
       </section>
 
       {/* ── Your Journey (text only, no icons) ── */}
-      <section className="lp-sec" style={{ textAlign: 'center' }}>
+      <section className="lp-sec">
         <div className="sec-label" style={{ justifyContent: 'center' }}>Your Journey</div>
-        <div className="journey-grid" style={{ justifyItems: 'center' }}>
+        <div className="journey-grid">
           {JOURNEY.map((s) => (
             <div key={s.n} className="journey-step">
               <div className="jn">{s.n}</div>
@@ -133,9 +133,9 @@ export default function HomePage() {
       </section>
 
       {/* ── Events / This Year ── */}
-      <section id="events" className="lp-sec" style={{ textAlign: 'center' }}>
+      <section id="events" className="lp-sec">
         <div className="sec-label" style={{ justifyContent: 'center' }}>This Year</div>
-        <div className="grid grid-3" style={{ justifyItems: 'center' }}>
+        <div className="grid grid-3">
           {EVENTS.map((e) => (
             <div key={e.t} className="event-card reveal">
               <Ph label={`Photo — ${e.t}`} h={120} />
