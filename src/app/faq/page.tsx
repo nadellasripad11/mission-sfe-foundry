@@ -3,12 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 
-interface FAQItem {
-  question: string;
-  answer: string;
-}
-
-const faqs: FAQItem[] = [
+const faqs = [
   {
     question: 'What is SFE Foundry?',
     answer: 'SFE Foundry is a student innovation club for builders, founders, and hackers. We run hackathons, pitch competitions, workshops, and mentorship programs to help students build cool projects and launch their ideas.'
@@ -27,7 +22,7 @@ const faqs: FAQItem[] = [
   },
   {
     question: 'Do I need experience to join?',
-    answer: 'Nope! We welcome beginners and experienced builders alike. If you\'re interested in learning and building cool stuff, you\'re in!'
+    answer: "Nope! We welcome beginners and experienced builders alike. If you're interested in learning and building cool stuff, you're in!"
   },
   {
     question: 'What should I bring to a hackathon?',
@@ -35,11 +30,11 @@ const faqs: FAQItem[] = [
   },
   {
     question: 'Is there a membership fee?',
-    answer: 'No membership fees! Most of our events are free to attend. We\'re here to help students build and innovate.'
+    answer: "No membership fees! Most of our events are free to attend. We're here to help students build and innovate."
   },
   {
     question: 'Can I form a team or do I need to go solo?',
-    answer: 'You can team up with others or work solo - totally up to you! Many of our best projects come from awesome team collaborations.'
+    answer: 'You can team up with others or work solo — totally up to you! Many of our best projects come from awesome team collaborations.'
   },
   {
     question: 'How do I contact SFE Foundry?',
@@ -52,88 +47,85 @@ const faqs: FAQItem[] = [
 ];
 
 export default function FAQ() {
-  const [openIndexes, setOpenIndexes] = useState<Set<number>>(new Set());
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+
+  const toggle = (idx: number) => setOpenIdx(openIdx === idx ? null : idx);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] py-12 px-8">
-      <div className="max-w-3xl mx-auto">
-        {/* Back button */}
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 mb-10 px-4 py-2 rounded-lg border border-[#BFDBFE] text-[#2563EB] font-semibold text-sm hover:bg-[#EFF6FF] hover:border-[#93C5FD] transition"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-          Back to home
+    <div style={{ minHeight: '100vh', background: 'var(--cream)', padding: '48px 24px 80px', fontFamily: 'var(--mono)' }}>
+      <div style={{ maxWidth: 720, margin: '0 auto' }}>
+
+        <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: 'var(--muted)', textDecoration: 'none', fontSize: '.74rem', letterSpacing: '.08em', textTransform: 'uppercase', marginBottom: 40 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
+          Back
         </Link>
 
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-bold mb-4 text-[#0F2A5C]">
-            Frequently Asked Questions
-          </h1>
-          <p className="text-lg text-[#64748B]">
-            Can't find what you're looking for? Email us at sfefoundery@gmail.com
-          </p>
-        </div>
+        <h1 style={{ fontFamily: 'Outfit', fontWeight: 900, fontSize: 'clamp(2rem, 5vw, 3rem)', color: 'var(--ink)', marginBottom: 8, lineHeight: 1.1 }}>
+          FAQ
+        </h1>
+        <p style={{ color: 'var(--muted)', fontSize: '.85rem', marginBottom: 40, letterSpacing: '.04em' }}>
+          Questions about SFE Foundry
+        </p>
 
-        {/* FAQ List */}
-        <div className="space-y-4">
-          {faqs.map((faq, idx) => (
-            <div
-              key={idx}
-              className="bg-white rounded-xl shadow-sm border border-blue-100 overflow-hidden hover:shadow-md transition"
-            >
-              <button
-                onClick={() => {
-                  const newSet = new Set(openIndexes);
-                  if (newSet.has(idx)) {
-                    newSet.delete(idx);
-                  } else {
-                    newSet.add(idx);
-                  }
-                  setOpenIndexes(newSet);
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {faqs.map((faq, idx) => {
+            const isOpen = openIdx === idx;
+            return (
+              <div
+                key={idx}
+                style={{
+                  background: 'var(--white)',
+                  border: '1px solid var(--line)',
+                  borderRadius: 10,
+                  overflow: 'hidden',
+                  transition: 'box-shadow .18s',
+                  boxShadow: isOpen ? '0 4px 16px rgba(0,0,0,.06)' : '0 1px 4px rgba(0,0,0,.04)',
                 }}
-                className="w-full px-6 py-4 flex justify-between items-center hover:bg-blue-50 transition"
               >
-                <h3 className="text-lg font-semibold text-[#1D3557] text-left">
-                  {faq.question}
-                </h3>
-                <span
-                  className={`text-2xl text-blue-500 transition-transform flex-shrink-0 ml-4 ${
-                    openIndexes.has(idx) ? 'rotate-45' : ''
-                  }`}
+                <button
+                  onClick={() => toggle(idx)}
+                  style={{
+                    width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '18px 20px', background: 'none', border: 'none', cursor: 'pointer',
+                    textAlign: 'left', gap: 16,
+                  }}
                 >
-                  +
-                </span>
-              </button>
+                  <span style={{ fontFamily: 'Outfit', fontWeight: 700, fontSize: '.95rem', color: 'var(--ink)', lineHeight: 1.3 }}>
+                    {faq.question}
+                  </span>
+                  <span style={{
+                    flexShrink: 0, width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'var(--orange)', fontSize: '1.2rem', fontWeight: 300,
+                    transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)',
+                    transition: 'transform .2s ease',
+                  }}>
+                    +
+                  </span>
+                </button>
 
-              {/* Answer */}
-              {openIndexes.has(idx) && (
-                <div className="px-6 py-4 bg-blue-50 border-t border-blue-100">
-                  <p className="text-[#1D3557]/80 leading-relaxed">
-                    {faq.answer}
-                  </p>
-                </div>
-              )}
-            </div>
-          ))}
+                {isOpen && (
+                  <div style={{ padding: '0 20px 18px', borderTop: '1px solid var(--line)' }}>
+                    <p style={{ color: 'var(--ink-soft)', fontSize: '.85rem', lineHeight: 1.7, marginTop: 14 }}>
+                      {faq.answer}
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
-        {/* CTA */}
-        <div className="mt-16 rounded-2xl p-8 text-white text-center" style={{ background: '#0F2A5C' }}>
-          <h2 className="text-2xl font-bold mb-4">Still have questions?</h2>
-          <p className="mb-6 text-[#A9BEDC]">
-            Get in touch with us directly or use the chat assistant on the website!
-          </p>
+        <div style={{ marginTop: 48, padding: '28px 24px', background: 'var(--ink)', borderRadius: 12, textAlign: 'center' }}>
+          <p style={{ color: 'var(--cream)', fontFamily: 'Outfit', fontWeight: 700, fontSize: '1.1rem', marginBottom: 8 }}>Still have questions?</p>
+          <p style={{ color: 'var(--muted)', fontSize: '.8rem', marginBottom: 20 }}>Reach out directly and we'll get back to you.</p>
           <a
-            href="mailto:sfefoundery@gmail.com?subject=Question%20about%20SFE%20Foundry&body=Hi%20SFE%20Foundry%20team%2C%0A%0AI%20have%20a%20question%3A%0A%0A"
-            className="inline-block px-8 py-3 bg-white text-[#0F2A5C] rounded-lg font-bold hover:bg-[#EFF6FF] transition"
+            href="mailto:sfefoundery@gmail.com"
+            style={{ display: 'inline-block', padding: '10px 24px', background: 'var(--orange)', color: '#fff', borderRadius: 7, fontFamily: 'var(--mono)', fontSize: '.74rem', letterSpacing: '.08em', textTransform: 'uppercase', textDecoration: 'none', fontWeight: 600 }}
           >
             Email Us
           </a>
         </div>
+
       </div>
     </div>
   );
