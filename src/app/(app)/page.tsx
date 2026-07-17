@@ -39,7 +39,6 @@ const STATS = [
   ['100+', 'Students'], ['15+', 'Projects'], ['7+', 'Hackathons'], ['10+', 'Guest Speakers'], ['1', 'Mission'],
 ];
 
-const SPONSORS = ['GitHub', 'Vercel', 'Replit', 'Figma', 'MongoDB'];
 
 const FAQ = [
   { q: "Do I need experience?", a: "No. Anyone willing to learn and build is welcome." },
@@ -171,23 +170,18 @@ export default function HomePage() {
       {/* ── Sponsors ── */}
       <section id="sponsors" className="lp-sec">
         <div className="sec-label">Sponsors</div>
-        <div className="hero-grid">
-          <div>
-            <p style={{ color: 'var(--muted)', fontSize: '.95rem', lineHeight: 1.7, marginBottom: 20 }}>
-              We&apos;re building relationships with local companies, founders, and organizations that believe in student innovation.
-            </p>
-            <a
-              href="https://forms.cloud.microsoft/r/uMqhCpd6Bm"
-              target="_blank" rel="noopener noreferrer"
-              className="btn btn-outline"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: '.78rem', padding: '10px 20px' }}
-            >
-              &gt; Become a Sponsor
-            </a>
-          </div>
-          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(120px,1fr))', gap: 12 }}>
-            {SPONSORS.map((p) => <div key={p} className="partner-logo">{p}</div>)}
-          </div>
+        <div>
+          <p style={{ color: 'var(--muted)', fontSize: '.95rem', lineHeight: 1.7, marginBottom: 20, maxWidth: 520 }}>
+            We&apos;re building relationships with local companies, founders, and organizations that believe in student innovation.
+          </p>
+          <a
+            href="https://forms.cloud.microsoft/r/uMqhCpd6Bm"
+            target="_blank" rel="noopener noreferrer"
+            className="btn btn-outline"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: '.78rem', padding: '10px 20px' }}
+          >
+            &gt; Become a Sponsor
+          </a>
         </div>
       </section>
 
