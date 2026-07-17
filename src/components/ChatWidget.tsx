@@ -77,9 +77,9 @@ export default function ChatWidget() {
             className="fixed bg-white rounded-3xl shadow-2xl flex flex-col z-[60] overflow-hidden border border-slate-200"
             style={{ bottom: 16, right: 16, left: 'auto', width: 'min(384px, calc(100vw - 32px))', height: 'min(560px, calc(100dvh - 32px))' }}
           >
-            <div className="px-6 py-4 flex justify-between items-center flex-shrink-0 border-b border-slate-100" style={{ background: 'linear-gradient(135deg,#EFF6FF,#DBEAFE)' }}>
-              <h3 className="font-extrabold text-lg leading-tight" style={{ color: '#0F2A5C', fontFamily: 'Outfit, sans-serif' }}>SFE Foundry<br />Assistant</h3>
-              <button onClick={() => setShowChat(false)} className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#2563EB' }} title="Minimize">
+            <div className="px-6 py-4 flex justify-between items-center flex-shrink-0 border-b border-slate-100" style={{ background: '#F6F2EA' }}>
+              <h3 className="font-extrabold text-lg leading-tight" style={{ color: '#1A1A1A', fontFamily: 'Outfit, sans-serif' }}>SFE Foundry<br />Assistant</h3>
+              <button onClick={() => setShowChat(false)} className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: '#1F9FD6' }} title="Minimize">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 12H4" /></svg>
               </button>
             </div>
@@ -90,7 +90,7 @@ export default function ChatWidget() {
                   <div className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div
                       className={`px-5 py-4 text-[15px] leading-relaxed ${msg.role === 'user' ? 'text-white rounded-3xl rounded-br-lg shadow-md max-w-[80%]' : 'bg-white text-slate-800 rounded-3xl rounded-tl-lg shadow-sm border border-slate-200 w-full'}`}
-                      style={msg.role === 'user' ? { background: '#2563EB' } : undefined}
+                      style={msg.role === 'user' ? { background: '#1F9FD6' } : undefined}
                     >
                       <p className="break-words">{msg.content}</p>
                     </div>
@@ -107,7 +107,7 @@ export default function ChatWidget() {
                               if (form) form.dispatchEvent(new Event('submit', { bubbles: true }));
                             }, 50);
                           }}
-                          className="w-full px-5 py-3.5 bg-white text-slate-700 rounded-full text-[15px] hover:bg-[#EFF6FF] hover:text-[#2563EB] hover:border-[#93C5FD] transition border border-slate-200 text-left shadow-sm font-medium"
+                          className="w-full px-5 py-3.5 bg-white text-slate-700 rounded-full text-[15px] hover:bg-[#EFF6FF] hover:text-[#1F9FD6] hover:border-[#93C5FD] transition border border-slate-200 text-left shadow-sm font-medium"
                         >
                           {s}
                         </button>
@@ -124,8 +124,8 @@ export default function ChatWidget() {
             </div>
 
             <form onSubmit={handleChatSubmit} data-chat-form className="px-4 py-4 border-t border-slate-100 flex gap-2.5 items-center flex-shrink-0 bg-white">
-              <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Message…" className="flex-1 px-5 py-3.5 bg-white rounded-full text-[15px] text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#2563EB] border border-slate-200 shadow-sm" disabled={chatLoading} />
-              <button type="submit" className="w-12 h-12 disabled:opacity-40 text-white rounded-full flex items-center justify-center flex-shrink-0 shadow-md hover:brightness-110" style={{ background: '#2563EB' }} disabled={chatLoading || !chatInput.trim()}>
+              <input type="text" value={chatInput} onChange={(e) => setChatInput(e.target.value)} placeholder="Message…" className="flex-1 px-5 py-3.5 bg-white rounded-full text-[15px] text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#1F9FD6] border border-slate-200 shadow-sm" disabled={chatLoading} />
+              <button type="submit" className="w-12 h-12 disabled:opacity-40 text-white rounded-full flex items-center justify-center flex-shrink-0 shadow-md hover:brightness-110" style={{ background: '#1F9FD6' }} disabled={chatLoading || !chatInput.trim()}>
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5.951-1.429 5.951 1.429a1 1 0 001.169-1.409l-7-14z" /></svg>
               </button>
             </form>

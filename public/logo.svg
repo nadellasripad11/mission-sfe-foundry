@@ -1,19 +1,6 @@
-<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- SFE Foundry furnace mark -->
-  <g stroke="#0F2A5C" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" fill="none">
-    <!-- chimney -->
-    <rect x="50" y="14" width="20" height="16" rx="3"/>
-    <!-- furnace body (stepped) -->
-    <path d="M34 104 L34 58 Q34 46 44 40 L52 32 L68 32 L76 40 Q86 46 86 58 L86 104 Z"/>
-    <!-- base -->
-    <rect x="28" y="104" width="64" height="8" rx="3" fill="#0F2A5C"/>
-    <!-- arch / mouth -->
-    <path d="M48 104 L48 84 Q48 72 60 72 Q72 72 72 84 L72 104" fill="#0F2A5C" stroke="none"/>
-    <!-- smile + eyes -->
-    <circle cx="52" cy="52" r="2.4" fill="#0F2A5C" stroke="none"/>
-    <circle cx="68" cy="52" r="2.4" fill="#0F2A5C" stroke="none"/>
-    <path d="M52 60 Q60 66 68 60" stroke="#0F2A5C" stroke-width="3.2" fill="none"/>
-  </g>
-  <!-- flame -->
-  <path d="M60 100 Q52 90 56 82 Q58 88 60 86 Q60 78 64 74 Q63 84 67 88 Q70 92 66 98 Q64 101 60 100 Z" fill="#2563EB"/>
+<svg width="64" height="48" viewBox="0 0 64 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- three angular slashes: charcoal, blue, orange -->
+  <polygon points="14,8 22,8 14,40 6,40" fill="#1A1A1A"/>
+  <polygon points="26,8 34,8 26,40 18,40" fill="#1F9FD6"/>
+  <polygon points="38,8 46,8 38,40 30,40" fill="#F26522"/>
 </svg>

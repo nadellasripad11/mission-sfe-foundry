@@ -1,10 +1,14 @@
 import Sidebar from '../../components/Sidebar';
+import TechBackground from '../../components/TechBackground';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="shell">
-      <Sidebar />
-      <main className="main">{children}</main>
-    </div>
+    <>
+      <TechBackground />
+      <div className="shell">
+        <Sidebar />
+        <main className="main">{children}</main>
+      </div>
+    </>
   );
 }

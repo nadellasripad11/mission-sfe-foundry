@@ -29,8 +29,11 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <Link href="/" className="brand-row">
-        <img src="/logo.svg" alt="" />
-        <span>SFE Foundry</span>
+        <img src="/logo.svg" alt="SFE Foundry" />
+        <span>
+          <span className="brand-name">SFE</span>
+          <span className="brand-sub">FOUNDRY</span>
+        </span>
       </Link>
 
       <nav>
