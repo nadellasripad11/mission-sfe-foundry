@@ -2,56 +2,62 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 import { useAuth } from './AuthProvider';
 
 const NAV = [
-  { href: '/', label: 'Home', icon: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10.5 12 3l9 7.5" /><path d="M5 9.5V21h14V9.5" /></svg>
-  ) },
-  { href: '/projects', label: 'Projects', icon: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 9h18M8 4v5" /></svg>
-  ) },
-  { href: '/rate', label: 'Rate', icon: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9 6.8 19.1l1-5.8L3.5 9.2l5.9-.9z" /></svg>
-  ) },
-  { href: '/resources', label: 'Resources', icon: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" /><path d="M14 3v5h5" /></svg>
-  ) },
-  { href: '/my-projects', label: 'My Projects', icon: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 21v-1a6 6 0 0 1 12 0v1" /></svg>
-  ) },
+  { href: '/', label: 'Home' },
+  { href: '/#about', label: 'About' },
+  { href: '/#programs', label: 'Programs' },
+  { href: '/#events', label: 'Events' },
+  { href: '/#community', label: 'Community' },
+  { href: '/#partners', label: 'Partners' },
+  { href: '/#faq', label: 'FAQ' },
+];
+
+const APP = [
+  { href: '/projects', label: 'Projects' },
+  { href: '/rate', label: 'Rate' },
+  { href: '/my-projects', label: 'My Projects' },
+];
+
+const SOCIALS = [
+  { label: 'Instagram', href: 'https://instagram.com' },
+  { label: 'Discord', href: 'https://discord.gg/EknhwSJ9s' },
+  { label: 'GitHub', href: 'https://github.com' },
+  { label: 'Email', href: 'mailto:sfefoundery@gmail.com' },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const { user, openAuth, signOut } = useAuth();
+  const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
 
   return (
-    <aside className="sidebar">
-      <Link href="/" className="brand-row">
-        <img src="/logo.svg" alt="SFE Foundry" />
-        <span>
-          <span className="brand-name">SFE</span>
-          <span className="brand-sub">FOUNDRY</span>
-        </span>
-      </Link>
+    <>
+      <button className="hamburger" onClick={() => setOpen((o) => !o)} aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+      {open && <div onClick={close} style={{ position: 'fixed', inset: 0, background: 'rgba(26,26,26,.35)', zIndex: 94 }} />}
 
-      <nav>
-        {NAV.map((n) => {
-          const active = n.href === '/' ? pathname === '/' : pathname.startsWith(n.href);
-          return (
-            <Link key={n.href} href={n.href} className={`side-link${active ? ' active' : ''}`}>
-              {n.icon}{n.label}
+      <aside className={`sidebar${open ? ' open' : ''}`}>
+        <Link href="/" className="brand2" onClick={close}>
+          <div className="brand-mark"><span className="sl">///</span>SFE</div>
+          <div className="brand-foundry">FOUNDRY</div>
+        </Link>
+
+        <nav>
+          {NAV.map((n) => (
+            <Link key={n.href} href={n.href} onClick={close}
+              className={`side-link${n.href === '/' && pathname === '/' ? ' active' : ''}`}>
+              {n.label}
             </Link>
-          );
-        })}
-      </nav>
+          ))}
+        </nav>
 
-      <div className="side-spacer" />
-
-      <div className="side-auth">
         {user ? (
-          <>
+          <div style={{ margin: '10px 0 4px' }}>
             <div className="side-user">
               <div className="side-avatar">{(user.name?.trim()?.[0] || user.email[0] || '?').toUpperCase()}</div>
               <div className="side-user-meta">
@@ -59,18 +65,39 @@ export default function Sidebar() {
                 <div className="side-user-mail">{user.email}</div>
               </div>
             </div>
-            <button className="side-link" style={{ marginTop: 4 }} onClick={signOut}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><path d="m16 17 5-5-5-5M21 12H9" /></svg>
-              Sign out
-            </button>
-          </>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <button className="btn btn-solid btn-block btn-sm" onClick={() => openAuth('signup')}>Sign Up</button>
-            <button className="side-link" style={{ justifyContent: 'center' }} onClick={() => openAuth('signin')}>Sign In</button>
           </div>
+        ) : (
+          <button className="join-btn" onClick={() => { openAuth('signup'); close(); }}>&gt; Join SFE</button>
         )}
-      </div>
-    </aside>
+
+        <div className="side-divider" />
+        <nav>
+          {APP.map((n) => (
+            <Link key={n.href} href={n.href} onClick={close}
+              className={`side-link${pathname.startsWith(n.href) ? ' active' : ''}`}>
+              {n.label}
+            </Link>
+          ))}
+          {user && <button className="side-link" onClick={() => { signOut(); close(); }}>Sign out</button>}
+        </nav>
+
+        <div className="side-spacer" />
+
+        <div className="side-divider" />
+        {SOCIALS.map((s) => (
+          <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="side-social">
+            <span style={{ color: 'var(--blue)' }}>▹</span>{s.label}
+          </a>
+        ))}
+
+        <div className="side-divider" />
+        <div className="side-meta">
+          Build <span className="dot">◦</span><br />
+          Launch <span className="dot">◦</span><br />
+          Scale <span className="dot">◦</span>
+        </div>
+        <div className="side-meta" style={{ marginTop: 8 }}>v 1.0<br />AHS <span className="dot">•</span> 2026</div>
+      </aside>
+    </>
   );
 }
