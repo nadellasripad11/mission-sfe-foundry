@@ -22,9 +22,8 @@ const APP = [
 ];
 
 const SOCIALS = [
-  { label: 'Instagram', href: 'https://instagram.com' },
-  { label: 'Discord', href: 'https://discord.gg/EknhwSJ9s' },
-  { label: 'GitHub', href: 'https://github.com' },
+  { label: 'Instagram', href: 'https://www.instagram.com/sfefoundry' },
+  { label: 'Discord', href: 'https://discord.gg/3gjCGadM9a' },
   { label: 'Email', href: 'mailto:sfefoundery@gmail.com' },
 ];
 
