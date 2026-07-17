@@ -42,16 +42,16 @@ const STATS = [
 const PARTNERS = ['GitHub', 'Vercel', 'Replit', 'Figma', 'MongoDB'];
 
 const FAQ = [
-  { q: ‘Do I need experience?’, a: ‘No. Anyone willing to learn and build is welcome.’ },
-  { q: ‘Do I need to know how to code?’, a: ‘No. We need designers, marketers, founders, developers, and more.’ },
-  { q: ‘How much does membership cost?’, a: ‘Free for the school year.’ },
-  { q: ‘Can beginners join?’, a: ‘Absolutely. We\’ll help you learn and grow.’ },
-  { q: ‘When do meetings happen?’, a: ‘Every other week after school.’ },
-  { q: ‘What happens at a hackathon?’, a: ‘You\’ll form a team, pick a problem, and build a project in 24–48 hours. There are prizes, mentors, and plenty of food.’ },
-  { q: ‘Can I join mid-year?’, a: ‘Yes! We welcome new members at any point during the school year.’ },
-  { q: ‘What kinds of projects do members build?’, a: ‘Apps, websites, AI tools, hardware prototypes, startup pitches — anything goes. If you can build it, bring it.’ },
-  { q: ‘Do I need a team to participate?’, a: ‘Nope. You can join solo and we\’ll help you find teammates, or you can come in with your own crew.’ },
-  { q: ‘How do I contact SFE Foundry?’, a: ‘Email us at sfefoundery@gmail.com or reach out on Instagram or Discord.’ },
+  { q: "Do I need experience?", a: "No. Anyone willing to learn and build is welcome." },
+  { q: "Do I need to know how to code?", a: "No. We need designers, marketers, founders, developers, and more." },
+  { q: "How much does membership cost?", a: "Free for the school year." },
+  { q: "Can beginners join?", a: "Absolutely. We’ll help you learn and grow." },
+  { q: "When do meetings happen?", a: "Every other week after school." },
+  { q: "What happens at a hackathon?", a: "You’ll form a team, pick a problem, and build a project in 24-48 hours. There are prizes, mentors, and plenty of food." },
+  { q: "Can I join mid-year?", a: "Yes! We welcome new members at any point during the school year." },
+  { q: "What kinds of projects do members build?", a: "Apps, websites, AI tools, hardware prototypes, startup pitches - anything goes. If you can build it, bring it." },
+  { q: "Do I need a team to participate?", a: "Nope. You can join solo and we’ll help you find teammates, or you can come in with your own crew." },
+  { q: "How do I contact SFE Foundry?", a: "Email us at sfefoundery@gmail.com or reach out on Instagram or Discord." },
 ];
 
 export default function HomePage() {
