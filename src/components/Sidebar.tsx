@@ -2,102 +2,58 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
 import { useAuth } from './AuthProvider';
 
 const NAV = [
-  { href: '/', label: 'Home' },
   { href: '/#about', label: 'About' },
   { href: '/#programs', label: 'Programs' },
   { href: '/#events', label: 'Events' },
   { href: '/#community', label: 'Community' },
-  { href: '/#partners', label: 'Partners' },
-  { href: '/#faq', label: 'FAQ' },
-];
-
-const APP = [
   { href: '/projects', label: 'Projects' },
-  { href: '/rate', label: 'Rate' },
-  { href: '/my-projects', label: 'My Projects' },
-];
-
-const SOCIALS = [
-  { label: 'Instagram', href: 'https://instagram.com' },
-  { label: 'Discord', href: 'https://discord.gg/EknhwSJ9s' },
-  { label: 'GitHub', href: 'https://github.com' },
-  { label: 'Email', href: 'mailto:sfefoundery@gmail.com' },
+  { href: '/#faq', label: 'FAQ' },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const { user, openAuth, signOut } = useAuth();
-  const [open, setOpen] = useState(false);
-  const close = () => setOpen(false);
 
   return (
-    <>
-      <button className="hamburger" onClick={() => setOpen((o) => !o)} aria-label="Menu">
-        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
-      </button>
-      {open && <div onClick={close} style={{ position: 'fixed', inset: 0, background: 'rgba(26,26,26,.35)', zIndex: 94 }} />}
-
-      <aside className={`sidebar${open ? ' open' : ''}`}>
-        <Link href="/" className="brand2" onClick={close}>
+    <header className="topnav">
+      <div className="topnav-inner">
+        <Link href="/" className="brand2" style={{ textDecoration: 'none' }}>
           <div className="brand-mark"><span className="sl">///</span>SFE</div>
           <div className="brand-foundry">FOUNDRY</div>
         </Link>
 
-        <nav>
+        <nav className="topnav-links">
           {NAV.map((n) => (
-            <Link key={n.href} href={n.href} onClick={close}
-              className={`side-link${n.href === '/' && pathname === '/' ? ' active' : ''}`}>
+            <Link
+              key={n.href}
+              href={n.href}
+              className={`topnav-link${pathname === n.href ? ' active' : ''}`}
+            >
               {n.label}
             </Link>
           ))}
         </nav>
 
-        {user ? (
-          <div style={{ margin: '10px 0 4px' }}>
-            <div className="side-user">
-              <div className="side-avatar">{(user.name?.trim()?.[0] || user.email[0] || '?').toUpperCase()}</div>
-              <div className="side-user-meta">
-                {user.name && <div className="side-user-name">{user.name}</div>}
-                <div className="side-user-mail">{user.email}</div>
+        <div className="topnav-actions">
+          {user ? (
+            <>
+              <div className="side-avatar" style={{ width: 32, height: 32, fontSize: '.8rem' }}>
+                {(user.name?.trim()?.[0] || user.email[0] || '?').toUpperCase()}
               </div>
-            </div>
-          </div>
-        ) : (
-          <button className="join-btn" onClick={() => { openAuth('signup'); close(); }}>&gt; Join SFE</button>
-        )}
-
-        <div className="side-divider" />
-        <nav>
-          {APP.map((n) => (
-            <Link key={n.href} href={n.href} onClick={close}
-              className={`side-link${pathname.startsWith(n.href) ? ' active' : ''}`}>
-              {n.label}
-            </Link>
-          ))}
-          {user && <button className="side-link" onClick={() => { signOut(); close(); }}>Sign out</button>}
-        </nav>
-
-        <div className="side-spacer" />
-
-        <div className="side-divider" />
-        {SOCIALS.map((s) => (
-          <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="side-social">
-            <span style={{ color: 'var(--blue)' }}>▹</span>{s.label}
-          </a>
-        ))}
-
-        <div className="side-divider" />
-        <div className="side-meta">
-          Build <span className="dot">◦</span><br />
-          Launch <span className="dot">◦</span><br />
-          Scale <span className="dot">◦</span>
+              <button className="topnav-link" onClick={signOut} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                Sign out
+              </button>
+            </>
+          ) : (
+            <button className="join-btn" style={{ width: 'auto', padding: '8px 16px', margin: 0 }} onClick={() => openAuth('signup')}>
+              &gt; Join SFE
+            </button>
+          )}
         </div>
-        <div className="side-meta" style={{ marginTop: 8 }}>v 1.0<br />AHS <span className="dot">•</span> 2026</div>
-      </aside>
-    </>
+      </div>
+    </header>
   );
 }
