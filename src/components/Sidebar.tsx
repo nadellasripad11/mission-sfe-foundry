@@ -7,11 +7,11 @@ import { useAuth } from './AuthProvider';
 
 const NAV = [
   { href: '/', label: 'Home' },
-  { href: '/about', label: 'About' },
-  { href: '/programs', label: 'Programs' },
-  { href: '/events', label: 'Events' },
-  { href: '/community', label: 'Community' },
-  { href: '/partners', label: 'Partners' },
+  { href: '/#about', label: 'About' },
+  { href: '/#programs', label: 'Programs' },
+  { href: '/#events', label: 'Events' },
+  { href: '/#community', label: 'Community' },
+  { href: '/#partners', label: 'Partners' },
   { href: '/faq', label: 'FAQ' },
 ];
 
