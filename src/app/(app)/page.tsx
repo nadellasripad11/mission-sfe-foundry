@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../components/AuthProvider';
 
@@ -50,6 +51,7 @@ const FAQ = [
 
 export default function HomePage() {
   const { openAuth } = useAuth();
+  const [faqOpen, setFaqOpen] = useState<number | null>(null);
   const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   return (
@@ -178,13 +180,26 @@ export default function HomePage() {
       {/* ── FAQ / Questions ── */}
       <section id="faq" className="lp-sec">
         <div className="sec-label">Questions</div>
-        <div className="faq-grid">
-          {FAQ.map((f) => (
-            <div key={f.q} className="faq-item">
-              <h4>{f.q}</h4>
-              <p>{f.a}</p>
-            </div>
-          ))}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxWidth: 680 }}>
+          {FAQ.map((f, idx) => {
+            const isOpen = faqOpen === idx;
+            return (
+              <div key={f.q} style={{ border: '1px solid var(--line)', borderRadius: 9, overflow: 'hidden', background: 'var(--white)' }}>
+                <button
+                  onClick={() => setFaqOpen(isOpen ? null : idx)}
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '15px 18px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', gap: 12 }}
+                >
+                  <span style={{ fontFamily: 'Outfit', fontWeight: 700, fontSize: '.9rem', color: 'var(--ink)' }}>{f.q}</span>
+                  <span style={{ color: 'var(--orange)', fontSize: '1.2rem', fontWeight: 300, flexShrink: 0, transform: isOpen ? 'rotate(45deg)' : 'none', transition: 'transform .2s ease', display: 'inline-block' }}>+</span>
+                </button>
+                {isOpen && (
+                  <div style={{ padding: '0 18px 14px', borderTop: '1px solid var(--line)' }}>
+                    <p style={{ color: 'var(--ink-soft)', fontSize: '.83rem', lineHeight: 1.7, marginTop: 12 }}>{f.a}</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </section>
 
