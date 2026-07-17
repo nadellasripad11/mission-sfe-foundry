@@ -27,7 +27,7 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 /* ── Layout shell ── */
 .shell { display: flex; min-height: 100vh; position: relative; z-index: 1; }
 .sidebar {
-  width: 244px; flex-shrink: 0; background: var(--white); color: var(--ink);
+  width: 244px; flex-shrink: 0; background: var(--cream); color: var(--ink);
   display: flex; flex-direction: column; padding: 22px 16px;
   position: sticky; top: 0; height: 100vh; z-index: 40;
   border-right: 1px solid var(--line);
