@@ -186,7 +186,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Join + Staff Application ── */}
-      <section className="lp-sec">
+      <section id="get-involved" className="lp-sec">
         <div className="sec-label">Get Involved</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 380px))', gap: 16, justifyContent: 'center', width: '100%' }}>
           <a

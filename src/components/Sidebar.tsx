@@ -12,6 +12,7 @@ const NAV = [
   { href: '/#events', label: 'Events' },
   { href: '/#community', label: 'Community' },
   { href: '/#sponsors', label: 'Sponsors' },
+  { href: '/#get-involved', label: 'Get Involved' },
   { href: '/faq', label: 'FAQ' },
 ];
 
