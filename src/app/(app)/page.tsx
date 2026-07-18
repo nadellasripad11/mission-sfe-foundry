@@ -2,26 +2,14 @@
 
 import Link from 'next/link';
 import { useAuth } from '../../components/AuthProvider';
-import Placeholder from '../../components/Placeholder';
 import Footer from '../../components/Footer';
-import { EVENTS } from '../../lib/events';
-import {
-  LogoHero, IconBulb, IconCode, IconTrophy, IconUsers, IconArrow,
-  IconLayers, IconInfinity,
-} from '../../components/icons';
+import { LogoHero, IconBulb, IconCode, IconTrophy, IconUsers, IconArrow } from '../../components/icons';
 
 const FEATURES = [
   { Icon: IconBulb, t: 'Entrepreneurship', d: 'Learn, launch, and lead with real-world impact.' },
   { Icon: IconCode, t: 'Technology', d: 'Use AI and modern tools to build smarter solutions.' },
   { Icon: IconTrophy, t: 'Competition', d: 'Compete in structured challenges and earn Seed Points.' },
   { Icon: IconUsers, t: 'Community', d: 'Collaborate with driven students and mentors who inspire you.' },
-];
-
-const STATS = [
-  { Icon: IconLayers, n: '3', l: 'Pillars' },
-  { Icon: IconTrophy, n: '7+', l: 'Competitions' },
-  { Icon: IconUsers, n: '100+', l: 'Members' },
-  { Icon: IconInfinity, n: '∞', l: 'Opportunities' },
 ];
 
 export default function HomePage() {
@@ -57,60 +45,11 @@ export default function HomePage() {
         ))}
       </section>
 
-      {/* ── Upcoming events ── */}
-      <section className="band">
-        <div className="band-head">
-          <h2 className="band-title">Upcoming Events</h2>
-          <Link href="/events" className="band-link">View all events <IconArrow size={15} /></Link>
-        </div>
-        <div className="ev-card-grid">
-          {EVENTS.map((e) => (
-            <article key={e.title} className="ev-card">
-              <div className="ev-card-top">
-                <div className="ev-date"><span className="ev-mon">{e.mon}</span><span className="ev-day">{e.day}</span></div>
-                <div>
-                  <div className="ev-card-t">{e.title}</div>
-                  <div className="ev-card-d">{e.desc}</div>
-                </div>
-              </div>
-              <div className="ev-card-meta"><span>{e.time}</span><span>{e.place}</span></div>
-              <Placeholder label={`Photo — ${e.title}`} h={150} />
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {/* ── What is SFE ── */}
-      <section className="band">
-        <div className="split">
-          <div>
-            <h2 className="band-title">What is SFE Foundry?</h2>
-            <p className="band-text">
-              We&apos;re a student-run organization that brings together entrepreneurs, builders, and problem solvers.
-              Through competitions, workshops, and projects, we create a space where students can build the future—together.
-            </p>
-            <Link href="/about" className="btn-dark" style={{ marginTop: 24 }}>Our Story <IconArrow size={18} /></Link>
-            <div style={{ marginTop: 26 }}><Placeholder label="Photo — the SFE Foundry team" h={210} /></div>
-          </div>
-          <div className="stat-rows">
-            {STATS.map(({ Icon, n, l }) => (
-              <div key={l} className="stat-row-item">
-                <span className="stat-row-ic"><Icon size={26} /></span>
-                <div>
-                  <div className="stat-row-n">{n}</div>
-                  <div className="stat-row-l">{l}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── CTA ── */}
       <section className="band">
-        <div className="cta dark">
-          <h2 className="cta-title light">Ready to build?</h2>
-          <p className="cta-text light">Join a community of students shipping projects and competing in hackathons.</p>
+        <div className="cta">
+          <h2 className="cta-title">Ready to build?</h2>
+          <p className="cta-text">Join a community of students shipping projects and competing in hackathons.</p>
           <button className="btn-primary" onClick={() => openAuth('signup')}>Join SFE Today <IconArrow size={18} /></button>
         </div>
       </section>

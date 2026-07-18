@@ -45,9 +45,9 @@ export default function FaqPage() {
       </section>
 
       <section className="band">
-        <div className="cta dark">
-          <h2 className="cta-title light">Still have questions?</h2>
-          <p className="cta-text light">Reach out directly and we&apos;ll get back to you.</p>
+        <div className="cta">
+          <h2 className="cta-title">Still have questions?</h2>
+          <p className="cta-text">Reach out directly and we&apos;ll get back to you.</p>
           <a href="mailto:sfefoundery@gmail.com" className="btn-primary">&gt; Email Us</a>
         </div>
       </section>

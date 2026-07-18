@@ -37,6 +37,15 @@ export default function AboutPage() {
       </section>
 
       <section className="band">
+        <h2 className="band-title">What is SFE Foundry?</h2>
+        <p className="band-text" style={{ maxWidth: 680 }}>
+          We&apos;re a student-run organization that brings together entrepreneurs, builders, and problem solvers.
+          Through competitions, workshops, and projects, we create a space where students can build the future—together.
+        </p>
+        <div style={{ marginTop: 26 }}><Placeholder label="Photo — the SFE Foundry team" h={300} /></div>
+      </section>
+
+      <section className="band">
         <blockquote className="quote">
           <span className="quote-mark">&ldquo;</span>
           <p>We believe the future belongs to builders and thinkers who never stop growing.</p>
