@@ -4,23 +4,24 @@ import Link from 'next/link';
 import { useAuth } from '../../components/AuthProvider';
 import Placeholder from '../../components/Placeholder';
 import Footer from '../../components/Footer';
+import { EVENTS } from '../../lib/events';
+import {
+  LogoHero, IconBulb, IconCode, IconTrophy, IconUsers, IconArrow,
+  IconLayers, IconInfinity,
+} from '../../components/icons';
 
-const PILLS = [
-  { t: 'Build', d: 'Websites, apps, AI tools, and startups.' },
-  { t: 'Compete', d: 'Hackathons and pitch competitions.' },
-  { t: 'Learn', d: 'Workshops with founders and engineers.' },
-  { t: 'Connect', d: 'Meet students who love building.' },
-];
-
-const EVENTS = [
-  { date: 'JUN 7', t: 'Idea Sprint', d: 'Turn a spark into a working prototype in one day.' },
-  { date: 'JUN 28', t: 'Market Blueprint', d: 'Validate your idea and map out a real business model.' },
-  { date: 'JUL 19', t: 'Founders Pitch', d: 'Pitch your project to judges and win prizes.' },
-  { date: 'AUG 2', t: 'Growth Challenge', d: 'Scale your build and compete for the top spot.' },
+const FEATURES = [
+  { Icon: IconBulb, t: 'Entrepreneurship', d: 'Learn, launch, and lead with real-world impact.' },
+  { Icon: IconCode, t: 'Technology', d: 'Use AI and modern tools to build smarter solutions.' },
+  { Icon: IconTrophy, t: 'Competition', d: 'Compete in structured challenges and earn Seed Points.' },
+  { Icon: IconUsers, t: 'Community', d: 'Collaborate with driven students and mentors who inspire you.' },
 ];
 
 const STATS = [
-  ['100+', 'Students'], ['15+', 'Projects'], ['7+', 'Hackathons'], ['10+', 'Speakers'],
+  { Icon: IconLayers, n: '3', l: 'Pillars' },
+  { Icon: IconTrophy, n: '7+', l: 'Competitions' },
+  { Icon: IconUsers, n: '100+', l: 'Members' },
+  { Icon: IconInfinity, n: '∞', l: 'Opportunities' },
 ];
 
 export default function HomePage() {
@@ -32,53 +33,49 @@ export default function HomePage() {
       <section className="hero">
         <div className="hero-inner">
           <div className="hero-eyebrow">// Student innovation · Alpharetta High School</div>
-          <h1 className="hero-title">
-            BUILD IDEAS.<br />COMPETE.<br /><span className="o">CREATE IMPACT.</span>
-          </h1>
+          <h1 className="hero-title">BUILD IDEAS.<br />COMPETE.<br /><span className="o">CREATE IMPACT.</span></h1>
           <p className="hero-lede">
-            SFE Foundry is a student community for founders, builders, and innovators. Build real projects,
-            compete in hackathons, and launch ideas that matter.
+            SFE Foundry is Alpharetta High School&apos;s entrepreneurship and technology organization. We help students
+            turn ideas into impact through competitions, workshops, and a community of builders.
           </p>
           <div className="hero-actions">
-            <button className="btn-primary" onClick={() => openAuth('signup')}>&gt; Join SFE</button>
-            <Link href="/about" className="btn-ghost">&gt; Learn more</Link>
+            <button className="btn-dark" onClick={() => openAuth('signup')}>Join SFE <IconArrow size={18} /></button>
+            <Link href="/about" className="btn-ghost">Learn More</Link>
           </div>
         </div>
-        <div className="hero-visual"><Placeholder label="Photo — students building together" h="100%" /></div>
+        <div className="hero-visual"><LogoHero size={380} /></div>
       </section>
 
-      {/* ── Feature pills ── */}
-      <section className="band">
-        <div className="pill-row">
-          {PILLS.map((p, i) => (
-            <div key={p.t} className="pill">
-              <div className="pill-num">0{i + 1}</div>
-              <div className="pill-t">{p.t}</div>
-              <div className="pill-d">{p.d}</div>
-            </div>
-          ))}
-        </div>
+      {/* ── Feature columns ── */}
+      <section className="feature-strip">
+        {FEATURES.map(({ Icon, t, d }) => (
+          <div key={t} className="feature-col">
+            <span className="feature-ic"><Icon size={30} /></span>
+            <div className="feature-t">{t}</div>
+            <div className="feature-d">{d}</div>
+          </div>
+        ))}
       </section>
 
-      {/* ── Upcoming events preview ── */}
+      {/* ── Upcoming events ── */}
       <section className="band">
         <div className="band-head">
-          <div>
-            <div className="eyebrow">// Upcoming</div>
-            <h2 className="band-title">This Year</h2>
-          </div>
-          <Link href="/events" className="band-link">All events &gt;</Link>
+          <h2 className="band-title">Upcoming Events</h2>
+          <Link href="/events" className="band-link">View all events <IconArrow size={15} /></Link>
         </div>
-        <div className="event-list">
+        <div className="ev-card-grid">
           {EVENTS.map((e) => (
-            <div key={e.t} className="event-row">
-              <div className="event-date">{e.date}</div>
-              <div className="event-body">
-                <div className="event-name">{e.t}</div>
-                <div className="event-desc">{e.d}</div>
+            <article key={e.title} className="ev-card">
+              <div className="ev-card-top">
+                <div className="ev-date"><span className="ev-mon">{e.mon}</span><span className="ev-day">{e.day}</span></div>
+                <div>
+                  <div className="ev-card-t">{e.title}</div>
+                  <div className="ev-card-d">{e.desc}</div>
+                </div>
               </div>
-              <div className="event-arrow">&gt;</div>
-            </div>
+              <div className="ev-card-meta"><span>{e.time}</span><span>{e.place}</span></div>
+              <Placeholder label={`Photo — ${e.title}`} h={150} />
+            </article>
           ))}
         </div>
       </section>
@@ -87,19 +84,22 @@ export default function HomePage() {
       <section className="band">
         <div className="split">
           <div>
-            <div className="eyebrow">// About</div>
             <h2 className="band-title">What is SFE Foundry?</h2>
             <p className="band-text">
-              Most clubs teach ideas. We help you build them. Whether you&apos;re into coding, startups, AI, or
-              design, SFE Foundry gives you the people, projects, and opportunities to turn ideas into reality.
+              We&apos;re a student-run organization that brings together entrepreneurs, builders, and problem solvers.
+              Through competitions, workshops, and projects, we create a space where students can build the future—together.
             </p>
-            <Link href="/about" className="btn-ghost" style={{ marginTop: 20 }}>&gt; Our mission</Link>
+            <Link href="/about" className="btn-dark" style={{ marginTop: 24 }}>Our Story <IconArrow size={18} /></Link>
+            <div style={{ marginTop: 26 }}><Placeholder label="Photo — the SFE Foundry team" h={210} /></div>
           </div>
-          <div className="stat-strip">
-            {STATS.map(([n, l]) => (
-              <div key={l} className="stat-box">
-                <div className="stat-box-n">{n}</div>
-                <div className="stat-box-l">{l}</div>
+          <div className="stat-rows">
+            {STATS.map(({ Icon, n, l }) => (
+              <div key={l} className="stat-row-item">
+                <span className="stat-row-ic"><Icon size={26} /></span>
+                <div>
+                  <div className="stat-row-n">{n}</div>
+                  <div className="stat-row-l">{l}</div>
+                </div>
               </div>
             ))}
           </div>
@@ -108,10 +108,10 @@ export default function HomePage() {
 
       {/* ── CTA ── */}
       <section className="band">
-        <div className="cta">
-          <h2 className="cta-title">Ready to build?</h2>
-          <p className="cta-text">Join a community of students shipping projects and competing in hackathons.</p>
-          <button className="btn-primary" onClick={() => openAuth('signup')}>&gt; Join SFE Today</button>
+        <div className="cta dark">
+          <h2 className="cta-title light">Ready to build?</h2>
+          <p className="cta-text light">Join a community of students shipping projects and competing in hackathons.</p>
+          <button className="btn-primary" onClick={() => openAuth('signup')}>Join SFE Today <IconArrow size={18} /></button>
         </div>
       </section>
 

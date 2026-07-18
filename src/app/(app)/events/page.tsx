@@ -1,41 +1,50 @@
 'use client';
 
-import Placeholder from '../../../components/Placeholder';
+import { useState } from 'react';
 import Footer from '../../../components/Footer';
+import { EVENTS } from '../../../lib/events';
+import { IconChevron, IconArrow } from '../../../components/icons';
 
-const EVENTS = [
-  { date: 'JUN 7', t: 'Idea Sprint', d: 'Turn a spark into a working prototype in a single day. Form a team, pick a problem, and ship something real.', tag: 'Hackathon' },
-  { date: 'JUN 28', t: 'Market Blueprint', d: 'Validate your idea and map out a real business model with mentors and founders.', tag: 'Workshop' },
-  { date: 'JUL 19', t: 'Founders Pitch', d: 'Pitch your project to a panel of judges, get feedback, and compete for prizes.', tag: 'Competition' },
-  { date: 'AUG 2', t: 'Growth Challenge', d: 'Take your build further — scale it, refine it, and compete for the top spot.', tag: 'Hackathon' },
-];
+const FILTERS = ['All', 'Competitions', 'Workshops', 'Social'] as const;
 
 export default function EventsPage() {
+  const [filter, setFilter] = useState<(typeof FILTERS)[number]>('All');
+  const shown = filter === 'All' ? EVENTS : EVENTS.filter((e) => e.category === filter);
+
   return (
     <div className="page">
       <section className="page-hero">
-        <div className="eyebrow">// Events</div>
-        <h1 className="ph-title">This Year at <span className="o">SFE Foundry</span></h1>
-        <p className="ph-lede">
-          Hackathons, workshops, and pitch competitions throughout the year. Everyone&apos;s welcome — no experience needed.
-        </p>
+        <h1 className="ph-title">EVENTS</h1>
+        <p className="ph-lede">Compete. Learn. Connect.</p>
       </section>
 
-      <section className="band">
-        <div className="event-grid">
-          {EVENTS.map((e) => (
-            <article key={e.t} className="event-card2">
-              <Placeholder label={`Photo — ${e.t}`} h={150} />
-              <div className="event-card2-body">
-                <div className="event-card2-meta">
-                  <span className="event-card2-date">{e.date}</span>
-                  <span className="event-card2-tag">{e.tag}</span>
-                </div>
-                <h3 className="event-card2-t">{e.t}</h3>
-                <p className="event-card2-d">{e.d}</p>
-              </div>
-            </article>
+      <section className="band" style={{ borderTop: 'none', paddingTop: 0 }}>
+        <div className="filter-row">
+          {FILTERS.map((f) => (
+            <button key={f} className={`filter-pill${filter === f ? ' on' : ''}`} onClick={() => setFilter(f)}>{f}</button>
           ))}
+        </div>
+
+        <div className="ev-list">
+          {shown.map((e) => (
+            <div key={e.title} className="ev-row">
+              <div className="ev-date"><span className="ev-mon">{e.mon}</span><span className="ev-day">{e.day}</span></div>
+              <div className="ev-row-body">
+                <div className="ev-row-t">{e.title}</div>
+                <div className="ev-row-d">{e.desc}</div>
+              </div>
+              <div className="ev-row-when">
+                <div>{e.time}</div>
+                <div className="ev-row-place">{e.place}</div>
+              </div>
+              <IconChevron size={20} className="ev-row-chev" />
+            </div>
+          ))}
+          {shown.length === 0 && <div className="ev-empty">No {filter.toLowerCase()} scheduled yet — check back soon.</div>}
+        </div>
+
+        <div style={{ textAlign: 'center', marginTop: 30 }}>
+          <a href="mailto:sfefoundery@gmail.com" className="btn-ghost">View Full Calendar <IconArrow size={17} /></a>
         </div>
       </section>
 

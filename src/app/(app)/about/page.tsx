@@ -3,66 +3,52 @@
 import Link from 'next/link';
 import Placeholder from '../../../components/Placeholder';
 import Footer from '../../../components/Footer';
+import { LogoHero, IconTarget, IconEye, IconSpark, IconArrow } from '../../../components/icons';
 
-const JOURNEY = [
-  { n: '01', t: 'Join', d: 'Become a member and get involved.' },
-  { n: '02', t: 'Meet Your Team', d: 'Find your people and form a team.' },
-  { n: '03', t: 'Learn', d: 'Build skills through workshops and mentorship.' },
-  { n: '04', t: 'Build', d: 'Create, prototype, and iterate on your ideas.' },
-  { n: '05', t: 'Compete', d: 'Join hackathons and pitch your projects.' },
-  { n: '06', t: 'Launch', d: 'Ship your project and make an impact.' },
+const PILLARS = [
+  { Icon: IconTarget, t: 'Our Mission', d: 'Empower students to build innovative solutions, launch ideas, and create lasting impact.' },
+  { Icon: IconEye, t: 'Our Vision', d: 'To be the leading student organization preparing the next generation of builders and leaders.' },
+  { Icon: IconSpark, t: 'Our Values', d: 'Integrity, curiosity, collaboration, excellence, and action.' },
 ];
 
 export default function AboutPage() {
   return (
     <div className="page">
-      <section className="page-hero">
-        <div className="eyebrow">// About</div>
-        <h1 className="ph-title">Most clubs teach ideas.<br /><span className="o">We help you build them.</span></h1>
-        <p className="ph-lede">
-          SFE Foundry is Alpharetta High School&apos;s community for founders, builders, and innovators — a place to
-          turn ideas into real projects alongside ambitious students.
-        </p>
+      <section className="about-hero">
+        <div>
+          <h1 className="ph-title">ABOUT<br />SFE FOUNDRY</h1>
+          <p className="ph-lede">
+            SFE Foundry is where ambition meets opportunity. We empower students to turn ideas into impact through
+            entrepreneurship, technology, and real-world experience.
+          </p>
+          <div className="pillar-list">
+            {PILLARS.map(({ Icon, t, d }) => (
+              <div key={t} className="pillar">
+                <span className="pillar-ic"><Icon size={24} /></span>
+                <div>
+                  <div className="pillar-t">{t}</div>
+                  <div className="pillar-d">{d}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="about-visual"><LogoHero size={400} rings /></div>
       </section>
 
       <section className="band">
-        <div className="split">
-          <div>
-            <div className="eyebrow">// Our mission</div>
-            <h2 className="band-title">Build. Compete. Launch.</h2>
-            <p className="band-text">
-              Whether you&apos;re interested in coding, startups, AI, product design, or entrepreneurship, SFE Foundry
-              gives you the people, projects, and opportunities to bring ideas to life. We&apos;re student-led and
-              open to anyone willing to learn and build.
-            </p>
-          </div>
-          <Placeholder label="Photo — a workshop session" h={230} />
-        </div>
-      </section>
-
-      <section className="band">
-        <div className="band-head center">
-          <div>
-            <div className="eyebrow" style={{ justifyContent: 'center' }}>// The path</div>
-            <h2 className="band-title">Your Journey</h2>
-          </div>
-        </div>
-        <div className="journey-row">
-          {JOURNEY.map((s) => (
-            <div key={s.n} className="journey-card">
-              <div className="journey-n">{s.n}</div>
-              <div className="journey-t">{s.t}</div>
-              <div className="journey-d">{s.d}</div>
-            </div>
-          ))}
-        </div>
+        <blockquote className="quote">
+          <span className="quote-mark">&ldquo;</span>
+          <p>We believe the future belongs to builders and thinkers who never stop growing.</p>
+        </blockquote>
+        <div style={{ marginTop: 20 }}><Placeholder label="Photo — the SFE Foundry team" h={260} /></div>
       </section>
 
       <section className="band">
         <div className="cta">
           <h2 className="cta-title">Come build with us.</h2>
           <p className="cta-text">Get involved as a member or apply to join the team.</p>
-          <Link href="/get-involved" className="btn-primary">&gt; Get Involved</Link>
+          <Link href="/get-involved" className="btn-primary">Get Involved <IconArrow size={18} /></Link>
         </div>
       </section>
 
