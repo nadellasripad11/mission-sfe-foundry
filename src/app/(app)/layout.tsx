@@ -1,14 +1,12 @@
-import Sidebar from '../../components/Sidebar';
+import TopNav from '../../components/TopNav';
 import TechBackground from '../../components/TechBackground';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <TechBackground />
-      <div className="shell">
-        <Sidebar />
-        <main className="main">{children}</main>
-      </div>
+      <TopNav />
+      <main className="main-wrap">{children}</main>
     </>
   );
 }
