@@ -6,7 +6,7 @@ export interface SavedResponse {
 export const savedResponses: SavedResponse[] = [
   {
     keywords: ['join', 'membership', 'how to join', 'become member', 'participate'],
-    response: 'You can join by emailing sfefoundery@gmail.com or clicking "Join" on our website. We welcome all students interested in innovation!'
+    response: 'You can join by emailing sfefoundryteam@gmail.com or clicking "Join" on our website. We welcome all students interested in innovation!'
   },
   {
     keywords: ['what is', 'sfe foundry', 'who are you', 'about sfe', 'about us'],
@@ -14,7 +14,7 @@ export const savedResponses: SavedResponse[] = [
   },
   {
     keywords: ['hackathon', 'when', 'when are', 'next event', 'upcoming'],
-    response: 'We host hackathons throughout the year! Check our website or email sfefoundery@gmail.com for dates and registration info.'
+    response: 'We host hackathons throughout the year! Check our website or email sfefoundryteam@gmail.com for dates and registration info.'
   },
   {
     keywords: ['event', 'events', 'what do you host', 'what do we do', 'activities'],
@@ -34,11 +34,11 @@ export const savedResponses: SavedResponse[] = [
   },
   {
     keywords: ['contact', 'email', 'reach out', 'get in touch', 'how to contact'],
-    response: 'Email us at sfefoundery@gmail.com anytime! You can also use this chat or check our website.'
+    response: 'Email us at sfefoundryteam@gmail.com anytime! You can also use this chat or check our website.'
   },
   {
     keywords: ['mentor', 'mentorship', 'advice', 'help', 'guidance'],
-    response: 'We connect members with experienced founders and mentors! Email sfefoundery@gmail.com to learn more about our mentorship program.'
+    response: 'We connect members with experienced founders and mentors! Email sfefoundryteam@gmail.com to learn more about our mentorship program.'
   },
   {
     keywords: ['bring', 'what to bring', 'hackathon supplies', 'materials'],

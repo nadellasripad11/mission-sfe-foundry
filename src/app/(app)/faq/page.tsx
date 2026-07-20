@@ -13,7 +13,7 @@ const FAQ = [
   { q: 'Can I join mid-year?', a: 'Yes! We welcome new members at any point during the school year.' },
   { q: 'What kinds of projects do members build?', a: 'Apps, websites, AI tools, hardware prototypes, startup pitches — anything goes. If you can build it, bring it.' },
   { q: 'Do I need a team to participate?', a: 'Nope. Join solo and we’ll help you find teammates, or come in with your own crew.' },
-  { q: 'How do I contact SFE Foundry?', a: 'Email sfefoundery@gmail.com or reach out on Instagram or Discord. You can also chat with our assistant right here on the site.' },
+  { q: 'How do I contact SFE Foundry?', a: 'Email sfefoundryteam@gmail.com or reach out on Instagram or Discord. You can also chat with our assistant right here on the site.' },
 ];
 
 export default function FaqPage() {
@@ -48,7 +48,7 @@ export default function FaqPage() {
         <div className="cta">
           <h2 className="cta-title">Still have questions?</h2>
           <p className="cta-text">Reach out directly and we&apos;ll get back to you.</p>
-          <a href="mailto:sfefoundery@gmail.com" className="btn-primary">&gt; Email Us</a>
+          <a href="mailto:sfefoundryteam@gmail.com" className="btn-primary">&gt; Email Us</a>
         </div>
       </section>
 

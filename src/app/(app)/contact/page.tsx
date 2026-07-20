@@ -5,12 +5,11 @@ import { useRouter } from 'next/navigation';
 import Footer from '../../../components/Footer';
 import { IconArrow, IconDiscord, IconInstagram, IconMail } from '../../../components/icons';
 
-// Web3Forms access key — get one free at https://web3forms.com (tied to sfefoundery@gmail.com).
+// Web3Forms access key — get one free at https://web3forms.com (tied to sfefoundryteam@gmail.com).
 const ACCESS_KEY = '7197061a-e46f-490b-8ab6-84550ca25bc5';
 
 const SOCIALS = [
-  { label: 'Email', sub: 'sfefoundery@gmail.com', href: 'mailto:sfefoundery@gmail.com', Icon: IconMail, color: 'var(--orange)' },
-  { label: 'Team Email', sub: 'sfefoundryteam@gmail.com', href: 'mailto:sfefoundryteam@gmail.com', Icon: IconMail, color: 'var(--orange)' },
+  { label: 'Email', sub: 'sfefoundryteam@gmail.com', href: 'mailto:sfefoundryteam@gmail.com', Icon: IconMail, color: 'var(--orange)' },
   { label: 'Discord', sub: 'discord.gg/3gjCGadM9a', href: 'https://discord.gg/3gjCGadM9a', Icon: IconDiscord, color: '#5865F2' },
   { label: 'Instagram', sub: '@sfefoundry', href: 'https://www.instagram.com/sfefoundry', Icon: IconInstagram, color: '#E1306C' },
 ];

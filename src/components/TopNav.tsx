@@ -24,8 +24,7 @@ const NAV = [
 const SOCIALS = [
   { label: 'Discord', sub: 'discord.gg/3gjCGadM9a', href: 'https://discord.gg/3gjCGadM9a', Icon: IconDiscord, color: '#5865F2' },
   { label: 'Instagram', sub: '@sfefoundry', href: 'https://www.instagram.com/sfefoundry', Icon: IconInstagram, color: '#E1306C' },
-  { label: 'Email', sub: 'sfefoundery@gmail.com', href: 'mailto:sfefoundery@gmail.com', Icon: IconMail, color: 'var(--orange)' },
-  { label: 'Team Email', sub: 'sfefoundryteam@gmail.com', href: 'mailto:sfefoundryteam@gmail.com', Icon: IconMail, color: 'var(--orange)' },
+  { label: 'Email', sub: 'sfefoundryteam@gmail.com', href: 'mailto:sfefoundryteam@gmail.com', Icon: IconMail, color: 'var(--orange)' },
 ];
 
 export default function TopNav() {

@@ -14,8 +14,7 @@ const LINKS = [
 const SOCIALS = [
   { label: 'Instagram', href: 'https://www.instagram.com/sfefoundry' },
   { label: 'Discord', href: 'https://discord.gg/3gjCGadM9a' },
-  { label: 'Email', href: 'mailto:sfefoundery@gmail.com' },
-  { label: 'Team Email', href: 'mailto:sfefoundryteam@gmail.com' },
+  { label: 'Email', href: 'mailto:sfefoundryteam@gmail.com' },
 ];
 
 export default function Footer() {

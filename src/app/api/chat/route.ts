@@ -57,7 +57,7 @@ Quick facts about us:
 
 Keep it brief and chill. Be encouraging and have fun!
 
-If something is out of scope, just say you're not sure and suggest emailing sfefoundery@gmail.com.`;
+If something is out of scope, just say you're not sure and suggest emailing sfefoundryteam@gmail.com.`;
 
 export async function POST(req: NextRequest) {
   try {
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
       NextResponse.json({
         content:
           (note ? note + ' ' : '') +
-          "I can't answer that one right now, but I'd love to help! You can email us at sfefoundery@gmail.com, or ask me about joining, events, or hackathons.",
+          "I can't answer that one right now, but I'd love to help! You can email us at sfefoundryteam@gmail.com, or ask me about joining, events, or hackathons.",
         suggestions: ['How do I join?', 'What events do you host?', 'About hackathons'],
       });
 
@@ -149,7 +149,7 @@ export async function POST(req: NextRequest) {
     console.error('Chat error:', error);
     return NextResponse.json({
       content:
-        "Sorry, I'm having a little trouble right now. You can reach the team at sfefoundery@gmail.com, or ask me about joining, events, or hackathons.",
+        "Sorry, I'm having a little trouble right now. You can reach the team at sfefoundryteam@gmail.com, or ask me about joining, events, or hackathons.",
       suggestions: ['How do I join?', 'What events do you host?', 'About hackathons'],
     });
   }

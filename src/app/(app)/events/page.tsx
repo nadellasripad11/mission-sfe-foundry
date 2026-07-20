@@ -44,7 +44,7 @@ export default function EventsPage() {
         </div>
 
         <div style={{ textAlign: 'center', marginTop: 30 }}>
-          <a href="mailto:sfefoundery@gmail.com" className="btn-ghost">View Full Calendar <IconArrow size={17} /></a>
+          <a href="mailto:sfefoundryteam@gmail.com" className="btn-ghost">View Full Calendar <IconArrow size={17} /></a>
         </div>
       </section>
 
