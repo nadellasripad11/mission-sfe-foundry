@@ -1,5 +1,7 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
+
 // Decorative floating "blueprint" annotations behind content (pointer-events: none).
 const DOTS = (
   <svg width="46" height="46" viewBox="0 0 46 46" fill="currentColor">
@@ -46,8 +48,10 @@ const ITEMS: { top?: string; bottom?: string; left?: string; right?: string; ani
 ];
 
 export default function TechBackground() {
+  const pathname = usePathname();
+  const strong = pathname === '/';
   return (
-    <div className="techbg" aria-hidden="true">
+    <div className={`techbg${strong ? ' techbg-strong' : ''}`} aria-hidden="true">
       {ITEMS.map((it, i) => (
         <div
           key={i}
