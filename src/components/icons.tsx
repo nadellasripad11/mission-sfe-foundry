@@ -66,30 +66,32 @@ export function LogoHero({ size = 320, rings = false }: { size?: number; rings?:
   );
 }
 
-// 3D extruded stripes — used only on the home hero
+// Thin flat slabs with a soft realistic shadow — used only on the home hero
 export function LogoHero3D({ size = 400 }: { size?: number }) {
   const bars = [
-    { x: 70, top: '#24242F', side: '#121219', edge: '#0C0C12' },
-    { x: 152, top: '#26A4DE', side: '#177DAF', edge: '#136089' },
-    { x: 234, top: '#F26A26', side: '#C4521B', edge: '#9C4013' },
+    { x: 96, top: '#20202A', edge: '#0E0E16', hi: '#3A3A48' },
+    { x: 176, top: '#2684C6', edge: '#1A5C8E', hi: '#4AA0DA' },
+    { x: 256, top: '#EB5F27', edge: '#B4451A', hi: '#F5824C' },
   ];
-  const W = 40, TOP = 150, BOT = 320, SLANT = 74, DX = 18, DY = 10;
+  const W = 36, TOP = 140, BOT = 312, SLANT = 78, DX = 7, DY = 7; // small offset = thin slab
   const top = (x: number) => `${x},${BOT} ${x + W},${BOT} ${x + W + SLANT},${TOP} ${x + SLANT},${TOP}`;
-  const rightFace = (x: number) => `${x + W},${BOT} ${x + W + SLANT},${TOP} ${x + W + SLANT + DX},${TOP + DY} ${x + W + DX},${BOT + DY}`;
-  const bottomFace = (x: number) => `${x},${BOT} ${x + W},${BOT} ${x + W + DX},${BOT + DY} ${x + DX},${BOT + DY}`;
+  const depth = (x: number) => // thin right + bottom edge showing the slab thickness
+    `${x},${BOT} ${x + W},${BOT} ${x + W + SLANT},${TOP} ${x + W + SLANT + DX},${TOP + DY} ${x + W + DX},${BOT + DY} ${x + DX},${BOT + DY}`;
+  const hi = (x: number) => // slim top-left highlight bevel
+    `${x + SLANT},${TOP} ${x + SLANT + 6},${TOP} ${x + 6},${BOT} ${x},${BOT}`;
   return (
     <svg width={size} height={size} viewBox="0 0 400 400" fill="none" aria-hidden="true" style={{ display: 'block', maxWidth: '100%' }}>
       <defs>
-        <filter id="lh3d-shadow" x="-40%" y="-40%" width="180%" height="180%">
-          <feDropShadow dx="6" dy="14" stdDeviation="12" floodColor="#1A1A1A" floodOpacity="0.24" />
+        <filter id="lh3d-shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feDropShadow dx="-6" dy="16" stdDeviation="15" floodColor="#1A1A1A" floodOpacity="0.22" />
         </filter>
       </defs>
       <g filter="url(#lh3d-shadow)">
         {bars.map((b) => (
           <g key={b.x}>
-            <polygon points={bottomFace(b.x)} fill={b.edge} />
-            <polygon points={rightFace(b.x)} fill={b.side} />
+            <polygon points={depth(b.x)} fill={b.edge} />
             <polygon points={top(b.x)} fill={b.top} />
+            <polygon points={hi(b.x)} fill={b.hi} opacity="0.55" />
           </g>
         ))}
       </g>
