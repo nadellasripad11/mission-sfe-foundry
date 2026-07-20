@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useAuth } from '../../components/AuthProvider';
 import Footer from '../../components/Footer';
-import { LogoHero, IconBulb, IconCode, IconTrophy, IconUsers, IconArrow } from '../../components/icons';
+import { LogoHero3D, IconBulb, IconCode, IconTrophy, IconUsers, IconArrow } from '../../components/icons';
 
 const FEATURES = [
   { Icon: IconBulb, t: 'Entrepreneurship', d: 'Learn, launch, and lead with real-world impact.' },
@@ -31,7 +31,7 @@ export default function HomePage() {
             <Link href="/about" className="btn-ghost">Learn More</Link>
           </div>
         </div>
-        <div className="hero-visual"><LogoHero size={380} /></div>
+        <div className="hero-visual"><LogoHero3D size={420} /></div>
       </section>
 
       {/* ── Feature columns ── */}

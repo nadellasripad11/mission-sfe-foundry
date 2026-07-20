@@ -65,3 +65,34 @@ export function LogoHero({ size = 320, rings = false }: { size?: number; rings?:
     </svg>
   );
 }
+
+// 3D extruded stripes — used only on the home hero
+export function LogoHero3D({ size = 400 }: { size?: number }) {
+  const bars = [
+    { x: 70, top: '#24242F', side: '#121219', edge: '#0C0C12' },
+    { x: 152, top: '#26A4DE', side: '#177DAF', edge: '#136089' },
+    { x: 234, top: '#F26A26', side: '#C4521B', edge: '#9C4013' },
+  ];
+  const W = 40, TOP = 150, BOT = 320, SLANT = 74, DX = 18, DY = 10;
+  const top = (x: number) => `${x},${BOT} ${x + W},${BOT} ${x + W + SLANT},${TOP} ${x + SLANT},${TOP}`;
+  const rightFace = (x: number) => `${x + W},${BOT} ${x + W + SLANT},${TOP} ${x + W + SLANT + DX},${TOP + DY} ${x + W + DX},${BOT + DY}`;
+  const bottomFace = (x: number) => `${x},${BOT} ${x + W},${BOT} ${x + W + DX},${BOT + DY} ${x + DX},${BOT + DY}`;
+  return (
+    <svg width={size} height={size} viewBox="0 0 400 400" fill="none" aria-hidden="true" style={{ display: 'block', maxWidth: '100%' }}>
+      <defs>
+        <filter id="lh3d-shadow" x="-40%" y="-40%" width="180%" height="180%">
+          <feDropShadow dx="6" dy="14" stdDeviation="12" floodColor="#1A1A1A" floodOpacity="0.24" />
+        </filter>
+      </defs>
+      <g filter="url(#lh3d-shadow)">
+        {bars.map((b) => (
+          <g key={b.x}>
+            <polygon points={bottomFace(b.x)} fill={b.edge} />
+            <polygon points={rightFace(b.x)} fill={b.side} />
+            <polygon points={top(b.x)} fill={b.top} />
+          </g>
+        ))}
+      </g>
+    </svg>
+  );
+}
