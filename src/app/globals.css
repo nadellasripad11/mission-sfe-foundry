@@ -401,6 +401,15 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 .sponsor-cta-visual { min-height:200px; }
 .sponsor-cta-visual .ph { height:100%; border:none; border-radius:0; }
 
+/* ── Contact ── */
+.contact-grid { display:grid; grid-template-columns: 1.4fr .9fr; gap:40px; align-items:start; }
+.contact-form { display:flex; flex-direction:column; }
+.contact-form .label { margin-top:10px; }
+.contact-aside { border:1px solid var(--line); border-radius:14px; background:var(--white); padding:24px; }
+.contact-social { display:flex; align-items:center; gap:12px; padding:10px 0; text-decoration:none; border-top:1px solid var(--line); }
+.contact-social:first-of-type { border-top:none; }
+.contact-social-ic { display:inline-flex; flex-shrink:0; }
+
 /* ── Drawer overrides for icon rows ── */
 .drawer-btn { display:inline-flex; align-items:center; justify-content:center; gap:7px; }
 .drawer-link-ic { color:var(--faint); flex-shrink:0; transition:color .18s; }
@@ -449,6 +458,7 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
   .feature-strip.cols-3 { grid-template-columns: 1fr 1fr; }
   .sponsor-cta { grid-template-columns: 1fr; }
   .sponsor-cta-visual { min-height: 180px; order: -1; }
+  .contact-grid { grid-template-columns: 1fr; gap: 26px; }
 }
 
 @media (max-width: 560px) {

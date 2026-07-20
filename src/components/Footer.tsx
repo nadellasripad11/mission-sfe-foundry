@@ -8,6 +8,7 @@ const LINKS = [
   { href: '/sponsors', label: 'Sponsors' },
   { href: '/get-involved', label: 'Get Involved' },
   { href: '/faq', label: 'FAQ' },
+  { href: '/contact', label: 'Contact' },
 ];
 
 const SOCIALS = [

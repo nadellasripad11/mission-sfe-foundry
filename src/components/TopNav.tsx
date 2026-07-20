@@ -18,6 +18,7 @@ const NAV = [
   { href: '/sponsors', label: 'Sponsors', Icon: IconTrophy },
   { href: '/get-involved', label: 'Get Involved', Icon: IconMegaphone },
   { href: '/faq', label: 'FAQ', Icon: IconHelp },
+  { href: '/contact', label: 'Contact', Icon: IconMail },
 ];
 
 const SOCIALS = [
