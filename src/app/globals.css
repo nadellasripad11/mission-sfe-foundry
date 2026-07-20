@@ -436,8 +436,7 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
   .hero { grid-template-columns: 1fr; gap: 20px; }
   .hero-visual { display: none; } /* hide the big stripe on mobile so the headline leads */
   .about-hero { grid-template-columns: 1fr; gap: 20px; }
-  .about-visual { order: -1; }
-  .about-visual svg { max-width: 280px; }
+  .about-visual { display: none; } /* hide the stripe on mobile so the heading leads */
   .split { grid-template-columns: 1fr; gap: 24px; }
   .stat-box { border-right: none; border-bottom: 1px solid var(--line); }
   .stat-box:last-child { border-bottom: none; }
