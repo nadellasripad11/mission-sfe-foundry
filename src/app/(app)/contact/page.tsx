@@ -5,7 +5,7 @@ import Footer from '../../../components/Footer';
 import { IconArrow, IconDiscord, IconInstagram, IconMail } from '../../../components/icons';
 
 // Web3Forms access key — get one free at https://web3forms.com (tied to sfefoundery@gmail.com).
-const ACCESS_KEY = 'REPLACE_WITH_WEB3FORMS_ACCESS_KEY';
+const ACCESS_KEY = '7197061a-e46f-490b-8ab6-84550ca25bc5';
 
 const SOCIALS = [
   { label: 'Email', sub: 'sfefoundery@gmail.com', href: 'mailto:sfefoundery@gmail.com', Icon: IconMail, color: 'var(--orange)' },
