@@ -6,8 +6,9 @@ import { useAuth } from '../../../components/AuthProvider';
 
 const APP_NAV = [
   { href: '/home', label: 'Home' },
+  { href: '/display', label: 'Display' },
   { href: '/rate', label: 'Rate' },
-  { href: '/mission', label: 'Mission' },
+  { href: '/mission', label: 'Missions' },
   { href: '/shop', label: 'Shop' },
   { href: '/resources', label: 'Resources' },
   { href: '/my-projects', label: 'My Projects' },

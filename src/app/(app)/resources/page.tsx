@@ -1,36 +1,41 @@
 'use client';
 
-import Link from 'next/link';
-
-const RESOURCES = [
-  { t: 'Getting started with Git & GitHub', d: 'Version control basics every builder needs.', href: 'https://docs.github.com/en/get-started' },
-  { t: 'Next.js docs', d: 'Build full-stack React apps with the framework this site uses.', href: 'https://nextjs.org/docs' },
-  { t: 'Supabase docs', d: 'Auth, database, and storage — the backend behind this site.', href: 'https://supabase.com/docs' },
-  { t: 'Figma', d: 'Design your project before you build it.', href: 'https://www.figma.com/' },
-  { t: 'freeCodeCamp', d: 'Free, project-based coding courses.', href: 'https://www.freecodecamp.org/' },
-  { t: 'Deploy on Vercel', d: 'Ship your project live in minutes.', href: 'https://vercel.com/docs' },
-];
+import Footer from '../../../components/Footer';
+import { RESOURCE_GROUPS } from '../../../lib/resources';
+import { IconArrow } from '../../../components/icons';
 
 export default function ResourcesPage() {
   return (
-    <div className="container">
-      <div className="page-eyebrow">Learn</div>
-      <h1 className="page-title">Resources</h1>
-      <p className="page-sub" style={{ marginBottom: 28 }}>Hand-picked guides and tools to help you build and ship.</p>
+    <div className="page">
+      <section className="page-hero">
+        <h1 className="ph-title">RESOURCES</h1>
+        <p className="ph-lede">Hand-picked guides for building with AI, shipping code, and designing like a pro.</p>
+      </section>
 
-      <div className="grid grid-3">
-        {RESOURCES.map((r) => (
-          <a key={r.t} href={r.href} target="_blank" rel="noopener noreferrer" className="card card-hover reveal" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-            <h3 style={{ fontWeight: 700, fontSize: '1.02rem', marginBottom: 6, color: 'var(--ink)' }}>{r.t}</h3>
-            <p style={{ color: 'var(--muted)', fontSize: '.88rem', lineHeight: 1.6 }}>{r.d}</p>
-            <div style={{ marginTop: 14, color: 'var(--blue)', fontWeight: 600, fontSize: '.82rem' }}>Open →</div>
-          </a>
+      <section className="band" style={{ borderTop: 'none', paddingTop: 0 }}>
+        {RESOURCE_GROUPS.map((g) => (
+          <div key={g.slug} className="resource-group">
+            <h2 className="resource-group-h">{g.name}</h2>
+            <div className="resource-grid">
+              {g.items.map((r) => (
+                <a
+                  key={r.title}
+                  href={r.href}
+                  target={r.external ? '_blank' : undefined}
+                  rel={r.external ? 'noopener noreferrer' : undefined}
+                  className="resource-card"
+                >
+                  <div className="resource-title">{r.title}</div>
+                  <p className="resource-desc">{r.description}</p>
+                  <div className="resource-cta">Open <IconArrow size={13} /></div>
+                </a>
+              ))}
+            </div>
+          </div>
         ))}
-      </div>
+      </section>
 
-      <div style={{ marginTop: 32 }}>
-        <Link href="/faq" className="btn btn-outline">Read the FAQ →</Link>
-      </div>
+      <Footer />
     </div>
   );
 }
