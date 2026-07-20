@@ -417,6 +417,15 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 .thanks-check svg { width:36px; height:36px; }
 .thanks-actions { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:30px; }
 
+/* ── 404 ── */
+.notfound { display:flex; flex-direction:column; align-items:center; text-align:center; padding: clamp(48px, 8vw, 96px) 0 clamp(40px, 6vw, 70px); }
+.notfound-code { font-family:'Outfit'; font-weight:900; font-size:clamp(5rem, 16vw, 11rem); line-height:.9; letter-spacing:-0.04em; color:var(--ink); }
+.notfound-code .o { color:var(--orange); }
+.notfound-actions { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:30px; }
+.notfound-links { display:flex; gap:8px 22px; flex-wrap:wrap; justify-content:center; margin-top:28px; }
+.notfound-link { font-family:var(--mono); font-size:.76rem; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color .18s; }
+.notfound-link:hover { color:var(--orange); }
+
 /* ── Drawer overrides for icon rows ── */
 .drawer-btn { display:inline-flex; align-items:center; justify-content:center; gap:7px; }
 .drawer-link-ic { color:var(--faint); flex-shrink:0; transition:color .18s; }
