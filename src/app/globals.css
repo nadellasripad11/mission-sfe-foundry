@@ -291,13 +291,22 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 .faq-a { padding:0 20px 18px; border-top:1px solid var(--line); }
 .faq-a p { color:var(--ink-soft); font-size:.9rem; line-height:1.7; margin-top:14px; }
 
-/* CTA */
-.cta { border:1px solid var(--line); border-radius:16px; background:var(--white); padding: clamp(30px, 5vw, 48px); text-align:center; }
-.cta.dark { background:var(--ink); border-color:var(--ink); }
+/* CTA (blueprint outline) */
+.cta { position:relative; border:1px dashed rgba(31,159,214,.4); border-radius:14px; background:transparent; padding: clamp(36px, 5vw, 56px); text-align:center; }
+.cta::before {
+  content:''; position:absolute; inset:7px; pointer-events:none;
+  background:
+    linear-gradient(var(--orange),var(--orange)) top left / 16px 2px no-repeat,
+    linear-gradient(var(--orange),var(--orange)) top left / 2px 16px no-repeat,
+    linear-gradient(var(--orange),var(--orange)) top right / 16px 2px no-repeat,
+    linear-gradient(var(--orange),var(--orange)) top right / 2px 16px no-repeat,
+    linear-gradient(var(--orange),var(--orange)) bottom left / 16px 2px no-repeat,
+    linear-gradient(var(--orange),var(--orange)) bottom left / 2px 16px no-repeat,
+    linear-gradient(var(--orange),var(--orange)) bottom right / 16px 2px no-repeat,
+    linear-gradient(var(--orange),var(--orange)) bottom right / 2px 16px no-repeat;
+}
 .cta-title { font-family:'Outfit'; font-weight:900; font-size:clamp(1.5rem,3vw,2.1rem); text-transform:uppercase; letter-spacing:-0.02em; color:var(--ink); }
-.cta-title.light { color:var(--cream); }
 .cta-text { color:var(--muted); font-size:.98rem; line-height:1.6; margin:12px auto 24px; max-width:440px; }
-.cta-text.light { color:var(--faint); }
 
 /* Footer */
 .site-foot { border-top:1px solid var(--line); margin-top:20px; padding:44px 0 24px; }
