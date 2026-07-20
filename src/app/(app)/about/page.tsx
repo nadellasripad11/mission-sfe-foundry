@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Placeholder from '../../../components/Placeholder';
 import Footer from '../../../components/Footer';
-import { LogoHero, IconTarget, IconEye, IconSpark, IconArrow } from '../../../components/icons';
+import { LogoHero3D, IconTarget, IconEye, IconSpark, IconArrow } from '../../../components/icons';
 
 const PILLARS = [
   { Icon: IconTarget, t: 'Our Mission', d: 'Empower students to build innovative solutions, launch ideas, and create lasting impact.' },
@@ -33,7 +33,7 @@ export default function AboutPage() {
             ))}
           </div>
         </div>
-        <div className="about-visual"><LogoHero size={400} rings /></div>
+        <div className="about-visual"><LogoHero3D size={420} /></div>
       </section>
 
       <section className="band">
