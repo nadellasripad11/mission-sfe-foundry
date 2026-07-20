@@ -19,12 +19,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: "SFE Foundry - Build. Compete. Launch.",
     description: "Join a community of student founders, hackers, and builders. Participate in startup competitions, hackathons, workshops, and mentorship programs.",
-    url: "https://sfe-foundry.vercel.app",
+    url: "https://sfe-foundery.vercel.app",
     siteName: "SFE Foundry",
     type: "website",
     images: [
       {
-        url: "https://sfe-foundry.vercel.app/og-image.webp",
+        url: "https://sfe-foundery.vercel.app/og-image.png",
         width: 1200,
         height: 630,
         alt: "SFE Foundry - Build. Compete. Launch.",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "SFE Foundry - Build. Compete. Launch.",
     description: "Join a community of student founders, hackers, and builders.",
-    images: ["https://sfe-foundry.vercel.app/og-image.webp"],
+    images: ["https://sfe-foundery.vercel.app/og-image.png"],
   },
 };
 
