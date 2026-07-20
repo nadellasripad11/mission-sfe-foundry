@@ -109,7 +109,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
                 {authMode === 'signup' ? 'Create your account' : 'Welcome back'}
               </h2>
               <p style={{ color: 'var(--faint)', fontSize: '.875rem', lineHeight: 1.55 }}>
-                {authMode === 'signup' ? 'Join SFE Foundry to ship projects and rate others.' : 'Sign in to your SFE Foundry account.'}
+                {authMode === 'signup' ? 'Join the SFE Foundry community.' : 'Sign in to your SFE Foundry account.'}
               </p>
             </div>
 
