@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Footer from '../../../components/Footer';
 import { IconArrow, IconDiscord, IconInstagram, IconMail } from '../../../components/icons';
 
@@ -14,6 +15,7 @@ const SOCIALS = [
 ];
 
 export default function ContactPage() {
+  const router = useRouter();
   const [status, setStatus] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle');
   const [error, setError] = useState('');
 
@@ -39,6 +41,7 @@ export default function ContactPage() {
       if (json.success) {
         setStatus('ok');
         form.reset();
+        router.push('/thank-you');
       } else {
         setStatus('error');
         setError(json.message || 'Something went wrong. Please email us directly.');

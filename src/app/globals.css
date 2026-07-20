@@ -410,6 +410,13 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 .contact-social:first-of-type { border-top:none; }
 .contact-social-ic { display:inline-flex; flex-shrink:0; }
 
+/* ── Thank you ── */
+.thanks { display:flex; flex-direction:column; align-items:center; text-align:center; padding: clamp(56px, 9vw, 110px) 0 clamp(40px, 6vw, 70px); }
+.thanks-check { width:74px; height:74px; border-radius:50%; background:var(--orange); color:#fff; display:flex; align-items:center; justify-content:center;
+  margin-bottom:24px; box-shadow:0 10px 26px rgba(242,101,34,.30); animation: rise .5s cubic-bezier(.34,1.56,.64,1) both; }
+.thanks-check svg { width:36px; height:36px; }
+.thanks-actions { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:30px; }
+
 /* ── Drawer overrides for icon rows ── */
 .drawer-btn { display:inline-flex; align-items:center; justify-content:center; gap:7px; }
 .drawer-link-ic { color:var(--faint); flex-shrink:0; transition:color .18s; }
