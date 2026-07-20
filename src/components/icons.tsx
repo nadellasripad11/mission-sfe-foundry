@@ -37,30 +37,31 @@ export const IconInstagram = (p: P) => <S {...p}><rect x="3.5" y="3.5" width="17
 // 3D extruded three-slash logo mark
 export function LogoHero({ size = 320, rings = false }: { size?: number; rings?: boolean }) {
   // each slash is a slanted bar; a darker offset copy fakes the extruded side
-  const slashes = [
-    { x: 40, top: '#23232F', side: '#121219' },
-    { x: 108, top: '#26A4DE', side: '#1783B7' },
-    { x: 176, top: '#F26A26', side: '#C4521B' },
+  // flat parallelogram stripes matching the real SFE Foundry mark
+  const bars = [
+    { x: 66, color: '#1C1C26' },
+    { x: 134, color: '#1F9FD6' },
+    { x: 202, color: '#F26522' },
   ];
-  const bar = (x: number) => `${x},210 ${x + 36},210 ${x + 82},96 ${x + 46},96`;
-  const side = (x: number) => `${x + 36},210 ${x + 36 + 14},210 ${x + 82 + 14},96 ${x + 82},96`;
+  const W = 30, TOP = 78, BOT = 242, SLANT = 58;
+  const pts = (x: number) => `${x},${BOT} ${x + W},${BOT} ${x + W + SLANT},${TOP} ${x + SLANT},${TOP}`;
   return (
     <svg width={size} height={size} viewBox="0 0 320 320" fill="none" aria-hidden="true" style={{ display: 'block', maxWidth: '100%' }}>
+      <defs>
+        <filter id="lh-shadow" x="-40%" y="-40%" width="180%" height="180%">
+          <feDropShadow dx="3" dy="9" stdDeviation="8" floodColor="#1A1A1A" floodOpacity="0.20" />
+        </filter>
+      </defs>
       {rings && (
         <g stroke="var(--line)" strokeWidth="1" opacity="0.8">
-          <circle cx="170" cy="155" r="150" strokeDasharray="2 7" />
-          <circle cx="170" cy="155" r="112" strokeDasharray="2 7" />
-          <circle cx="170" cy="155" r="74" strokeDasharray="2 7" />
+          <circle cx="176" cy="160" r="150" strokeDasharray="2 7" />
+          <circle cx="176" cy="160" r="112" strokeDasharray="2 7" />
+          <circle cx="176" cy="160" r="74" strokeDasharray="2 7" />
         </g>
       )}
-      <ellipse cx="150" cy="238" rx="130" ry="20" fill="rgba(26,26,26,.10)" />
-      {slashes.map((s) => (
-        <g key={s.x}>
-          <polygon points={side(s.x)} fill={s.side} />
-          <polygon points={`${s.x + 82},96 ${s.x + 82 + 14},96 ${s.x + 46 + 14},96 ${s.x + 46},96`} fill={s.side} />
-          <polygon points={bar(s.x)} fill={s.top} />
-        </g>
-      ))}
+      <g filter="url(#lh-shadow)">
+        {bars.map((b) => <polygon key={b.x} points={pts(b.x)} fill={b.color} />)}
+      </g>
     </svg>
   );
 }
