@@ -89,8 +89,9 @@ export default function MyProjectsPage() {
 
   return (
     <div className="my-projects-page">
-      {/* Profile Section */}
-      <div className="profile-card">
+      <div>
+        {/* Profile Section */}
+        <div className="profile-card">
         {/* Banner */}
         <div className="profile-banner">
           <div className="profile-banner-content">
@@ -211,19 +212,31 @@ export default function MyProjectsPage() {
         </div>
       )}
 
-      {/* Projects Tab */}
-      <div className="projects-section">
-        {loading ? (
-          <p style={{ color: 'var(--faint)', textAlign: 'center', padding: '40px' }}>Loading…</p>
-        ) : projects.length === 0 ? (
-          <div className="empty">
-            <p style={{ color: 'var(--muted)', marginBottom: 16 }}>No projects yet. Ship your first!</p>
-          </div>
-        ) : (
-          <div className="proj-grid">
-            {projects.map((p) => <ProjectCard key={p.id} p={p} onDelete={() => remove(p.id)} />)}
-          </div>
-        )}
+        {/* Projects Tab */}
+        <div className="projects-section">
+          {loading ? (
+            <p style={{ color: 'var(--faint)', textAlign: 'center', padding: '40px' }}>Loading…</p>
+          ) : projects.length === 0 ? (
+            <div className="empty">
+              <p style={{ color: 'var(--muted)', marginBottom: 16 }}>No projects yet. Ship your first!</p>
+            </div>
+          ) : (
+            <div className="proj-grid">
+              {projects.map((p) => <ProjectCard key={p.id} p={p} onDelete={() => remove(p.id)} />)}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Achievements Section */}
+      <div className="profile-achievements">
+        <h3 className="achievements-title">Achievements</h3>
+        <div className="achievements-count">0 / 11 earned</div>
+        <div className="achievements-grid">
+          <div className="achievement-badge" title="First Project">🚀</div>
+          <div className="achievement-badge" title="5 Projects">⭐</div>
+          <div className="achievement-badge" title="100 Votes">🏆</div>
+        </div>
       </div>
     </div>
   );
