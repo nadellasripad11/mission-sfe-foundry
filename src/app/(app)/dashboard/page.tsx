@@ -21,8 +21,9 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
+    if (!user) return;
     load();
-  }, [user]);
+  }, [user?.id]);
 
   const handleRate = async (projectId: string, stars: number) => {
     setMine((m) => ({ ...m, [projectId]: stars }));

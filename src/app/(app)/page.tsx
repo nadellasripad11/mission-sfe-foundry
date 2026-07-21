@@ -20,7 +20,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (ready && user) router.push('/dashboard');
-  }, [ready, user, router]);
+  }, [ready, user?.id, router]);
 
   return (
     <div className="page">
