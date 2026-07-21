@@ -31,21 +31,28 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const [msgOk, setMsgOk] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
     const toUser = (su: any): AppUser | null =>
       su ? { id: su.id, email: su.email ?? '', name: su.user_metadata?.name ?? su.user_metadata?.full_name ?? null } : null;
 
     supabase.auth.getSession().then(({ data }) => {
-      setUser(toUser(data.session?.user));
-      setReady(true);
+      if (mounted) {
+        setUser(toUser(data.session?.user));
+        setReady(true);
+      }
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      const u = toUser(session?.user);
-      const wasNull = !user;
-      setUser(u);
-      if (u && wasNull) { setShowModal(false); window.location.href = '/dashboard'; }
-      else if (u) setShowModal(false);
+      if (mounted) {
+        const u = toUser(session?.user);
+        setUser(u);
+        if (u && _e === 'SIGNED_IN') { setShowModal(false); }
+        else if (u) setShowModal(false);
+      }
     });
-    return () => sub.subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
   const openAuth = (mode: AuthMode = 'signup') => { setAuthMode(mode); setMessage(''); setShowModal(true); };

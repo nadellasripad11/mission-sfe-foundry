@@ -20,7 +20,7 @@ export default function RatePage() {
     if (user) setMine(await getMyRatings(user.id).catch(() => ({})));
     setLoading(false);
   };
-  useEffect(() => { load(); }, [user]);
+  useEffect(() => { load(); }, [user?.id]);
 
   const handleRate = async (projectId: string, stars: number) => {
     if (!user) { openAuth('signin'); return; }

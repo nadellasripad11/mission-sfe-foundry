@@ -77,7 +77,7 @@ export default function TopNav() {
                   <div className="drawer-user-mail">{user.email}</div>
                 </div>
               </div>
-              <Link href="/home" onClick={close} className="drawer-btn">Go to App <IconArrow size={17} /></Link>
+              <Link href="/dashboard" onClick={close} className="drawer-btn">Go to App <IconArrow size={17} /></Link>
               <button className="drawer-btn ghost" onClick={() => { signOut(); close(); }}>Sign out</button>
             </>
           ) : (

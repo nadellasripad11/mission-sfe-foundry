@@ -20,7 +20,8 @@ export default function HomePage() {
 
   useEffect(() => {
     if (ready && user) router.push('/dashboard');
-  }, [ready, user?.id, router]);
+  }, [ready, user?.id]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
 
   return (
     <div className="page">
