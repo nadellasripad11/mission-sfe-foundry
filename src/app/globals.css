@@ -527,10 +527,10 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 .t-drift { animation: tdrift 12s ease-in-out infinite; }
 .t-spin { animation: tspin 40s linear infinite; }
 
-/* ── Sidebar + App Layout (Stardance style) ── */
-.app-container { display: flex; min-height: 100vh; }
+/* ── Sidebar + App Layout (Stardance style - blended) ── */
+.app-container { display: flex; min-height: 100vh; background: var(--bg); }
 .sidebar {
-  position: fixed; left: 0; top: 0; bottom: 0; width: 220px; background: var(--white);
+  position: fixed; left: 0; top: 0; bottom: 0; width: 220px; background: var(--bg);
   border-right: 1px solid var(--line); padding: 24px 18px; display: flex; flex-direction: column;
   gap: 32px; z-index: 50;
 }
@@ -570,7 +570,7 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 
 .app-main {
   flex: 1; margin-left: 220px; padding: 40px 32px 60px;
-  max-width: 1200px; width: 100%;
+  max-width: 1200px; width: 100%; background: var(--bg);
 }
 @media (min-width: 1024px) {
   .app-main { margin-left: 240px; }
