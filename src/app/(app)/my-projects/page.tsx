@@ -33,7 +33,7 @@ export default function MyProjectsPage() {
     if (!user) { setLoading(false); return; }
     getMyProjects(user.id).then((p) => { setProjects(p); setLoading(false); }).catch(() => setLoading(false));
   };
-  useEffect(() => { load(); }, [user]);
+  useEffect(() => { load(); }, [user?.id]);
 
   const addTag = () => {
     const t = tagInput.trim().replace(/^#/, '').toLowerCase();
