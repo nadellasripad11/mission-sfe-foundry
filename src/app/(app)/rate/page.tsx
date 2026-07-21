@@ -1,9 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useAuth } from '../../../components/AuthProvider';
+import Footer from '../../../components/Footer';
 import Stars from '../../../components/Stars';
 import { getProjects, getMyRatings, rateProject, type ProjectWithRating } from '../../../lib/projects';
+import { IconArrow } from '../../../components/icons';
 
 export default function RatePage() {
   const { user, openAuth } = useAuth();
@@ -26,41 +29,49 @@ export default function RatePage() {
   };
 
   return (
-    <div className="container">
-      <div className="page-eyebrow">Feedback</div>
-      <h1 className="page-title">Rate projects</h1>
-      <p className="page-sub" style={{ marginBottom: 28 }}>
-        {user ? 'Give a star rating to what the community has built.' : 'Sign in to rate what the community has built.'}
-      </p>
+    <div className="page">
+      <section className="page-hero">
+        <h1 className="ph-title">RATE</h1>
+        <p className="ph-lede">{user ? 'Give a star rating to projects the community has shipped.' : 'Sign in to rate what the community has shipped.'}</p>
+      </section>
 
-      {!user && (
-        <div className="empty" style={{ marginBottom: 28 }}>
-          <p style={{ color: 'var(--muted)', marginBottom: 16 }}>You need an account to rate projects.</p>
-          <button className="btn btn-solid" onClick={() => openAuth('signin')}>Sign in</button>
-        </div>
-      )}
+      <section className="band" style={{ borderTop: 'none', paddingTop: 0 }}>
+        {!user && (
+          <div className="empty" style={{ marginBottom: 22 }}>
+            <p style={{ color: 'var(--muted)', marginBottom: 16 }}>You need an account to rate projects.</p>
+            <button className="btn-primary" onClick={() => openAuth('signin')}>Sign in <IconArrow size={17} /></button>
+          </div>
+        )}
 
-      {loading ? (
-        <p style={{ color: 'var(--faint)' }}>Loading…</p>
-      ) : projects.length === 0 ? (
-        <div className="empty"><p style={{ color: 'var(--muted)' }}>No projects to rate yet.</p></div>
-      ) : (
-        <div className="grid grid-2">
-          {projects.map((p) => (
-            <div key={p.id} className="card reveal">
-              <h3 style={{ fontWeight: 700, fontSize: '1.05rem', marginBottom: 4 }}>{p.title}</h3>
-              <p style={{ color: 'var(--faint)', fontSize: '.8rem', marginBottom: 12 }}>by {p.author_name || 'Anonymous'}</p>
-              <div style={{ marginBottom: 12 }}><Stars value={p.avg} count={p.count} /></div>
-              <div style={{ borderTop: '1px solid var(--line)', paddingTop: 12, display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '.82rem', color: 'var(--muted)', fontWeight: 600 }}>
-                  {mine[p.id] ? 'Your rating:' : 'Your rating:'}
-                </span>
-                <Stars interactive current={mine[p.id] ?? 0} onRate={(s) => handleRate(p.id, s)} />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+        {loading ? (
+          <p style={{ color: 'var(--faint)' }}>Loading…</p>
+        ) : projects.length === 0 ? (
+          <div className="empty">
+            <p style={{ color: 'var(--muted)', marginBottom: 16 }}>No projects to rate yet.</p>
+            <Link href="/my-projects" className="btn-primary" style={{ display: 'inline-flex' }}>Ship the first <IconArrow size={17} /></Link>
+          </div>
+        ) : (
+          <div className="proj-grid">
+            {projects.map((p) => (
+              <article key={p.id} className="proj-card">
+                {p.screenshots[0] && <div className="proj-shot"><img src={p.screenshots[0]} alt="" /></div>}
+                <div className="proj-body">
+                  <div className="proj-title">{p.title}</div>
+                  <div className="proj-author">by {p.author_name || 'Anonymous'}</div>
+                  <p className="proj-desc">{p.description}</p>
+                  <div style={{ marginTop: 8 }}><Stars value={p.avg} count={p.count} /></div>
+                  <div className="proj-actions" style={{ borderTop: '1px solid var(--line)', paddingTop: 12, marginTop: 12, flexDirection: 'column', alignItems: 'flex-start', gap: 8 }}>
+                    <span style={{ fontFamily: 'var(--mono)', fontSize: '.68rem', letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--muted)' }}>Your rating</span>
+                    <Stars interactive current={mine[p.id] ?? 0} onRate={(s) => handleRate(p.id, s)} />
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <Footer />
     </div>
   );
 }

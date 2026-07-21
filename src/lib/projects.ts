@@ -5,10 +5,10 @@ export type Project = {
   user_id: string;
   author_name: string | null;
   title: string;
-  description: string | null;
-  url: string | null;
-  repo_url: string | null;
-  image_url: string | null;
+  description: string;
+  url: string;
+  screenshots: string[];
+  tags: string[];
   created_at: string;
 };
 
@@ -22,7 +22,7 @@ export async function getProjects(): Promise<ProjectWithRating[]> {
   ]);
   if (pErr) throw pErr;
   const agg = new Map<string, { sum: number; count: number }>();
-  (ratings ?? []).forEach((r: any) => {
+  (ratings ?? []).forEach((r: { project_id: string; stars: number }) => {
     const a = agg.get(r.project_id) ?? { sum: 0, count: 0 };
     a.sum += r.stars; a.count += 1;
     agg.set(r.project_id, a);
@@ -41,17 +41,18 @@ export async function getMyProjects(userId: string): Promise<Project[]> {
 }
 
 export async function createProject(input: {
-  user_id: string; author_name: string | null; title: string;
-  description: string; url: string; repo_url: string; image_url: string;
+  user_id: string; author_name: string | null;
+  title: string; description: string; url: string;
+  screenshots: string[]; tags: string[];
 }) {
   const { error } = await supabase.from('projects').insert({
     user_id: input.user_id,
     author_name: input.author_name,
     title: input.title,
-    description: input.description || null,
-    url: input.url || null,
-    repo_url: input.repo_url || null,
-    image_url: input.image_url || null,
+    description: input.description,
+    url: input.url,
+    screenshots: input.screenshots,
+    tags: input.tags,
   });
   if (error) throw error;
 }
@@ -72,6 +73,6 @@ export async function rateProject(projectId: string, userId: string, stars: numb
 export async function getMyRatings(userId: string): Promise<Record<string, number>> {
   const { data } = await supabase.from('ratings').select('project_id, stars').eq('user_id', userId);
   const map: Record<string, number> = {};
-  (data ?? []).forEach((r: any) => { map[r.project_id] = r.stars; });
+  (data ?? []).forEach((r: { project_id: string; stars: number }) => { map[r.project_id] = r.stars; });
   return map;
 }
