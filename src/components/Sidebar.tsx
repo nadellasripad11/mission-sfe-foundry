@@ -12,13 +12,13 @@ export default function Sidebar() {
   const isActive = (path: string) => pathname === path || pathname?.startsWith(path + '/');
 
   const navItems = [
-    { href: '/dashboard', icon: IconHome, label: 'Home', emoji: '🚀' },
-    { href: '/display', icon: IconEye, label: 'Display', emoji: '👁️' },
-    { href: '/rate', icon: IconTrophy, label: 'Rate', emoji: '⭐' },
-    { href: '/mission', icon: IconTarget, label: 'Missions', emoji: '📋' },
-    { href: '/shop', icon: IconShoppingCart, label: 'Shop', emoji: '🛒' },
-    { href: '/resources', icon: IconCode, label: 'Resources', emoji: '💻' },
-    { href: '/my-projects', icon: IconUser, label: 'My Projects', emoji: '👤' },
+    { href: '/dashboard', label: 'Home', emoji: '🚀' },
+    { href: '/display', label: 'Display', emoji: '👁️' },
+    { href: '/rate', label: 'Rate', emoji: '⭐' },
+    { href: '/mission', label: 'Missions', emoji: '📋' },
+    { href: '/shop', label: 'Shop', emoji: '🛒' },
+    { href: '/resources', label: 'Resources', emoji: '💻' },
+    { href: '/my-projects', label: 'My Projects', emoji: '👤' },
   ];
 
   return (
