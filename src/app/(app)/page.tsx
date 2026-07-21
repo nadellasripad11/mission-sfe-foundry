@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '../../components/AuthProvider';
 import Footer from '../../components/Footer';
@@ -13,7 +15,12 @@ const FEATURES = [
 ];
 
 export default function HomePage() {
-  const { openAuth } = useAuth();
+  const router = useRouter();
+  const { user, ready, openAuth } = useAuth();
+
+  useEffect(() => {
+    if (ready && user) router.push('/dashboard');
+  }, [ready, user, router]);
 
   return (
     <div className="page">

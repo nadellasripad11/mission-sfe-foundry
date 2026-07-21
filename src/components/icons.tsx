@@ -30,6 +30,8 @@ export const IconClose = (p: P) => <S {...p}><path d="M6 6l12 12M18 6 6 18" /></
 export const IconMenu = (p: P) => <S {...p}><path d="M4 7h16M4 12h16M4 17h16" /></S>;
 export const IconClock = (p: P) => <S {...p}><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 2" /></S>;
 export const IconMail = (p: P) => <S {...p}><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="m3.5 7 8.5 6 8.5-6" /></S>;
+export const IconShoppingCart = (p: P) => <S {...p}><circle cx="8" cy="21" r="1.5" fill="currentColor" /><circle cx="20" cy="21" r="1.5" fill="currentColor" /><path d="M2 4h2.5l1.8 9a2.5 2.5 0 0 0 2.4 2h10.4a2.5 2.5 0 0 0 2.3-1.6l2-7" /></S>;
+export const IconUser = (p: P) => <S {...p}><circle cx="12" cy="9" r="4" /><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7" /></S>;
 
 export const IconDiscord = (p: P) => <S {...p} fill><path d="M19.3 5.4A17 17 0 0 0 15 4l-.3.5a12.6 12.6 0 0 1 3.6 1.8 15.9 15.9 0 0 0-12.6 0A12.6 12.6 0 0 1 9.3 4.5L9 4a17 17 0 0 0-4.3 1.4C2 9.3 1.3 13.1 1.6 16.8a17 17 0 0 0 5.2 2.6l.6-1a11 11 0 0 1-1.8-.9l.4-.3a12.1 12.1 0 0 0 10 0l.4.3c-.6.4-1.2.7-1.8.9l.6 1a17 17 0 0 0 5.2-2.6c.4-4.3-.6-8-2.7-11.4ZM8.5 14.6c-1 0-1.9-1-1.9-2.1 0-1.2.8-2.1 1.9-2.1s1.9 1 1.9 2.1c0 1.2-.9 2.1-1.9 2.1Zm7 0c-1 0-1.9-1-1.9-2.1 0-1.2.9-2.1 1.9-2.1s1.9 1 1.9 2.1c0 1.2-.8 2.1-1.9 2.1Z" /></S>;
 export const IconInstagram = (p: P) => <S {...p}><rect x="3.5" y="3.5" width="17" height="17" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="16.5" cy="7.5" r=".9" fill="currentColor" stroke="none" /></S>;
