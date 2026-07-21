@@ -14,6 +14,7 @@ export default function MyProjectsPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [tab, setTab] = useState<'projects' | 'feed'>('projects');
+  const [myProjectsCount, setMyProjectsCount] = useState(0);
 
   const [title, setTitle] = useState('Untitled');
   const [description, setDescription] = useState('');
@@ -90,50 +91,52 @@ export default function MyProjectsPage() {
   return (
     <div className="my-projects-page">
       <div>
-        {/* Profile Section */}
-        <div className="profile-card">
-        {/* Banner */}
-        <div className="profile-banner">
-          <div className="profile-banner-content">
-            <LogoHero size={200} />
+        {/* Profile Card - Stardance Style */}
+        <div className="profile-card stardance">
+          {/* Large Banner */}
+          <div className="profile-banner large">
+            <div className="profile-banner-content">
+              <LogoHero size={280} />
+            </div>
+          </div>
+
+          {/* Profile Info Overlay */}
+          <div className="profile-overlay">
+            <div className="profile-info-overlay">
+              <div className="profile-avatar">{(user?.name?.trim()?.[0] || user?.email[0] || '?').toUpperCase()}</div>
+
+              <div className="profile-meta">
+                <h1 className="profile-username">@{user?.name?.toLowerCase().replace(/\s+/g, '') || user?.email.split('@')[0]}</h1>
+                <p className="profile-joined">Joined {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                <p className="profile-bio">Building cool things</p>
+              </div>
+
+              <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
+                {showForm ? 'Close' : 'Ship Project'} <IconArrow size={16} />
+              </button>
+            </div>
+
+            {/* Stats Row - Horizontal */}
+            <div className="profile-stats-inline">
+              <div className="stat-inline">
+                <div className="stat-num">{projects.length}</div>
+                <div className="stat-label">Projects</div>
+              </div>
+              <div className="stat-inline">
+                <div className="stat-num">0</div>
+                <div className="stat-label">Devlogs</div>
+              </div>
+              <div className="stat-inline">
+                <div className="stat-num">0</div>
+                <div className="stat-label">Ships</div>
+              </div>
+              <div className="stat-inline">
+                <div className="stat-num">0</div>
+                <div className="stat-label">Votes</div>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Profile Info */}
-        <div className="profile-info-section">
-          <div className="profile-avatar">{(user?.name?.trim()?.[0] || user?.email[0] || '?').toUpperCase()}</div>
-
-          <div className="profile-header">
-            <h1 className="profile-username">@{user?.name?.toLowerCase().replace(/\s+/g, '') || user?.email.split('@')[0]}</h1>
-            <p className="profile-joined">Joined {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-            <p className="profile-bio">Building cool things</p>
-          </div>
-
-          <button className="btn-primary" onClick={() => setShowForm(!showForm)} style={{ marginLeft: 'auto' }}>
-            {showForm ? 'Close' : 'Ship Project'} <IconArrow size={16} />
-          </button>
-        </div>
-
-        {/* Stats */}
-        <div className="profile-stats-row">
-          <div className="profile-stat">
-            <div className="stat-num">{projects.length}</div>
-            <div className="stat-label">Projects</div>
-          </div>
-          <div className="profile-stat">
-            <div className="stat-num">0</div>
-            <div className="stat-label">Devlogs</div>
-          </div>
-          <div className="profile-stat">
-            <div className="stat-num">0</div>
-            <div className="stat-label">Ships</div>
-          </div>
-          <div className="profile-stat">
-            <div className="stat-num">0</div>
-            <div className="stat-label">Votes</div>
-          </div>
-        </div>
-      </div>
 
       {/* Form */}
       {showForm && (
@@ -212,17 +215,36 @@ export default function MyProjectsPage() {
         </div>
       )}
 
-        {/* Projects Tab */}
+        {/* Tabs - Feed and Projects */}
+        <div className="project-tabs">
+          <button className={`project-tab${tab === 'feed' ? ' active' : ''}`} onClick={() => setTab('feed')}>
+            Feed
+          </button>
+          <button className={`project-tab${tab === 'projects' ? ' active' : ''}`} onClick={() => setTab('projects')}>
+            Projects ({projects.length})
+          </button>
+        </div>
+
+        {/* Projects/Feed Section */}
         <div className="projects-section">
-          {loading ? (
-            <p style={{ color: 'var(--faint)', textAlign: 'center', padding: '40px' }}>Loading…</p>
-          ) : projects.length === 0 ? (
+          {tab === 'projects' && (
+            <>
+              {loading ? (
+                <p style={{ color: 'var(--faint)', textAlign: 'center', padding: '40px' }}>Loading…</p>
+              ) : projects.length === 0 ? (
+                <div className="empty">
+                  <p style={{ color: 'var(--muted)', marginBottom: 16 }}>No projects yet. Ship your first!</p>
+                </div>
+              ) : (
+                <div className="proj-grid">
+                  {projects.map((p) => <ProjectCard key={p.id} p={p} onDelete={() => remove(p.id)} />)}
+                </div>
+              )}
+            </>
+          )}
+          {tab === 'feed' && (
             <div className="empty">
-              <p style={{ color: 'var(--muted)', marginBottom: 16 }}>No projects yet. Ship your first!</p>
-            </div>
-          ) : (
-            <div className="proj-grid">
-              {projects.map((p) => <ProjectCard key={p.id} p={p} onDelete={() => remove(p.id)} />)}
+              <p style={{ color: 'var(--muted)', marginBottom: 16 }}>Feed coming soon</p>
             </div>
           )}
         </div>
