@@ -12,6 +12,7 @@ interface AuthCtx {
   ready: boolean;
   openAuth: (mode?: AuthMode) => void;
   signOut: () => Promise<void>;
+  configError?: string;
 }
 
 const Ctx = createContext<AuthCtx>({ user: null, ready: false, openAuth: () => {}, signOut: async () => {} });
@@ -20,6 +21,7 @@ export const useAuth = () => useContext(Ctx);
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null);
   const [ready, setReady] = useState(false);
+  const [configError, setConfigError] = useState<string>('');
 
   const [showModal, setShowModal] = useState(false);
   const [authMode, setAuthMode] = useState<AuthMode>('signup');
@@ -33,6 +35,23 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     let mounted = true;
     let lastUserId: string | null = null;
+
+    // Check if Supabase is configured
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const isMissingConfig =
+      !supabaseUrl || !supabaseKey ||
+      supabaseUrl === 'https://placeholder.supabase.co' ||
+      supabaseKey === 'placeholder';
+
+    if (isMissingConfig) {
+      setConfigError(
+        'Supabase is not configured. Create a .env.local file with ' +
+        'NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY'
+      );
+      setReady(true);
+      return;
+    }
 
     const toUser = (su: any): AppUser | null =>
       su ? { id: su.id, email: su.email ?? '', name: su.user_metadata?.name ?? su.user_metadata?.full_name ?? null } : null;
@@ -122,7 +141,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   };
 
   return (
-    <Ctx.Provider value={{ user, ready, openAuth, signOut }}>
+    <Ctx.Provider value={{ user, ready, openAuth, signOut, configError }}>
       {children}
 
       {showModal && (

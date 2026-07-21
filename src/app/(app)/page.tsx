@@ -16,7 +16,7 @@ const FEATURES = [
 
 export default function HomePage() {
   const router = useRouter();
-  const { user, ready, openAuth } = useAuth();
+  const { user, ready, openAuth, configError } = useAuth();
 
   useEffect(() => {
     if (ready && user) {
@@ -28,6 +28,30 @@ export default function HomePage() {
   // Don't render anything if user is redirecting
   if (ready && user) {
     return null;
+  }
+
+  // Show configuration error if Supabase isn't set up
+  if (configError) {
+    return (
+      <div className="page">
+        <section className="hero">
+          <div className="hero-inner" style={{ maxWidth: '600px', textAlign: 'center' }}>
+            <h1 className="hero-title" style={{ color: '#E74C3C' }}>⚙️ Configuration Required</h1>
+            <p className="hero-lede" style={{ color: '#C0392B' }}>
+              {configError}
+            </p>
+            <div style={{ background: '#FADBD8', border: '1px solid #E74C3C', borderRadius: '8px', padding: '20px', marginTop: '20px', textAlign: 'left', fontFamily: 'var(--mono)', fontSize: '0.9rem' }}>
+              <p style={{ marginBottom: '10px' }}>Create a file called <code style={{ background: '#fff', padding: '2px 6px', borderRadius: '4px' }}>.env.local</code> in the project root:</p>
+              <pre style={{ background: '#fff', padding: '12px', borderRadius: '4px', overflow: 'auto' }}>
+NEXT_PUBLIC_SUPABASE_URL=your_url_here
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key_here
+              </pre>
+              <p style={{ marginTop: '10px', fontSize: '0.85rem' }}>Then restart the dev server.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
   }
 
   return (
