@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from './AuthProvider';
 import { LogoMark } from './Logo';
-import { IconHome, IconEye, IconTrophy, IconTarget, IconShoppingCart, IconCode, IconUser } from './icons';
+import { IconHome, IconEye, IconTrophy, IconTarget, IconShoppingCart, IconCode, IconUsers } from './icons';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -19,7 +19,7 @@ export default function Sidebar() {
     { href: '/mission', icon: IconTarget, label: 'Missions' },
     { href: '/shop', icon: IconShoppingCart, label: 'Shop' },
     { href: '/resources', icon: IconCode, label: 'Resources' },
-    { href: '/my-projects', icon: IconUser, label: 'My Projects' },
+    { href: '/my-projects', icon: IconUsers, label: 'My Projects' },
   ];
 
   return (
