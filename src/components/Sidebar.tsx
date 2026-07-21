@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from './AuthProvider';
-import { LogoMark } from './Logo';
+import SFELogo from './SFELogo';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -25,7 +25,7 @@ export default function Sidebar() {
     <aside className="sidebar">
       {/* Logo */}
       <Link href="/dashboard" className="sidebar-logo">
-        <LogoMark />
+        <SFELogo size={100} />
       </Link>
 
       {/* Nav items */}
