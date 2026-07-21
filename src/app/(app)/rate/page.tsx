@@ -36,14 +36,12 @@ export default function RatePage() {
       </section>
 
       <section className="band" style={{ borderTop: 'none', paddingTop: 0 }}>
-        {!user && (
-          <div className="empty" style={{ marginBottom: 22 }}>
+        {!user ? (
+          <div className="empty">
             <p style={{ color: 'var(--muted)', marginBottom: 16 }}>You need an account to rate projects.</p>
             <button className="btn-primary" onClick={() => openAuth('signin')}>Sign in <IconArrow size={17} /></button>
           </div>
-        )}
-
-        {loading ? (
+        ) : loading ? (
           <p style={{ color: 'var(--faint)' }}>Loading…</p>
         ) : projects.length === 0 ? (
           <div className="empty">
