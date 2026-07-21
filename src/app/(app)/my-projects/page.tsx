@@ -5,16 +5,8 @@ import Link from 'next/link';
 import { useAuth } from '../../../components/AuthProvider';
 import Footer from '../../../components/Footer';
 import { createProject, deleteProject, getMyProjects, type Project } from '../../../lib/projects';
+import { uploadImage } from '../../../lib/uploadImage';
 import { IconArrow, IconClose } from '../../../components/icons';
-
-async function uploadOne(file: File): Promise<string> {
-  const form = new FormData();
-  form.append('file', file);
-  const res = await fetch('/api/upload', { method: 'POST', body: form });
-  const json = await res.json();
-  if (!res.ok) throw new Error(json.error || 'Upload failed');
-  return json.url as string;
-}
 
 export default function MyProjectsPage() {
   const { user, openAuth, ready } = useAuth();
@@ -54,7 +46,7 @@ export default function MyProjectsPage() {
     setSaving(true);
     try {
       const urls: string[] = [];
-      for (const f of pending) urls.push(await uploadOne(f));
+      for (const f of pending) urls.push(await uploadImage(f, user.id));
       await createProject({
         user_id: user.id,
         author_name: user.name ?? user.email,
