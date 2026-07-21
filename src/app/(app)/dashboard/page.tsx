@@ -12,12 +12,20 @@ export default function DashboardPage() {
   const [projects, setProjects] = useState<ProjectWithRating[]>([]);
   const [mine, setMine] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   const load = async () => {
-    const p = await getProjects().catch(() => []);
-    setProjects(p);
-    if (user) setMine(await getMyRatings(user.id).catch(() => ({})));
-    setLoading(false);
+    try {
+      setError('');
+      const p = await getProjects().catch(() => []);
+      setProjects(p);
+      if (user) setMine(await getMyRatings(user.id).catch(() => ({})));
+    } catch (err) {
+      console.error('Dashboard load error:', err);
+      setError('Failed to load projects');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -41,6 +49,21 @@ export default function DashboardPage() {
           <p>Here's what's happening at SFE Foundry.</p>
         </div>
         <p style={{ color: 'var(--faint)' }}>Loading…</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="dashboard">
+        <div className="dashboard-header">
+          <h1>Welcome back, {user?.name || 'Builder'}.</h1>
+          <p>Here's what's happening at SFE Foundry.</p>
+        </div>
+        <div className="empty">
+          <p style={{ color: '#E74C3C', marginBottom: 16 }}>{error}</p>
+          <button onClick={load} className="btn-primary">Try Again</button>
+        </div>
       </div>
     );
   }

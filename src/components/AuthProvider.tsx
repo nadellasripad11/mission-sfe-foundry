@@ -32,6 +32,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     let mounted = true;
+    let lastUserId: string | null = null;
+
     const toUser = (su: any): AppUser | null =>
       su ? { id: su.id, email: su.email ?? '', name: su.user_metadata?.name ?? su.user_metadata?.full_name ?? null } : null;
 
@@ -42,7 +44,9 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
           if (error) {
             console.error('Session retrieval error:', error);
           }
-          setUser(toUser(data?.session?.user));
+          const u = toUser(data?.session?.user);
+          setUser(u);
+          lastUserId = u?.id ?? null;
           setReady(true);
         }
       } catch (err) {
@@ -56,8 +60,14 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       if (mounted) {
         const u = toUser(session?.user);
-        setUser(u);
-        if (u) setShowModal(false);
+        const newUserId = u?.id ?? null;
+
+        // Only update state if user ID actually changed (prevents redundant updates)
+        if (newUserId !== lastUserId) {
+          lastUserId = newUserId;
+          setUser(u);
+          if (u) setShowModal(false);
+        }
       }
     });
 

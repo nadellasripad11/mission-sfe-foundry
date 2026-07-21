@@ -28,10 +28,20 @@ export default function MyProjectsPage() {
   const [pending, setPending] = useState<File[]>([]);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
+  const [loadError, setLoadError] = useState('');
 
-  const load = () => {
+  const load = async () => {
     if (!user) { setLoading(false); return; }
-    getMyProjects(user.id).then((p) => { setProjects(p); setLoading(false); }).catch(() => setLoading(false));
+    try {
+      setLoadError('');
+      const p = await getMyProjects(user.id);
+      setProjects(p);
+    } catch (error) {
+      console.error('Projects load error:', error);
+      setLoadError('Failed to load projects');
+    } finally {
+      setLoading(false);
+    }
   };
   useEffect(() => { load(); }, [user?.id]);
 
