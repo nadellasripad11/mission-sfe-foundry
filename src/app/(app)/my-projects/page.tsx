@@ -14,9 +14,13 @@ export default function MyProjectsPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState('Untitled');
   const [description, setDescription] = useState('');
   const [url, setUrl] = useState('');
+  const [demoUrl, setDemoUrl] = useState('');
+  const [githubUrl, setGithubUrl] = useState('');
+  const [projectType, setProjectType] = useState<'software' | 'hardware'>('software');
+  const [aiUsage, setAiUsage] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [pending, setPending] = useState<File[]>([]);
@@ -102,16 +106,43 @@ export default function MyProjectsPage() {
 
       {showForm && (
         <section className="band" style={{ borderTop: 'none', paddingTop: 0 }}>
-          <form className="contact-form" onSubmit={submit} style={{ maxWidth: 720 }}>
-            <label className="label" htmlFor="p-title">Title *</label>
-            <input id="p-title" className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="What is it called?" required />
+          <form className="contact-form" onSubmit={submit} style={{ maxWidth: 800 }}>
+            {/* Title */}
+            <label className="label" htmlFor="p-title">Project Title *</label>
+            <input id="p-title" className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Untitled" required />
 
-            <label className="label" htmlFor="p-desc">Description *</label>
-            <textarea id="p-desc" className="input" value={description} onChange={(e) => setDescription(e.target.value)} rows={4} required placeholder="What does it do? Who is it for?" style={{ resize: 'vertical', minHeight: 100 }} />
+            {/* Description */}
+            <label className="label" htmlFor="p-desc">What does it do? *</label>
+            <textarea id="p-desc" className="input" value={description} onChange={(e) => setDescription(e.target.value)} rows={4} required placeholder="Describe your project…" style={{ resize: 'vertical', minHeight: 100 }} />
 
-            <label className="label" htmlFor="p-url">Link *</label>
-            <input id="p-url" className="input" type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…" required />
+            {/* Project Type */}
+            <label className="label">Project Type *</label>
+            <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
+              {(['software', 'hardware'] as const).map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  className={`btn ${projectType === type ? 'btn-solid' : 'btn-ghost'}`}
+                  onClick={() => setProjectType(type)}
+                  style={{ textTransform: 'capitalize', padding: '10px 20px' }}
+                >
+                  {type}
+                </button>
+              ))}
+            </div>
 
+            {/* Links */}
+            <label className="label" htmlFor="p-demo">Demo URL</label>
+            <input id="p-demo" className="input" type="url" value={demoUrl} onChange={(e) => setDemoUrl(e.target.value)} placeholder="https://…" />
+
+            <label className="label" htmlFor="p-github">GitHub / Source URL</label>
+            <input id="p-github" className="input" type="url" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} placeholder="https://github.com/…" />
+
+            {/* AI Usage */}
+            <label className="label" htmlFor="p-ai">AI Usage Declaration</label>
+            <textarea id="p-ai" className="input" value={aiUsage} onChange={(e) => setAiUsage(e.target.value)} rows={3} placeholder="How did you use AI? Write 'None' if you didn't." style={{ resize: 'vertical', minHeight: 80 }} />
+
+            {/* Screenshots */}
             <label className="label">Screenshots * <span style={{ color: 'var(--faint)', fontWeight: 400 }}>(PNG/JPG/WebP, up to 6 MB each)</span></label>
             <input
               type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple
@@ -129,6 +160,7 @@ export default function MyProjectsPage() {
               </div>
             )}
 
+            {/* Tags */}
             <label className="label" htmlFor="p-tag" style={{ marginTop: 12 }}>Tags * <span style={{ color: 'var(--faint)', fontWeight: 400 }}>(press Enter to add)</span></label>
             <input
               id="p-tag" className="input" value={tagInput}
@@ -148,7 +180,7 @@ export default function MyProjectsPage() {
 
             {err && <div className="msg-err">{err}</div>}
             <button className="btn-primary" type="submit" disabled={saving} style={{ marginTop: 8 }}>
-              {saving ? 'Publishing…' : <>Publish Project <IconArrow size={18} /></>}
+              {saving ? 'Publishing…' : <>Ship Project <IconArrow size={18} /></>}
             </button>
           </form>
         </section>
