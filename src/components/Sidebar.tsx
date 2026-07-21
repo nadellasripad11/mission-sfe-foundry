@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from './AuthProvider';
 import { LogoMark } from './Logo';
-import { IconHome, IconEye, IconTrophy, IconTarget, IconShoppingCart, IconCode, IconUser } from './icons';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -13,13 +12,13 @@ export default function Sidebar() {
   const isActive = (path: string) => pathname === path || pathname?.startsWith(path + '/');
 
   const navItems = [
-    { href: '/dashboard', icon: IconHome, label: 'Home' },
-    { href: '/display', icon: IconEye, label: 'Display' },
-    { href: '/rate', icon: IconTrophy, label: 'Rate' },
-    { href: '/mission', icon: IconTarget, label: 'Missions' },
-    { href: '/shop', icon: IconShoppingCart, label: 'Shop' },
-    { href: '/resources', icon: IconCode, label: 'Resources' },
-    { href: '/my-projects', icon: IconUser, label: 'My Projects' },
+    { href: '/dashboard', icon: IconHome, label: 'Home', emoji: '🚀' },
+    { href: '/display', icon: IconEye, label: 'Display', emoji: '👁️' },
+    { href: '/rate', icon: IconTrophy, label: 'Rate', emoji: '⭐' },
+    { href: '/mission', icon: IconTarget, label: 'Missions', emoji: '📋' },
+    { href: '/shop', icon: IconShoppingCart, label: 'Shop', emoji: '🛒' },
+    { href: '/resources', icon: IconCode, label: 'Resources', emoji: '💻' },
+    { href: '/my-projects', icon: IconUser, label: 'My Projects', emoji: '👤' },
   ];
 
   return (
@@ -31,14 +30,14 @@ export default function Sidebar() {
 
       {/* Nav items */}
       <nav className="sidebar-nav">
-        {navItems.map(({ href, icon: Icon, label }) => (
+        {navItems.map(({ href, label, emoji }) => (
           <Link
             key={href}
             href={href}
             className={`sidebar-link ${isActive(href) ? 'active' : ''}`}
             title={label}
           >
-            <Icon size={20} />
+            <span style={{ fontSize: '1.3rem', display: 'flex', alignItems: 'center' }}>{emoji}</span>
             <span className="sidebar-label">{label}</span>
           </Link>
         ))}
