@@ -42,7 +42,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       const u = toUser(session?.user);
       const wasNull = !user;
       setUser(u);
-      if (u && wasNull) { setShowModal(false); window.location.href = '/home'; }
+      if (u && wasNull) { setShowModal(false); window.location.href = '/dashboard'; }
       else if (u) setShowModal(false);
     });
     return () => sub.subscription.unsubscribe();
