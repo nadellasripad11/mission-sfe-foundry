@@ -575,6 +575,30 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
   .user-email { font-size: .7rem; color: var(--faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 }
 
+.sidebar-user-profile {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px;
+  background: rgba(242,101,34,.06); border-radius: 11px; border: 1px solid var(--line);
+}
+.sidebar-user-main {
+  display: flex; align-items: center; gap: 10px; flex: 1; cursor: pointer; padding: 4px 0;
+  transition: transform .18s;
+}
+.sidebar-user-main:hover { transform: translateY(-1px); }
+.sidebar-user-actions {
+  display: flex; gap: 4px;
+}
+.sidebar-action-btn {
+  width: 32px; height: 32px; border-radius: 8px; border: none; background: transparent;
+  color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: color .18s, background .18s;
+}
+.sidebar-action-btn:hover {
+  color: var(--ink); background: var(--white);
+}
+.sidebar-action-btn.danger:hover {
+  color: #E74C3C; background: #FFEBEE;
+}
+
 .app-main {
   flex: 1; margin-left: 220px; padding: 40px 32px 60px;
   max-width: 1200px; width: 100%; background: var(--bg);
