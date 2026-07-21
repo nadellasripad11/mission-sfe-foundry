@@ -19,9 +19,16 @@ export default function HomePage() {
   const { user, ready, openAuth } = useAuth();
 
   useEffect(() => {
-    if (ready && user) router.push('/dashboard');
+    if (ready && user) {
+      router.push('/dashboard');
+    }
   }, [ready, user?.id]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
+
+  // Don't render anything if user is redirecting
+  if (ready && user) {
+    return null;
+  }
 
   return (
     <div className="page">
