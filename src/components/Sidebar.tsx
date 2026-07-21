@@ -19,6 +19,7 @@ export default function Sidebar() {
     { href: '/mission', icon: IconTarget, label: 'Missions' },
     { href: '/shop', icon: IconShoppingCart, label: 'Shop' },
     { href: '/resources', icon: IconCode, label: 'Resources' },
+    { href: '/profile', icon: IconUsers, label: 'My Profile' },
     { href: '/my-projects', icon: IconUsers, label: 'My Projects' },
   ];
 
