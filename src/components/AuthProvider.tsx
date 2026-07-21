@@ -35,20 +35,32 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     const toUser = (su: any): AppUser | null =>
       su ? { id: su.id, email: su.email ?? '', name: su.user_metadata?.name ?? su.user_metadata?.full_name ?? null } : null;
 
-    supabase.auth.getSession().then(({ data }) => {
-      if (mounted) {
-        setUser(toUser(data.session?.user));
-        setReady(true);
+    const initSession = async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (mounted) {
+          if (error) {
+            console.error('Session retrieval error:', error);
+          }
+          setUser(toUser(data?.session?.user));
+          setReady(true);
+        }
+      } catch (err) {
+        console.error('Session initialization error:', err);
+        if (mounted) setReady(true);
       }
-    });
+    };
+
+    initSession();
+
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       if (mounted) {
         const u = toUser(session?.user);
         setUser(u);
-        if (u && _e === 'SIGNED_IN') { setShowModal(false); }
-        else if (u) setShowModal(false);
+        if (u) setShowModal(false);
       }
     });
+
     return () => {
       mounted = false;
       sub.subscription.unsubscribe();
