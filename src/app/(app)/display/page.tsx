@@ -79,7 +79,7 @@ export default function DisplayPage() {
                     {p.buzz && <div className="display-buzz-hint">📖 Builder story inside</div>}
                     <div className="proj-actions">
                       {p.count > 0
-                        ? <span className="proj-rating">Overall {p.overall.toFixed(1)}/9 <span style={{ color: 'var(--faint)' }}>({p.count})</span></span>
+                        ? <span className="proj-rating">Overall {p.overall.toFixed(1)}/5 <span style={{ color: 'var(--faint)' }}>({p.count})</span></span>
                         : <span style={{ color: 'var(--faint)', fontSize: '.82rem' }}>No ratings yet</span>
                       }
                     </div>

@@ -10,6 +10,7 @@ import {
   type Project, type CategoryRating,
 } from '../../../../lib/projects';
 import { IconArrow } from '../../../../components/icons';
+import StarRating from '../../../../components/StarRating';
 
 const BUZZ_QUESTIONS_KEYS = ['inspiration', 'how_built', 'biggest_challenge', 'proud_of'];
 
@@ -27,31 +28,13 @@ const BUZZ_LABELS: Record<string, string> = {
   proud_of: '🏆 Most proud of',
 };
 
-function ScoreBar({ value, max = 9 }: { value: number; max?: number }) {
+function ScoreBar({ value, max = 5 }: { value: number; max?: number }) {
   return (
     <div className="score-bar-wrap">
       <div className="score-bar-track">
         <div className="score-bar-fill" style={{ width: `${(value / max) * 100}%` }} />
       </div>
       <span className="score-bar-val">{value > 0 ? value.toFixed(1) : '—'}<span className="score-bar-max">/{max}</span></span>
-    </div>
-  );
-}
-
-function NineSlider({ value, onChange }: { value: number; onChange: (n: number) => void }) {
-  return (
-    <div className="nine-slider">
-      {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => (
-        <button
-          key={n}
-          type="button"
-          className={`nine-btn${value === n ? ' on' : ''}`}
-          onClick={() => onChange(n)}
-          aria-label={`${n}/9`}
-        >
-          {n}
-        </button>
-      ))}
     </div>
   );
 }
@@ -204,7 +187,7 @@ export default function ProjectPage() {
                       <div className="proj-feedback-scores">
                         {CATEGORIES.map(c => (
                           <span key={c.key} className="proj-feedback-score">
-                            {c.label}: <strong>{r[c.key]}/9</strong>
+                            {c.label}: <strong>{r[c.key]}/5</strong>
                           </span>
                         ))}
                       </div>
@@ -232,7 +215,7 @@ export default function ProjectPage() {
                     </div>
                   ))}
                   <div className="proj-score-overall">
-                    Overall <strong>{((avg.originality + avg.technicality + avg.usability + avg.impact) / 4).toFixed(1)}</strong>/9
+                    Overall <strong>{((avg.originality + avg.technicality + avg.usability + avg.impact) / 4).toFixed(1)}</strong>/5
                   </div>
                 </div>
               ) : (
@@ -254,10 +237,10 @@ export default function ProjectPage() {
                     <div key={c.key} className="rate-cat-row">
                       <div className="rate-cat-head">
                         <span className="rate-cat-label">{c.label}</span>
-                        <span className="rate-cat-score">{rating[c.key] > 0 ? `${rating[c.key]}/9` : '—/9'}</span>
+                        <span className="rate-cat-score">{rating[c.key] > 0 ? `${rating[c.key]}/5` : '—/5'}</span>
                       </div>
                       <div className="rate-cat-desc">{c.desc}</div>
-                      <NineSlider value={rating[c.key]} onChange={v => setRating(r => ({ ...r, [c.key]: v }))} />
+                      <StarRating value={rating[c.key]} onChange={v => setRating(r => ({ ...r, [c.key]: v }))} size={28} />
                     </div>
                   ))}
 

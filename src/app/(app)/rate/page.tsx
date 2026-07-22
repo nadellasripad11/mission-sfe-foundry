@@ -9,6 +9,7 @@ import {
   type ProjectWithRating, type CategoryRating,
 } from '../../../lib/projects';
 import { IconArrow } from '../../../components/icons';
+import StarRating from '../../../components/StarRating';
 
 const CATEGORIES = [
   { key: 'originality'  as const, label: 'Originality',  desc: 'How unique or creative is the core idea?' },
@@ -16,22 +17,6 @@ const CATEGORIES = [
   { key: 'usability'    as const, label: 'Usability',    desc: 'How easy and intuitive is it to use?' },
   { key: 'impact'       as const, label: 'Impact',       desc: 'How meaningful is the problem it solves?' },
 ];
-
-function NineSlider({ value, onChange, disabled }: { value: number; onChange: (n: number) => void; disabled?: boolean }) {
-  return (
-    <div className="nine-slider">
-      {[1,2,3,4,5,6,7,8,9].map(n => (
-        <button
-          key={n} type="button"
-          className={`nine-btn${value === n ? ' on' : ''}`}
-          onClick={() => !disabled && onChange(n)}
-          disabled={disabled}
-          aria-label={`${n}/9`}
-        >{n}</button>
-      ))}
-    </div>
-  );
-}
 
 function wordCount(s: string) { return s.trim().split(/\s+/).filter(Boolean).length; }
 
@@ -149,7 +134,7 @@ export default function RatePage() {
                     <div className="rate-picker-title">{p.title}</div>
                     <div className="rate-picker-author">by {p.author_name || 'Anonymous'}</div>
                     {p.count > 0
-                      ? <div className="rate-picker-score">{p.overall.toFixed(1)}/9 avg</div>
+                      ? <div className="rate-picker-score">{'★'.repeat(Math.round(p.overall))} {p.overall.toFixed(1)}/5</div>
                       : <div className="rate-picker-unrated">No ratings yet</div>
                     }
                   </div>
@@ -185,9 +170,9 @@ export default function RatePage() {
                       <div key={c.key} className="rate-detail-score-row">
                         <span className="rate-detail-score-label">{c.label}</span>
                         <div className="rate-detail-bar-wrap">
-                          <div className="rate-detail-bar" style={{ width: `${(avg[c.key] / 9) * 100}%` }} />
+                          <div className="rate-detail-bar" style={{ width: `${(avg[c.key] / 5) * 100}%` }} />
                         </div>
-                        <span className="rate-detail-score-val">{avg[c.key].toFixed(1)}</span>
+                        <span className="rate-detail-score-val">{avg[c.key].toFixed(1)}/5</span>
                       </div>
                     ))}
                   </div>
@@ -217,10 +202,10 @@ export default function RatePage() {
                       <div key={c.key} className="rate-cat-row">
                         <div className="rate-cat-head">
                           <span className="rate-cat-label">{c.label}</span>
-                          <span className="rate-cat-score">{score[c.key] > 0 ? `${score[c.key]}/9` : '—/9'}</span>
+                          <span className="rate-cat-score">{score[c.key] > 0 ? `${score[c.key]}/5` : '—/5'}</span>
                         </div>
                         <div className="rate-cat-desc">{c.desc}</div>
-                        <NineSlider value={score[c.key]} onChange={v => setScore(s => ({ ...s, [c.key]: v }))} />
+                        <StarRating value={score[c.key]} onChange={v => setScore(s => ({ ...s, [c.key]: v }))} size={28} />
                       </div>
                     ))}
 

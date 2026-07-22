@@ -131,7 +131,7 @@ export default function DashboardPage() {
                         {(['originality', 'technicality', 'usability', 'impact'] as const).map(k => (
                           <div key={k} className="rate-card-score">
                             <span className="rate-card-score-label">{k.slice(0, 4).toUpperCase()}</span>
-                            <span className="rate-card-score-val">{p[k].toFixed(1)}/9</span>
+                            <span className="rate-card-score-val">{p[k].toFixed(1)}/5</span>
                           </div>
                         ))}
                       </div>
