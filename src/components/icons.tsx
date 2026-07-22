@@ -68,24 +68,24 @@ export function LogoHero({ size = 320, rings = false }: { size?: number; rings?:
   );
 }
 
-// Thin flat slabs with a soft realistic shadow — used only on the home hero
+// Bold 3D extruded slabs — home hero visual
 export function LogoHero3D({ size = 400 }: { size?: number }) {
   const bars = [
-    { x: 96, top: '#20202A', edge: '#0E0E16', hi: '#3A3A48' },
-    { x: 176, top: '#2684C6', edge: '#1A5C8E', hi: '#4AA0DA' },
-    { x: 256, top: '#EB5F27', edge: '#B4451A', hi: '#F5824C' },
+    { x: 10,  top: '#20202A', edge: '#0B0B12', hi: '#3C3C4E' },
+    { x: 118, top: '#2684C6', edge: '#165E90', hi: '#4AAEDD' },
+    { x: 226, top: '#EB5F27', edge: '#A8401A', hi: '#F57D45' },
   ];
-  const W = 36, TOP = 140, BOT = 312, SLANT = 78, DX = 7, DY = 7; // small offset = thin slab
-  const top = (x: number) => `${x},${BOT} ${x + W},${BOT} ${x + W + SLANT},${TOP} ${x + SLANT},${TOP}`;
-  const depth = (x: number) => // thin right + bottom edge showing the slab thickness
-    `${x},${BOT} ${x + W},${BOT} ${x + W + SLANT},${TOP} ${x + W + SLANT + DX},${TOP + DY} ${x + W + DX},${BOT + DY} ${x + DX},${BOT + DY}`;
-  const hi = (x: number) => // slim top-left highlight bevel
-    `${x + SLANT},${TOP} ${x + SLANT + 6},${TOP} ${x + 6},${BOT} ${x},${BOT}`;
+  const W = 70, TOP = 36, BOT = 388, SLANT = 86, DX = 26, DY = 22;
+  const top   = (x: number) => `${x},${BOT} ${x+W},${BOT} ${x+W+SLANT},${TOP} ${x+SLANT},${TOP}`;
+  const depth = (x: number) =>
+    `${x},${BOT} ${x+W},${BOT} ${x+W+SLANT},${TOP} ${x+W+SLANT+DX},${TOP+DY} ${x+W+DX},${BOT+DY} ${x+DX},${BOT+DY}`;
+  const hi    = (x: number) =>
+    `${x+SLANT},${TOP} ${x+SLANT+8},${TOP} ${x+8},${BOT} ${x},${BOT}`;
   return (
-    <svg width={size} height={size} viewBox="0 0 400 400" fill="none" aria-hidden="true" style={{ display: 'block', maxWidth: '100%' }}>
+    <svg width={size} height={Math.round(size * 0.98)} viewBox="0 0 430 430" fill="none" aria-hidden="true" style={{ display: 'block', maxWidth: '100%' }}>
       <defs>
         <filter id="lh3d-shadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feDropShadow dx="-6" dy="16" stdDeviation="15" floodColor="#1A1A1A" floodOpacity="0.22" />
+          <feDropShadow dx="-4" dy="20" stdDeviation="18" floodColor="#1A1A1A" floodOpacity="0.28" />
         </filter>
       </defs>
       <g filter="url(#lh3d-shadow)">
@@ -93,7 +93,7 @@ export function LogoHero3D({ size = 400 }: { size?: number }) {
           <g key={b.x}>
             <polygon points={depth(b.x)} fill={b.edge} />
             <polygon points={top(b.x)} fill={b.top} />
-            <polygon points={hi(b.x)} fill={b.hi} opacity="0.55" />
+            <polygon points={hi(b.x)} fill={b.hi} opacity="0.45" />
           </g>
         ))}
       </g>

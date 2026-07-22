@@ -7,7 +7,7 @@ import { useAuth } from '../../components/AuthProvider';
 import Footer from '../../components/Footer';
 import {
   LogoHero3D, IconBulb, IconCode, IconTrophy, IconUsers, IconArrow,
-  IconLayers, IconInfinity, IconClock,
+  IconLayers, IconInfinity,
 } from '../../components/icons';
 
 const FEATURES = [
@@ -103,9 +103,9 @@ export default function HomePage() {
           {EVENTS.map((e) => (
             <div key={e.title} className="ev-card">
               <div className="ev-card-top">
-                <div className="ev-date">
-                  <span className="ev-mon">{e.mon}</span>
-                  <span className="ev-day">{e.day}</span>
+                <div className="ev-home-date">
+                  <span className="ev-home-mon">{e.mon}</span>
+                  <span className="ev-home-day">{e.day}</span>
                 </div>
                 <div>
                   <div className="ev-card-t">{e.title}</div>
@@ -113,7 +113,7 @@ export default function HomePage() {
                 </div>
               </div>
               <div className="ev-card-meta">
-                <span><IconClock size={12} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />{e.time}</span>
+                <span>{e.time}</span>
                 <span>{e.place}</span>
               </div>
             </div>
@@ -126,7 +126,7 @@ export default function HomePage() {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'start' }}>
           {/* Left */}
           <div>
-            <h2 className="band-title" style={{ marginBottom: 16 }}>What is SFE Foundry?</h2>
+            <h2 className="band-title" style={{ marginBottom: 16, textTransform: 'uppercase' }}>What is SFE Foundry?</h2>
             <p className="band-text" style={{ marginTop: 0 }}>
               We&apos;re a student-run organization that brings together entrepreneurs, builders, and problem solvers.
               Through competitions, workshops, and projects, we create a space where students can build the future—together.
