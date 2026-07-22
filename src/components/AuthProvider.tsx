@@ -12,6 +12,7 @@ interface AuthCtx {
   ready: boolean;
   openAuth: (mode?: AuthMode) => void;
   signOut: () => Promise<void>;
+  configError?: string;
 }
 
 const Ctx = createContext<AuthCtx>({ user: null, ready: false, openAuth: () => {}, signOut: async () => {} });
@@ -20,6 +21,7 @@ export const useAuth = () => useContext(Ctx);
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null);
   const [ready, setReady] = useState(false);
+  const [configError, setConfigError] = useState<string>('');
 
   const [showModal, setShowModal] = useState(false);
   const [authMode, setAuthMode] = useState<AuthMode>('signup');
@@ -31,21 +33,67 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const [msgOk, setMsgOk] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
+    let lastUserId: string | null = null;
+
+    // Check if Supabase is configured
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const isMissingConfig =
+      !supabaseUrl || !supabaseKey ||
+      supabaseUrl === 'https://placeholder.supabase.co' ||
+      supabaseKey === 'placeholder';
+
+    if (isMissingConfig) {
+      setConfigError(
+        'Supabase is not configured. Create a .env.local file with ' +
+        'NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY'
+      );
+      setReady(true);
+      return;
+    }
+
     const toUser = (su: any): AppUser | null =>
       su ? { id: su.id, email: su.email ?? '', name: su.user_metadata?.name ?? su.user_metadata?.full_name ?? null } : null;
 
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(toUser(data.session?.user));
-      setReady(true);
-    });
+    const initSession = async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (mounted) {
+          if (error) {
+            console.error('Session retrieval error:', error);
+          }
+          const u = toUser(data?.session?.user);
+          setUser(u);
+          lastUserId = u?.id ?? null;
+          setReady(true);
+        }
+      } catch (err) {
+        console.error('Session initialization error:', err);
+        if (mounted) setReady(true);
+      }
+    };
+
+    initSession();
+
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      const u = toUser(session?.user);
-      const wasNull = !user;
-      setUser(u);
-      if (u && wasNull) { setShowModal(false); window.location.href = '/dashboard'; }
-      else if (u) setShowModal(false);
+      if (mounted) {
+        const u = toUser(session?.user);
+        const newUserId = u?.id ?? null;
+
+        // Only update state if user ID actually changed (prevents redundant updates)
+        if (newUserId !== lastUserId) {
+          lastUserId = newUserId;
+          setUser(u);
+          if (u) setShowModal(false);
+        }
+      }
     });
-    return () => sub.subscription.unsubscribe();
+
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
   const openAuth = (mode: AuthMode = 'signup') => { setAuthMode(mode); setMessage(''); setShowModal(true); };
@@ -93,7 +141,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   };
 
   return (
-    <Ctx.Provider value={{ user, ready, openAuth, signOut }}>
+    <Ctx.Provider value={{ user, ready, openAuth, signOut, configError }}>
       {children}
 
       {showModal && (

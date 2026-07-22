@@ -53,11 +53,17 @@ export default function Shop() {
         <div className="shop-grid">
           {shown.map((it) => (
             <a key={it.name} href={requestMailto(it.name)} className="shop-card">
-              <div className="shop-card-img" aria-hidden="true"><div className="shop-card-img-inner" /></div>
+              <div className="shop-card-img">
+                <img src={it.image} alt={it.name} className="shop-card-photo" />
+              </div>
               <div className="shop-card-body">
                 <div className="shop-card-cat">{it.category}</div>
                 <div className="shop-card-name">{it.name}</div>
-                {it.tag && <div className="shop-card-tag">{it.tag}</div>}
+                {it.description && <div className="shop-card-desc">{it.description}</div>}
+                <div className="shop-card-meta">
+                  {it.price && <span className="shop-card-price">{it.price} pts</span>}
+                  {it.tag && <span className="shop-card-tag">{it.tag}</span>}
+                </div>
                 <div className="shop-card-cta">Request <IconArrow size={13} /></div>
               </div>
             </a>

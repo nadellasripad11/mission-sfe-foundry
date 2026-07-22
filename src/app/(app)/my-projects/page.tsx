@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../../components/AuthProvider';
-import Footer from '../../../components/Footer';
 import { createProject, deleteProject, getMyProjects, type Project } from '../../../lib/projects';
 import { uploadImage } from '../../../lib/uploadImage';
+import { LogoHero } from '../../../components/icons';
 import { IconArrow, IconClose } from '../../../components/icons';
 
 export default function MyProjectsPage() {
@@ -13,6 +13,8 @@ export default function MyProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [tab, setTab] = useState<'projects' | 'feed'>('projects');
+  const [myProjectsCount, setMyProjectsCount] = useState(0);
 
   const [title, setTitle] = useState('Untitled');
   const [description, setDescription] = useState('');
@@ -26,12 +28,22 @@ export default function MyProjectsPage() {
   const [pending, setPending] = useState<File[]>([]);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
+  const [loadError, setLoadError] = useState('');
 
-  const load = () => {
+  const load = async () => {
     if (!user) { setLoading(false); return; }
-    getMyProjects(user.id).then((p) => { setProjects(p); setLoading(false); }).catch(() => setLoading(false));
+    try {
+      setLoadError('');
+      const p = await getMyProjects(user.id);
+      setProjects(p);
+    } catch (error) {
+      console.error('Projects load error:', error);
+      setLoadError('Failed to load projects');
+    } finally {
+      setLoading(false);
+    }
   };
-  useEffect(() => { load(); }, [user]);
+  useEffect(() => { load(); }, [user?.id]);
 
   const addTag = () => {
     const t = tagInput.trim().replace(/^#/, '').toLowerCase();
@@ -60,7 +72,7 @@ export default function MyProjectsPage() {
         screenshots: urls,
         tags,
       });
-      setTitle(''); setDescription(''); setUrl(''); setTags([]); setPending([]);
+      setTitle('Untitled'); setDescription(''); setUrl(''); setTags([]); setPending([]);
       setShowForm(false);
       load();
     } catch (e: unknown) {
@@ -77,77 +89,105 @@ export default function MyProjectsPage() {
 
   if (ready && !user) {
     return (
-      <div className="page">
-        <section className="page-hero">
-          <h1 className="ph-title">MY PROJECTS</h1>
-          <p className="ph-lede">Sign in to see and manage the projects you&apos;ve shipped.</p>
-        </section>
-        <section className="band">
-          <div className="empty">
-            <button className="btn-primary" onClick={() => openAuth('signin')}>Sign in <IconArrow size={17} /></button>
-          </div>
-        </section>
-        <Footer />
+      <div className="my-projects-page">
+        <div className="empty">
+          <p style={{ color: 'var(--muted)', marginBottom: 16 }}>Sign in to manage your projects.</p>
+          <button className="btn-primary" onClick={() => openAuth('signin')}>Sign In <IconArrow size={17} /></button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="page">
-      <section className="page-hero">
-        <h1 className="ph-title">MY PROJECTS</h1>
-        <p className="ph-lede">Ship your work here and it lands on the public Display board for others to rate.</p>
-        <div style={{ marginTop: 22 }}>
-          <button className="btn-primary" onClick={() => setShowForm((s) => !s)}>
-            {showForm ? 'Close form' : 'Add a Project'} <IconArrow size={17} />
-          </button>
+    <div className="my-projects-page">
+      <div>
+        {/* Profile Card - Stardance Style */}
+        <div className="profile-card stardance">
+          {/* Large Banner */}
+          <div className="profile-banner large">
+            <div className="profile-banner-content">
+              <LogoHero size={280} />
+            </div>
+          </div>
+
+          {/* Profile Info Overlay */}
+          <div className="profile-overlay">
+            <div className="profile-info-overlay">
+              <div className="profile-avatar">{(user?.name?.trim()?.[0] || user?.email[0] || '?').toUpperCase()}</div>
+
+              <div className="profile-meta">
+                <h1 className="profile-username">@{user?.name?.toLowerCase().replace(/\s+/g, '') || user?.email.split('@')[0]}</h1>
+                <p className="profile-joined">Joined {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                <p className="profile-bio">Building cool things</p>
+              </div>
+
+              <button className="btn-primary" onClick={() => setShowForm(!showForm)}>
+                {showForm ? 'Close' : 'Ship Project'} <IconArrow size={16} />
+              </button>
+            </div>
+
+            {/* Stats Row - Horizontal */}
+            <div className="profile-stats-inline">
+              <div className="stat-inline">
+                <div className="stat-num">{projects.length}</div>
+                <div className="stat-label">Projects</div>
+              </div>
+              <div className="stat-inline">
+                <div className="stat-num">0</div>
+                <div className="stat-label">Devlogs</div>
+              </div>
+              <div className="stat-inline">
+                <div className="stat-num">0</div>
+                <div className="stat-label">Ships</div>
+              </div>
+              <div className="stat-inline">
+                <div className="stat-num">0</div>
+                <div className="stat-label">Votes</div>
+              </div>
+            </div>
+          </div>
         </div>
-      </section>
 
+      {/* Form */}
       {showForm && (
-        <section className="band" style={{ borderTop: 'none', paddingTop: 0 }}>
-          <form className="contact-form" onSubmit={submit} style={{ maxWidth: 800 }}>
-            {/* Title */}
-            <label className="label" htmlFor="p-title">Project Title *</label>
-            <input id="p-title" className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Untitled" required />
+        <div className="project-form-section">
+          <form className="project-form" onSubmit={submit}>
+            <h2>Ship Your Project</h2>
 
-            {/* Description */}
-            <label className="label" htmlFor="p-desc">What does it do? *</label>
-            <textarea id="p-desc" className="input" value={description} onChange={(e) => setDescription(e.target.value)} rows={4} required placeholder="Describe your project…" style={{ resize: 'vertical', minHeight: 100 }} />
+            <label className="form-label">Project Title *</label>
+            <input className="form-input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Untitled" required />
 
-            {/* Project Type */}
-            <label className="label">Project Type *</label>
-            <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
+            <label className="form-label">Description *</label>
+            <textarea className="form-input" value={description} onChange={(e) => setDescription(e.target.value)} rows={4} placeholder="What does it do?" required style={{ resize: 'vertical', minHeight: 100 }} />
+
+            <label className="form-label">Project Type *</label>
+            <div className="type-selector">
               {(['software', 'hardware'] as const).map((type) => (
                 <button
                   key={type}
                   type="button"
-                  className={`btn ${projectType === type ? 'btn-solid' : 'btn-ghost'}`}
+                  className={`type-btn${projectType === type ? ' active' : ''}`}
                   onClick={() => setProjectType(type)}
-                  style={{ textTransform: 'capitalize', padding: '10px 20px' }}
                 >
-                  {type}
+                  {type === 'software' ? '💻 Software' : '⚙️ Hardware'}
                 </button>
               ))}
             </div>
 
-            {/* Links */}
-            <label className="label" htmlFor="p-demo">Demo URL</label>
-            <input id="p-demo" className="input" type="url" value={demoUrl} onChange={(e) => setDemoUrl(e.target.value)} placeholder="https://…" />
+            <label className="form-label">Demo URL</label>
+            <input className="form-input" type="url" value={demoUrl} onChange={(e) => setDemoUrl(e.target.value)} placeholder="https://…" />
 
-            <label className="label" htmlFor="p-github">GitHub / Source URL</label>
-            <input id="p-github" className="input" type="url" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} placeholder="https://github.com/…" />
+            <label className="form-label">GitHub URL</label>
+            <input className="form-input" type="url" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} placeholder="https://github.com/…" />
 
-            {/* AI Usage */}
-            <label className="label" htmlFor="p-ai">AI Usage Declaration</label>
-            <textarea id="p-ai" className="input" value={aiUsage} onChange={(e) => setAiUsage(e.target.value)} rows={3} placeholder="How did you use AI? Write 'None' if you didn't." style={{ resize: 'vertical', minHeight: 80 }} />
+            <label className="form-label">AI Usage Declaration</label>
+            <textarea className="form-input" value={aiUsage} onChange={(e) => setAiUsage(e.target.value)} rows={3} placeholder="How did you use AI?" style={{ resize: 'vertical', minHeight: 80 }} />
 
-            {/* Screenshots */}
-            <label className="label">Screenshots * <span style={{ color: 'var(--faint)', fontWeight: 400 }}>(PNG/JPG/WebP, up to 6 MB each)</span></label>
+            <label className="form-label">Screenshots * <span style={{ color: 'var(--faint)', fontWeight: 400 }}>(PNG/JPG/WebP)</span></label>
             <input
               type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple
               onChange={(e) => setPending([...pending, ...Array.from(e.target.files ?? [])])}
-              className="input" style={{ padding: 10 }}
+              className="form-input" style={{ padding: 10 }}
             />
             {pending.length > 0 && (
               <div className="tag-row" style={{ marginTop: 4 }}>
@@ -160,10 +200,9 @@ export default function MyProjectsPage() {
               </div>
             )}
 
-            {/* Tags */}
-            <label className="label" htmlFor="p-tag" style={{ marginTop: 12 }}>Tags * <span style={{ color: 'var(--faint)', fontWeight: 400 }}>(press Enter to add)</span></label>
+            <label className="form-label">Tags * <span style={{ color: 'var(--faint)', fontWeight: 400 }}>(press Enter)</span></label>
             <input
-              id="p-tag" className="input" value={tagInput}
+              className="form-input" value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
               placeholder="ai, web, hackathon…"
@@ -179,28 +218,59 @@ export default function MyProjectsPage() {
             )}
 
             {err && <div className="msg-err">{err}</div>}
-            <button className="btn-primary" type="submit" disabled={saving} style={{ marginTop: 8 }}>
-              {saving ? 'Publishing…' : <>Ship Project <IconArrow size={18} /></>}
+            <button className="btn-primary" type="submit" disabled={saving} style={{ marginTop: 16, width: '100%' }}>
+              {saving ? 'Publishing…' : 'Ship Project →'}
             </button>
           </form>
-        </section>
+        </div>
       )}
 
-      <section className="band" style={{ borderTop: showForm ? '1px solid var(--line)' : 'none', paddingTop: showForm ? 40 : 0 }}>
-        {loading ? (
-          <p style={{ color: 'var(--faint)' }}>Loading…</p>
-        ) : projects.length === 0 ? (
-          <div className="empty">
-            <p style={{ color: 'var(--muted)' }}>You haven&apos;t shipped anything yet. Click &ldquo;Add a Project&rdquo; above to ship your first.</p>
-          </div>
-        ) : (
-          <div className="proj-grid">
-            {projects.map((p) => <ProjectCard key={p.id} p={p} onDelete={() => remove(p.id)} />)}
-          </div>
-        )}
-      </section>
+        {/* Tabs - Feed and Projects */}
+        <div className="project-tabs">
+          <button className={`project-tab${tab === 'feed' ? ' active' : ''}`} onClick={() => setTab('feed')}>
+            Feed
+          </button>
+          <button className={`project-tab${tab === 'projects' ? ' active' : ''}`} onClick={() => setTab('projects')}>
+            Projects ({projects.length})
+          </button>
+        </div>
 
-      <Footer />
+        {/* Projects/Feed Section */}
+        <div className="projects-section">
+          {tab === 'projects' && (
+            <>
+              {loading ? (
+                <p style={{ color: 'var(--faint)', textAlign: 'center', padding: '40px' }}>Loading…</p>
+              ) : projects.length === 0 ? (
+                <div className="empty">
+                  <p style={{ color: 'var(--muted)', marginBottom: 16 }}>No projects yet. Ship your first!</p>
+                </div>
+              ) : (
+                <div className="proj-grid">
+                  {projects.map((p) => <ProjectCard key={p.id} p={p} onDelete={() => remove(p.id)} />)}
+                </div>
+              )}
+            </>
+          )}
+          {tab === 'feed' && (
+            <div className="empty">
+              <p style={{ color: 'var(--muted)', marginBottom: 16 }}>Feed coming soon</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Achievements Section */}
+      <div className="profile-achievements">
+        <h3 className="achievements-title">Achievements</h3>
+        <div className="achievements-progress">
+          <div className="achievements-count">{projects.length > 0 ? '1' : '0'} / 11 earned</div>
+          <div className="progress-bar">
+            <div className="progress-fill" style={{ width: `${(Math.min(projects.length, 11) / 11) * 100}%` }} />
+          </div>
+        </div>
+        <Link href="/achievements" className="achievements-link">See all achievements →</Link>
+      </div>
     </div>
   );
 }
@@ -215,11 +285,11 @@ function ProjectCard({ p, onDelete }: { p: Project; onDelete?: () => void }) {
         <div className="proj-title">{p.title}</div>
         <p className="proj-desc">{p.description}</p>
         {p.tags.length > 0 && (
-          <div className="tag-row" style={{ marginTop: 4 }}>
+          <div className="tag-row" style={{ marginTop: 8 }}>
             {p.tags.map((t) => <span key={t} className="tag mini">#{t}</span>)}
           </div>
         )}
-        <div className="proj-actions">
+        <div className="proj-actions" style={{ marginTop: 12 }}>
           <a href={p.url} target="_blank" rel="noopener noreferrer" className="btn-ghost btn-sm">Open</a>
           {onDelete && <button className="btn-ghost btn-sm danger" onClick={onDelete}>Delete</button>}
         </div>
