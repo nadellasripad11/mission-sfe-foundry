@@ -79,9 +79,8 @@ export default function RatePage() {
       const [r, mine] = await Promise.all([getProjectRatings(selected.id), getMyRating(selected.id, user.id)]);
       setRatings(r); setMyRating(mine); setRateDone(true);
     } catch (err: unknown) {
-      console.error('submitRating error:', err);
-      const msg = err instanceof Error ? err.message : JSON.stringify(err);
-      setRateErr(`Error: ${msg}`);
+      const msg = err instanceof Error ? err.message : (err as { message?: string })?.message ?? JSON.stringify(err);
+      setRateErr(msg || 'Something went wrong. Try again.');
     }
     finally { setSubmitting(false); }
   };

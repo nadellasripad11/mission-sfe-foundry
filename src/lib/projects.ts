@@ -130,10 +130,33 @@ export async function submitRating(input: {
   originality: number; technicality: number; usability: number; impact: number;
   feedback: string;
 }) {
-  const { error } = await supabase
+  // Check if rating already exists for this user+project
+  const { data: existing } = await supabase
     .from('ratings')
-    .upsert(input, { onConflict: 'project_id,user_id' });
-  if (error) throw error;
+    .select('id')
+    .eq('project_id', input.project_id)
+    .eq('user_id', input.user_id)
+    .maybeSingle();
+
+  if (existing) {
+    const { error } = await supabase
+      .from('ratings')
+      .update({
+        originality: input.originality,
+        technicality: input.technicality,
+        usability: input.usability,
+        impact: input.impact,
+        feedback: input.feedback,
+      })
+      .eq('project_id', input.project_id)
+      .eq('user_id', input.user_id);
+    if (error) throw error;
+  } else {
+    const { error } = await supabase
+      .from('ratings')
+      .insert(input);
+    if (error) throw error;
+  }
 }
 
 export async function getMyRating(projectId: string, userId: string): Promise<CategoryRating | null> {
