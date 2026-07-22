@@ -9,7 +9,12 @@ import { uploadImage } from '../../../lib/uploadImage';
 import { IconArrow, IconClose } from '../../../components/icons';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
+const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5 MB
+
 async function uploadProfileFile(file: File, userId: string, kind: 'avatar' | 'banner') {
+  if (!ALLOWED_IMAGE_TYPES.has(file.type)) throw new Error('Only JPEG, PNG, WebP, or GIF images are allowed.');
+  if (file.size > MAX_UPLOAD_BYTES) throw new Error('Image must be 5 MB or smaller.');
   const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
   const path = `${userId}/${kind}-${Date.now()}.${ext}`;
   const { error } = await supabase.storage.from('projects').upload(path, file, { contentType: file.type, upsert: true });
@@ -334,7 +339,7 @@ export default function MyProjectsPage() {
             <div className="empty"><p style={{ color: 'var(--muted)' }}>No projects yet. Ship your first!</p></div>
           ) : (
             <div className="proj-grid">
-              {projects.map(p => <ProjectCard key={p.id} p={p} onDelete={async () => { await deleteProject(p.id); setProjects(projects.filter(x => x.id !== p.id)); }} />)}
+              {projects.map(p => <ProjectCard key={p.id} p={p} onDelete={async () => { if (!user) return; await deleteProject(p.id, user.id); setProjects(projects.filter(x => x.id !== p.id)); }} />)}
             </div>
           )
         )}
@@ -367,7 +372,9 @@ function ProjectCard({ p, onDelete }: { p: Project; onDelete?: () => void }) {
           </div>
         )}
         <div className="proj-actions" style={{ marginTop: 12 }}>
-          <a href={p.url} target="_blank" rel="noopener noreferrer" className="btn-ghost btn-sm">Open</a>
+          {/^https?:\/\//.test(p.url) && (
+            <a href={p.url} target="_blank" rel="noopener noreferrer" className="btn-ghost btn-sm">Open</a>
+          )}
           {onDelete && <button className="btn-ghost btn-sm danger" onClick={onDelete}>Delete</button>}
         </div>
       </div>

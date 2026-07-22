@@ -113,9 +113,11 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                <a href={p.url} target="_blank" rel="noopener noreferrer" className="btn-ghost btn-sm">
-                  Open <IconArrow size={14} />
-                </a>
+                {/^https?:\/\//.test(p.url) && (
+                  <a href={p.url} target="_blank" rel="noopener noreferrer" className="btn-ghost btn-sm">
+                    Open <IconArrow size={14} />
+                  </a>
+                )}
               </div>
             </article>
           ))}

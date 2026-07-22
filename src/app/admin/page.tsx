@@ -1,16 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { createClient } from '@supabase/supabase-js';
-
-const PASSCODE = 'onjgfew#432asm3e@erfj342opi';
-
-function supabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-}
 
 interface Signup { id: number; email: string; name: string; reason: string | null; created_at: string; }
 interface PageView { id: number; page: string; session_id: string | null; referrer: string | null; created_at: string; }
@@ -28,7 +18,6 @@ interface AdminData {
   fetchedAt: Date;
 }
 
-// ── Stat card ─────────────────────────────────────────────────────────────────
 function StatCard({ label, value, sub, color }: { label: string; value: string | number; sub?: string; color: string }) {
   return (
     <div className="adm-stat">
@@ -44,15 +33,28 @@ function LoginScreen({ onAuth }: { onAuth: () => void }) {
   const [code, setCode] = useState('');
   const [err, setErr] = useState('');
   const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (code === PASSCODE) {
-      sessionStorage.setItem('adm-auth', '1');
-      onAuth();
-    } else {
-      setErr('Incorrect passcode.');
-      setCode('');
+    setLoading(true); setErr('');
+    try {
+      const res = await fetch('/api/admin/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+      if (res.ok) {
+        onAuth();
+      } else {
+        const { error } = await res.json();
+        setErr(error || 'Incorrect passcode.');
+        setCode('');
+      }
+    } catch {
+      setErr('Connection error. Try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -77,6 +79,7 @@ function LoginScreen({ onAuth }: { onAuth: () => void }) {
               value={code}
               onChange={(e) => { setCode(e.target.value); setErr(''); }}
               autoFocus
+              disabled={loading}
               style={{ fontFamily: 'var(--mono)', letterSpacing: '0.05em', paddingRight: 44 }}
             />
             <button
@@ -92,8 +95,8 @@ function LoginScreen({ onAuth }: { onAuth: () => void }) {
             </button>
           </div>
           {err && <div className="msg-err" style={{ marginBottom: 0 }}>{err}</div>}
-          <button type="submit" className="btn btn-solid btn-block" style={{ marginTop: 12, padding: 13 }}>
-            Unlock Panel
+          <button type="submit" className="btn btn-solid btn-block" style={{ marginTop: 12, padding: 13 }} disabled={loading}>
+            {loading ? 'Verifying…' : 'Unlock Panel'}
           </button>
         </form>
       </div>
@@ -102,7 +105,7 @@ function LoginScreen({ onAuth }: { onAuth: () => void }) {
 }
 
 // ── Main dashboard ─────────────────────────────────────────────────────────────
-function Dashboard() {
+function Dashboard({ onSignOut }: { onSignOut: () => void }) {
   const [data, setData] = useState<AdminData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -113,72 +116,74 @@ function Dashboard() {
   const fetchData = useCallback(async () => {
     setLoading(true); setError('');
     try {
-      const db = supabase();
-      const [signupsRes, viewsRes, eventsRes] = await Promise.all([
-        db.from('signups').select('*').order('created_at', { ascending: false }),
-        db.from('page_views').select('*').order('created_at', { ascending: false }).limit(500),
-        db.from('analytics_events').select('*').order('created_at', { ascending: false }).limit(200),
-      ]);
-
-      const signups: Signup[] = signupsRes.data || [];
-      const pageViews: PageView[] = viewsRes.data || [];
-      const events: AnalyticsEvent[] = eventsRes.data || [];
+      const res = await fetch('/api/admin/data');
+      if (res.status === 401) { onSignOut(); return; }
+      if (!res.ok) throw new Error('Failed to fetch');
+      const { signups, pageViews, events } = await res.json();
 
       const now = Date.now();
       const day = 86400000;
       const week = 7 * day;
 
-      const todaySignups = signups.filter(s => now - new Date(s.created_at).getTime() < day).length;
-      const weekSignups = signups.filter(s => now - new Date(s.created_at).getTime() < week).length;
-      const todayViews = pageViews.filter(v => now - new Date(v.created_at).getTime() < day).length;
-      const uniqueSessions = new Set(pageViews.map(v => v.session_id).filter(Boolean)).size;
+      const todaySignups = signups.filter((s: Signup) => now - new Date(s.created_at).getTime() < day).length;
+      const weekSignups = signups.filter((s: Signup) => now - new Date(s.created_at).getTime() < week).length;
+      const todayViews = pageViews.filter((v: PageView) => now - new Date(v.created_at).getTime() < day).length;
+      const uniqueSessions = new Set(pageViews.map((v: PageView) => v.session_id).filter(Boolean)).size;
 
       const pageCounts: Record<string, number> = {};
-      for (const v of pageViews) pageCounts[v.page] = (pageCounts[v.page] || 0) + 1;
+      for (const v of pageViews as PageView[]) pageCounts[v.page] = (pageCounts[v.page] || 0) + 1;
       const topPages = Object.entries(pageCounts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 10)
+        .sort((a, b) => b[1] - a[1]).slice(0, 10)
         .map(([page, count]) => ({ page, count }));
 
       setData({ signups, pageViews, events, topPages, uniqueSessions, todaySignups, weekSignups, todayViews, fetchedAt: new Date() });
-    } catch (e) {
-      setError('Failed to load data. Check Supabase connection.');
-      console.error(e);
+    } catch {
+      setError('Failed to load data. Check connection.');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [onSignOut]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  // Auto-refresh countdown
   useEffect(() => {
     if (!autoRefresh) { setCountdown(30); return; }
     const interval = setInterval(() => {
-      setCountdown(c => {
-        if (c <= 1) { fetchData(); return 30; }
-        return c - 1;
-      });
+      setCountdown(c => { if (c <= 1) { fetchData(); return 30; } return c - 1; });
     }, 1000);
     return () => clearInterval(interval);
   }, [autoRefresh, fetchData]);
 
+  // Sanitize CSV values to prevent formula injection
+  const sanitizeCsv = (val: unknown): string => {
+    const s = String(val ?? '').replace(/"/g, '""');
+    // Strip leading =, +, -, @ which Excel treats as formulas
+    const safe = s.replace(/^[=+\-@\t\r]+/, '');
+    return `"${safe}"`;
+  };
+
   const exportCSV = (rows: Record<string, unknown>[], name: string) => {
     if (!rows.length) return;
     const keys = Object.keys(rows[0]);
-    const csv = [keys, ...rows.map(r => keys.map(k => `"${String(r[k] ?? '').replace(/"/g, '""')}"`))]
-      .map(r => r.join(',')).join('\n');
+    const csv = [
+      keys.map(k => `"${k}"`),
+      ...rows.map(r => keys.map(k => sanitizeCsv(r[k]))),
+    ].map(r => r.join(',')).join('\n');
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
     a.download = `${name}-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
   };
 
+  const signOut = async () => {
+    await fetch('/api/admin/auth', { method: 'DELETE' });
+    onSignOut();
+  };
+
   const fmt = (iso: string) => new Date(iso).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
   return (
     <div className="adm-wrap">
-      {/* Header */}
       <div className="adm-header">
         <div className="adm-header-left">
           <div className="adm-logo-mark">
@@ -210,15 +215,12 @@ function Dashboard() {
             )}
             Refresh
           </button>
-          <button className="adm-btn adm-btn-danger" onClick={() => { sessionStorage.removeItem('adm-auth'); window.location.href = '/'; }}>
-            Sign Out
-          </button>
+          <button className="adm-btn adm-btn-danger" onClick={signOut}>Sign Out</button>
         </div>
       </div>
 
       {error && <div className="adm-error">{error}</div>}
 
-      {/* Tabs */}
       <div className="adm-tabs">
         {(['overview', 'signups', 'pageviews', 'events'] as const).map(t => (
           <button key={t} className={`adm-tab${activeTab === t ? ' on' : ''}`} onClick={() => setActiveTab(t)}>
@@ -230,7 +232,6 @@ function Dashboard() {
         ))}
       </div>
 
-      {/* Overview */}
       {activeTab === 'overview' && data && (
         <div className="adm-content">
           <div className="adm-stats-grid">
@@ -244,9 +245,7 @@ function Dashboard() {
 
           <div className="adm-two-col">
             <div className="adm-card">
-              <div className="adm-card-head">
-                <span className="adm-card-title">Top Pages</span>
-              </div>
+              <div className="adm-card-head"><span className="adm-card-title">Top Pages</span></div>
               <div className="adm-table-wrap">
                 <table className="adm-table">
                   <thead><tr><th>Page</th><th>Views</th><th>Share</th></tr></thead>
@@ -268,9 +267,7 @@ function Dashboard() {
             </div>
 
             <div className="adm-card">
-              <div className="adm-card-head">
-                <span className="adm-card-title">Recent Members</span>
-              </div>
+              <div className="adm-card-head"><span className="adm-card-title">Recent Members</span></div>
               <div className="adm-table-wrap">
                 <table className="adm-table">
                   <thead><tr><th>Name</th><th>Email</th><th>Joined</th></tr></thead>
@@ -290,9 +287,7 @@ function Dashboard() {
 
           {data.events.length > 0 && (
             <div className="adm-card" style={{ marginTop: 20 }}>
-              <div className="adm-card-head">
-                <span className="adm-card-title">Recent Events</span>
-              </div>
+              <div className="adm-card-head"><span className="adm-card-title">Recent Events</span></div>
               <div className="adm-table-wrap">
                 <table className="adm-table">
                   <thead><tr><th>Type</th><th>Page</th><th>Data</th><th>When</th></tr></thead>
@@ -315,7 +310,6 @@ function Dashboard() {
         </div>
       )}
 
-      {/* Signups tab */}
       {activeTab === 'signups' && data && (
         <div className="adm-content">
           <div className="adm-card">
@@ -344,7 +338,6 @@ function Dashboard() {
         </div>
       )}
 
-      {/* Page views tab */}
       {activeTab === 'pageviews' && data && (
         <div className="adm-content">
           <div className="adm-card">
@@ -368,18 +361,12 @@ function Dashboard() {
               </table>
             </div>
             {data.pageViews.length === 0 && (
-              <div className="adm-empty">
-                No page views recorded yet.{' '}
-                <span style={{ color: 'var(--muted)', fontSize: '.85rem' }}>
-                  Make sure the <code>page_views</code> table exists in Supabase with RLS allowing inserts.
-                </span>
-              </div>
+              <div className="adm-empty">No page views recorded yet. Make sure the <code>page_views</code> table exists.</div>
             )}
           </div>
         </div>
       )}
 
-      {/* Events tab */}
       {activeTab === 'events' && data && (
         <div className="adm-content">
           <div className="adm-card">
@@ -404,22 +391,14 @@ function Dashboard() {
                 </tbody>
               </table>
             </div>
-            {data.events.length === 0 && (
-              <div className="adm-empty">
-                No events yet.{' '}
-                <span style={{ color: 'var(--muted)', fontSize: '.85rem' }}>
-                  Make sure the <code>analytics_events</code> table exists in Supabase.
-                </span>
-              </div>
-            )}
+            {data.events.length === 0 && <div className="adm-empty">No events yet.</div>}
           </div>
         </div>
       )}
 
-      {/* SQL setup notice */}
       {data && (data.pageViews.length === 0 || data.events.length === 0) && (
         <div className="adm-sql-notice">
-          <strong>Supabase setup required</strong> — run this SQL in your Supabase dashboard to enable full analytics:
+          <strong>Supabase setup required</strong> — run this SQL in your Supabase dashboard:
           <pre>{`CREATE TABLE IF NOT EXISTS page_views (
   id BIGSERIAL PRIMARY KEY,
   page TEXT NOT NULL,
@@ -428,8 +407,8 @@ function Dashboard() {
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 ALTER TABLE page_views ENABLE ROW LEVEL SECURITY;
+-- Allow anonymous inserts only (no public reads — admin reads server-side)
 CREATE POLICY "anon insert" ON page_views FOR INSERT TO anon WITH CHECK (true);
-CREATE POLICY "anon select" ON page_views FOR SELECT TO anon USING (true);
 
 CREATE TABLE IF NOT EXISTS analytics_events (
   id BIGSERIAL PRIMARY KEY,
@@ -439,8 +418,7 @@ CREATE TABLE IF NOT EXISTS analytics_events (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 ALTER TABLE analytics_events ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "anon insert" ON analytics_events FOR INSERT TO anon WITH CHECK (true);
-CREATE POLICY "anon select" ON analytics_events FOR SELECT TO anon USING (true);`}</pre>
+CREATE POLICY "anon insert" ON analytics_events FOR INSERT TO anon WITH CHECK (true);`}</pre>
         </div>
       )}
     </div>
@@ -453,11 +431,12 @@ export default function AdminPage() {
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    setAuthed(sessionStorage.getItem('adm-auth') === '1');
-    setChecked(true);
+    fetch('/api/admin/data')
+      .then(r => { setAuthed(r.ok); setChecked(true); })
+      .catch(() => setChecked(true));
   }, []);
 
   if (!checked) return null;
   if (!authed) return <LoginScreen onAuth={() => setAuthed(true)} />;
-  return <Dashboard />;
+  return <Dashboard onSignOut={() => { setAuthed(false); }} />;
 }

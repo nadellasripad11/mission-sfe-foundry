@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
+import { rateLimit, getIp } from '../../../lib/rateLimit';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -11,14 +12,25 @@ const g = globalThis as unknown as { __accts?: Map<string, Account> };
 const localStore = g.__accts ?? (g.__accts = new Map<string, Account>());
 
 export async function POST(req: NextRequest) {
+  // 10 signup/signin attempts per IP per 15 minutes
+  if (!rateLimit(`signups:${getIp(req)}`, 10, 15 * 60_000)) {
+    return NextResponse.json({ error: 'Too many requests. Please wait a few minutes.' }, { status: 429 });
+  }
+
   try {
     const { mode, email, password, name, reason } = await req.json();
 
-    if (!email || !email.includes('@')) {
+    if (!email || typeof email !== 'string' || !email.includes('@') || email.length > 254) {
       return NextResponse.json({ error: 'Valid email required' }, { status: 400 });
     }
-    if (!password || String(password).length < 6) {
-      return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 });
+    if (!password || typeof password !== 'string' || String(password).length < 6 || String(password).length > 128) {
+      return NextResponse.json({ error: 'Password must be 6–128 characters' }, { status: 400 });
+    }
+    if (mode === 'signup' && name && String(name).length > 100) {
+      return NextResponse.json({ error: 'Name must be 100 characters or fewer' }, { status: 400 });
+    }
+    if (reason && typeof reason === 'string' && reason.length > 500) {
+      return NextResponse.json({ error: 'Reason must be 500 characters or fewer' }, { status: 400 });
     }
     const key = String(email).trim().toLowerCase();
     const origin =
@@ -134,8 +146,9 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('Auth error:', error);
+    console.error('Auth error:', error);
     return NextResponse.json(
-      { error: 'Something went wrong. Please try again.', details: String(error) },
+      { error: 'Something went wrong. Please try again.' },
       { status: 500 }
     );
   }

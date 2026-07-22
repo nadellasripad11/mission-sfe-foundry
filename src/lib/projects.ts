@@ -57,8 +57,8 @@ export async function createProject(input: {
   if (error) throw error;
 }
 
-export async function deleteProject(id: string) {
-  const { error } = await supabase.from('projects').delete().eq('id', id);
+export async function deleteProject(id: string, userId: string) {
+  const { error } = await supabase.from('projects').delete().eq('id', id).eq('user_id', userId);
   if (error) throw error;
 }
 

@@ -75,7 +75,7 @@ export default function DisplayPage() {
                     </div>
                   )}
                   <div className="proj-actions">
-                    <a href={p.url} target="_blank" rel="noopener noreferrer" className="btn-ghost btn-sm">Open</a>
+                    {/^https?:\/\//.test(p.url) && <a href={p.url} target="_blank" rel="noopener noreferrer" className="btn-ghost btn-sm">Open</a>}
                     <div className="proj-rating">★ {p.count > 0 ? p.avg.toFixed(1) : '—'} <span style={{ color: 'var(--faint)' }}>({p.count})</span></div>
                   </div>
                 </div>

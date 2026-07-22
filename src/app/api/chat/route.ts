@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { findMatchingResponse } from './saved-responses';
+import { rateLimit, getIp } from '../../../lib/rateLimit';
 
 function generateSuggestions(response: string, messages: any[]): string[] {
   const suggestions: string[] = [];
@@ -60,6 +61,14 @@ Keep it brief and chill. Be encouraging and have fun!
 If something is out of scope, just say you're not sure and suggest emailing sfefoundryteam@gmail.com.`;
 
 export async function POST(req: NextRequest) {
+  // 20 messages per IP per minute
+  if (!rateLimit(`chat:${getIp(req)}`, 20, 60_000)) {
+    return NextResponse.json(
+      { content: "You're sending messages too fast — slow down a bit!", suggestions: [] },
+      { status: 429 }
+    );
+  }
+
   try {
     const { messages } = await req.json();
 
@@ -70,8 +79,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Limit conversation history to last 20 messages, each max 2000 chars
+    const safeMessages = messages.slice(-20).map((m: { role: string; content: string }) => ({
+      role: m.role === 'user' ? 'user' : 'assistant',
+      content: typeof m.content === 'string' ? m.content.slice(0, 2000) : '',
+    }));
+
     // Get the last user message
-    const lastMessage = messages[messages.length - 1];
+    const lastMessage = safeMessages[safeMessages.length - 1];
     if (!lastMessage || lastMessage.role !== 'user') {
       return NextResponse.json(
         { error: 'Last message must be from user' },
@@ -82,7 +97,7 @@ export async function POST(req: NextRequest) {
     // Check for saved responses first
     const savedResponse = findMatchingResponse(lastMessage.content);
     if (savedResponse) {
-      const suggestions = generateSuggestions(savedResponse.response, messages);
+      const suggestions = generateSuggestions(savedResponse.response, safeMessages);
       return NextResponse.json({
         content: savedResponse.response,
         suggestions,
@@ -107,8 +122,8 @@ export async function POST(req: NextRequest) {
     // Use the REST API directly with available models
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
-    // Convert messages to Gemini REST format
-    const contents = messages.map((msg: any) => ({
+    // Convert sanitized messages to Gemini REST format
+    const contents = safeMessages.map((msg) => ({
       role: msg.role === 'user' ? 'user' : 'model',
       parts: [{ text: msg.content }],
     }));
@@ -139,7 +154,7 @@ export async function POST(req: NextRequest) {
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'I apologize, I could not generate a response.';
 
     // Generate suggestions based on the response
-    const suggestions = generateSuggestions(text, messages);
+    const suggestions = generateSuggestions(text, safeMessages);
 
     return NextResponse.json({
       content: text,

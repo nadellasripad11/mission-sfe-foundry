@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 function getSession() {
   if (typeof sessionStorage === 'undefined') return null;
   let s = sessionStorage.getItem('sfe-sid');
-  if (!s) { s = Math.random().toString(36).slice(2) + Date.now().toString(36); sessionStorage.setItem('sfe-sid', s); }
+  if (!s) { s = crypto.randomUUID(); sessionStorage.setItem('sfe-sid', s); }
   return s;
 }
 

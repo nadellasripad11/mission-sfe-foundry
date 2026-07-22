@@ -118,7 +118,7 @@ export default function ProfilePage() {
                       </div>
                     )}
                     <div className="proj-actions" style={{ marginTop: 12 }}>
-                      <a href={p.url} target="_blank" rel="noopener noreferrer" className="btn-ghost btn-sm">Open</a>
+                      {/^https?:\/\//.test(p.url) && <a href={p.url} target="_blank" rel="noopener noreferrer" className="btn-ghost btn-sm">Open</a>}
                     </div>
                   </div>
                 </article>
