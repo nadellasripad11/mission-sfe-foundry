@@ -1153,3 +1153,155 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
   .adm-tabs { padding: 0 16px; }
   .cookie-inner { flex-direction: column; align-items: flex-start; }
 }
+
+/* ── My Projects / Profile redesign ──────────────────────────────────────── */
+.mp-main { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+.mp-profile-card {
+  background: var(--white); border: 1px solid var(--line); border-radius: 18px;
+  overflow: hidden; position: relative;
+}
+
+.mp-banner {
+  height: 180px; cursor: pointer; position: relative;
+  background: linear-gradient(135deg, #e8e0d0 0%, #d8cfc0 100%);
+  transition: opacity .15s;
+}
+.mp-banner:hover { opacity: .9; }
+.mp-banner-default {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+}
+.mp-banner-default span {
+  font-size: .82rem; color: var(--muted); background: rgba(255,255,255,.6);
+  padding: 6px 14px; border-radius: 20px; border: 1px dashed var(--line);
+}
+
+.mp-profile-row {
+  display: flex; align-items: flex-end; gap: 18px;
+  padding: 0 24px 16px; margin-top: -40px; position: relative;
+}
+.mp-avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: var(--ink); color: var(--cream); font-family: 'Outfit', sans-serif;
+  font-weight: 800; font-size: 2rem;
+  display: flex; align-items: center; justify-content: center;
+  border: 4px solid var(--white); flex-shrink: 0; cursor: pointer;
+  overflow: hidden; transition: opacity .15s;
+}
+.mp-avatar:hover { opacity: .85; }
+
+.mp-profile-info { flex: 1; min-width: 0; padding-top: 46px; }
+.mp-username { font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.4rem; color: var(--ink); }
+.mp-joined { font-size: .78rem; color: var(--muted); margin-top: 2px; font-family: var(--mono); }
+.mp-bio { font-size: .9rem; color: var(--ink-soft); margin-top: 6px; line-height: 1.5; }
+
+.mp-ship-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 10px 22px; border-radius: 10px; font-weight: 800; font-size: .88rem;
+  background: var(--orange); color: #fff; border: none; cursor: pointer;
+  transition: opacity .15s; flex-shrink: 0; align-self: flex-end; margin-bottom: 2px;
+  letter-spacing: .02em;
+}
+.mp-ship-btn:hover { opacity: .88; }
+
+.mp-stats {
+  display: flex; gap: 28px; padding: 14px 24px;
+  border-top: 1px solid var(--line); margin-top: 4px;
+}
+.mp-stat { display: flex; gap: 6px; align-items: baseline; }
+.mp-stat-n { font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.2rem; color: var(--orange); }
+.mp-stat-l { font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+
+.mp-edit-link {
+  display: block; width: 100%; text-align: center;
+  padding: 9px; font-size: .82rem; font-weight: 600; color: var(--muted);
+  background: none; border: none; border-top: 1px solid var(--line); cursor: pointer;
+  transition: color .15s;
+}
+.mp-edit-link:hover { color: var(--ink); }
+
+/* ── Edit profile overlay (Stardance dark style) ─────────────────────────── */
+.ep-overlay {
+  position: fixed; inset: 0; z-index: 200; background: #0f0f1a;
+  display: flex; flex-direction: column; overflow-y: auto;
+}
+
+.ep-banner {
+  min-height: 200px; background: #1a1a2e; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; transition: opacity .15s; flex-shrink: 0;
+}
+.ep-banner:hover { opacity: .9; }
+.ep-banner-placeholder {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  color: #555; font-size: .9rem;
+  border: 2px dashed #333; border-radius: 12px; padding: 32px 48px;
+}
+.ep-banner-edit-hint {
+  position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,.6); color: #aaa; font-size: .8rem;
+  padding: 4px 12px; border-radius: 20px;
+}
+
+.ep-body {
+  flex: 1; padding: 28px 32px 40px; max-width: 640px; width: 100%; margin: 0 auto;
+  position: relative;
+}
+
+.ep-back {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.08);
+  border: none; cursor: pointer; color: #ccc; margin-bottom: 24px;
+  transition: background .15s;
+}
+.ep-back:hover { background: rgba(255,255,255,.14); }
+
+.ep-avatar-wrap {
+  width: 80px; height: 80px; border-radius: 50%; position: relative; cursor: pointer;
+  margin-bottom: 24px; overflow: hidden;
+}
+.ep-avatar-letter {
+  width: 100%; height: 100%; background: #333; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 2rem; color: #eee;
+}
+.ep-avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.ep-avatar-overlay {
+  position: absolute; inset: 0; border-radius: 50%; background: rgba(0,0,0,.5);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .15s; color: #fff;
+}
+.ep-avatar-wrap:hover .ep-avatar-overlay { opacity: 1; }
+
+.ep-bio-section { margin-bottom: 28px; }
+.ep-bio-input {
+  width: 100%; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 12px; color: #eee; padding: 14px 16px; font-size: .95rem;
+  font-family: 'Inter', sans-serif; resize: vertical; line-height: 1.6; min-height: 120px;
+  outline: none; box-sizing: border-box; transition: border-color .15s;
+}
+.ep-bio-input::placeholder { color: #555; }
+.ep-bio-input:focus { border-color: rgba(255,255,255,.25); }
+.ep-bio-hint { font-size: .78rem; color: #555; margin-top: 8px; }
+
+.ep-actions {
+  display: flex; justify-content: flex-end; gap: 12px;
+}
+.ep-btn-cancel {
+  padding: 10px 24px; border-radius: 24px; font-weight: 600; font-size: .9rem;
+  border: 1.5px solid rgba(255,255,255,.15); background: transparent; color: #aaa; cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.ep-btn-cancel:hover { border-color: rgba(255,255,255,.3); color: #eee; }
+.ep-btn-save {
+  padding: 10px 28px; border-radius: 24px; font-weight: 700; font-size: .9rem;
+  border: none; background: #fff; color: #111; cursor: pointer; transition: opacity .15s;
+}
+.ep-btn-save:hover { opacity: .88; }
+
+@media (max-width: 680px) {
+  .mp-profile-row { flex-wrap: wrap; }
+  .mp-ship-btn { width: 100%; justify-content: center; }
+  .mp-stats { flex-wrap: wrap; gap: 16px; }
+  .ep-body { padding: 20px 20px 32px; }
+}
