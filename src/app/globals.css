@@ -1220,88 +1220,127 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 }
 .mp-edit-link:hover { color: var(--ink); }
 
-/* ── Edit profile overlay (Stardance dark style) ─────────────────────────── */
+/* ── Edit profile overlay (Stardance exact match) ──────────────────────────── */
 .ep-overlay {
-  position: fixed; inset: 0; z-index: 200; background: #0f0f1a;
-  display: flex; flex-direction: column; overflow-y: auto;
+  position: fixed; inset: 0; z-index: 200;
+  background: #0d1117; overflow-y: auto;
+  display: flex; flex-direction: column;
 }
 
+/* Banner */
 .ep-banner {
-  min-height: 200px; background: #1a1a2e; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  position: relative; transition: opacity .15s; flex-shrink: 0;
+  position: relative; height: 200px; background: #0d1117;
+  border-bottom: 2px dashed rgba(255,255,255,.18);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: opacity .15s;
 }
-.ep-banner:hover { opacity: .9; }
-.ep-banner-placeholder {
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-  color: #555; font-size: .9rem;
-  border: 2px dashed #333; border-radius: 12px; padding: 32px 48px;
-}
-.ep-banner-edit-hint {
-  position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
-  background: rgba(0,0,0,.6); color: #aaa; font-size: .8rem;
-  padding: 4px 12px; border-radius: 20px;
-}
-
-.ep-body {
-  flex: 1; padding: 28px 32px 40px; max-width: 640px; width: 100%; margin: 0 auto;
-  position: relative;
-}
+.ep-banner:hover { opacity: .92; }
 
 .ep-back {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.08);
-  border: none; cursor: pointer; color: #ccc; margin-bottom: 24px;
-  transition: background .15s;
+  position: absolute; top: 18px; left: 18px;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: rgba(255,255,255,.12); border: none; cursor: pointer;
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  transition: background .15s; z-index: 2;
 }
-.ep-back:hover { background: rgba(255,255,255,.14); }
+.ep-back:hover { background: rgba(255,255,255,.2); }
+
+.ep-banner-label {
+  font-size: 1rem; font-weight: 500; color: rgba(255,255,255,.5);
+  letter-spacing: .01em; pointer-events: none;
+}
+
+/* Profile panel below banner */
+.ep-panel {
+  background: #3d4568; flex: 1;
+  padding: 28px 32px 40px; display: flex; flex-direction: column; gap: 18px;
+  border-top: 2px dashed rgba(255,255,255,.18);
+}
+
+/* Avatar + username row */
+.ep-profile-row { display: flex; align-items: center; gap: 18px; }
 
 .ep-avatar-wrap {
-  width: 80px; height: 80px; border-radius: 50%; position: relative; cursor: pointer;
-  margin-bottom: 24px; overflow: hidden;
+  width: 72px; height: 72px; border-radius: 50%;
+  position: relative; cursor: pointer; flex-shrink: 0; overflow: hidden;
 }
 .ep-avatar-letter {
-  width: 100%; height: 100%; background: #333; border-radius: 50%;
+  width: 100%; height: 100%; background: #1a6b3c; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 2rem; color: #eee;
+  font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.8rem; color: #fff;
 }
-.ep-avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.ep-avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
 .ep-avatar-overlay {
-  position: absolute; inset: 0; border-radius: 50%; background: rgba(0,0,0,.5);
-  display: flex; align-items: center; justify-content: center;
+  position: absolute; inset: 0; border-radius: 50%;
+  background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center;
   opacity: 0; transition: opacity .15s; color: #fff;
 }
 .ep-avatar-wrap:hover .ep-avatar-overlay { opacity: 1; }
 
-.ep-bio-section { margin-bottom: 28px; }
-.ep-bio-input {
-  width: 100%; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1);
-  border-radius: 12px; color: #eee; padding: 14px 16px; font-size: .95rem;
-  font-family: 'Inter', sans-serif; resize: vertical; line-height: 1.6; min-height: 120px;
-  outline: none; box-sizing: border-box; transition: border-color .15s;
+.ep-user-info { display: flex; flex-direction: column; gap: 4px; }
+.ep-username {
+  font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.7rem;
+  color: #fff; text-decoration: underline; text-underline-offset: 4px;
 }
-.ep-bio-input::placeholder { color: #555; }
-.ep-bio-input:focus { border-color: rgba(255,255,255,.25); }
-.ep-bio-hint { font-size: .78rem; color: #555; margin-top: 8px; }
+.ep-joined { font-size: .9rem; color: rgba(255,255,255,.6); }
 
-.ep-actions {
-  display: flex; justify-content: flex-end; gap: 12px;
+/* Stats row */
+.ep-stats { display: flex; gap: 32px; }
+.ep-stat { display: flex; flex-direction: column; gap: 2px; }
+.ep-stat-n { font-weight: 800; font-size: 1.4rem; color: #fff; font-family: 'Outfit', sans-serif; }
+.ep-stat-l { font-size: .8rem; color: rgba(255,255,255,.55); }
+
+/* Bio */
+.ep-bio-input {
+  width: 100%; background: transparent; border: none; outline: none;
+  color: #fff; font-size: 1.05rem; font-family: 'Inter', sans-serif;
+  line-height: 1.6; resize: none; min-height: 80px; box-sizing: border-box;
+  padding: 0;
 }
+.ep-bio-input::placeholder { color: rgba(255,255,255,.3); }
+
+.ep-bio-hint {
+  font-size: .82rem; color: rgba(255,255,255,.4);
+}
+.ep-bio-hint kbd {
+  background: rgba(255,255,255,.12); border-radius: 4px; padding: 1px 5px;
+  font-family: var(--mono); font-size: .78rem; color: rgba(255,255,255,.6);
+}
+
+/* Verified badge */
+.ep-verified {
+  font-size: .88rem; color: #4ade80; display: flex; align-items: center; gap: 8px;
+}
+.ep-verified-x {
+  background: none; border: none; color: rgba(255,255,255,.4); cursor: pointer;
+  font-size: 1.1rem; padding: 0; line-height: 1;
+}
+.ep-verified-x:hover { color: #fff; }
+
+/* Footer */
+.ep-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px; margin-top: auto; padding-top: 8px;
+}
+.ep-follow-counts { display: flex; gap: 20px; font-size: .92rem; color: rgba(255,255,255,.8); }
+.ep-follow-counts strong { color: #fff; font-weight: 700; }
+.ep-actions { display: flex; gap: 10px; }
+
 .ep-btn-cancel {
-  padding: 10px 24px; border-radius: 24px; font-weight: 600; font-size: .9rem;
-  border: 1.5px solid rgba(255,255,255,.15); background: transparent; color: #aaa; cursor: pointer;
-  transition: border-color .15s, color .15s;
+  padding: 10px 26px; border-radius: 28px; font-weight: 600; font-size: .9rem;
+  border: 1.5px solid rgba(255,255,255,.3); background: transparent; color: #fff;
+  cursor: pointer; transition: background .15s;
 }
-.ep-btn-cancel:hover { border-color: rgba(255,255,255,.3); color: #eee; }
+.ep-btn-cancel:hover { background: rgba(255,255,255,.08); }
 .ep-btn-save {
-  padding: 10px 28px; border-radius: 24px; font-weight: 700; font-size: .9rem;
+  padding: 10px 28px; border-radius: 28px; font-weight: 700; font-size: .9rem;
   border: none; background: #fff; color: #111; cursor: pointer; transition: opacity .15s;
 }
 .ep-btn-save:hover { opacity: .88; }
 
-@media (max-width: 680px) {
-  .mp-profile-row { flex-wrap: wrap; }
-  .mp-ship-btn { width: 100%; justify-content: center; }
-  .mp-stats { flex-wrap: wrap; gap: 16px; }
-  .ep-body { padding: 20px 20px 32px; }
+@media (max-width: 600px) {
+  .ep-panel { padding: 20px 18px 32px; }
+  .ep-username { font-size: 1.3rem; }
+  .ep-stats { gap: 20px; flex-wrap: wrap; }
+  .ep-footer { flex-direction: column; align-items: flex-start; }
 }

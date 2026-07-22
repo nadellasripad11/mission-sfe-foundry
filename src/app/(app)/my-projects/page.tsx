@@ -24,10 +24,11 @@ function formatJoined(iso?: string) {
 
 // ── Edit overlay (Stardance style) ────────────────────────────────────────────
 function EditProfile({
-  initialBio, initialBanner, initialAvatar, avatarLetter,
+  initialBio, initialBanner, initialAvatar, avatarLetter, username, joinedAt, projectCount,
   onSave, onCancel,
 }: {
   initialBio: string; initialBanner: string; initialAvatar: string; avatarLetter: string;
+  username: string; joinedAt: string; projectCount: number;
   onSave: (bio: string, bannerUrl: string, avatarUrl: string) => void;
   onCancel: () => void;
 }) {
@@ -36,6 +37,7 @@ function EditProfile({
   const [avatarUrl, setAvatarUrl] = useState(initialAvatar);
   const [savingBanner, setSavingBanner] = useState(false);
   const [savingAvatar, setSavingAvatar] = useState(false);
+  const [verifiedDismissed, setVerifiedDismissed] = useState(false);
   const { user } = useAuth();
   const bannerRef = useRef<HTMLInputElement>(null);
   const avatarRef = useRef<HTMLInputElement>(null);
@@ -56,67 +58,87 @@ function EditProfile({
 
   return (
     <div className="ep-overlay">
-      {/* Banner */}
-      <div className="ep-banner" onClick={() => bannerRef.current?.click()}
-        style={bannerUrl ? { backgroundImage: `url(${bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
-        {!bannerUrl && (
-          <div className="ep-banner-placeholder">
-            {savingBanner ? (
-              <span style={{ color: '#888' }}>Uploading…</span>
-            ) : (
-              <>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                <span>Upload banner</span>
-              </>
-            )}
-          </div>
-        )}
-        {bannerUrl && (
-          <div className="ep-banner-edit-hint">
-            {savingBanner ? 'Uploading…' : 'Click to change banner'}
-          </div>
-        )}
+      {/* ── Banner ── */}
+      <div
+        className="ep-banner"
+        onClick={() => bannerRef.current?.click()}
+        style={bannerUrl ? { backgroundImage: `url(${bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
+      >
+        {/* Back button inside banner, top-left */}
+        <button className="ep-back" onClick={(e) => { e.stopPropagation(); onCancel(); }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+
+        {/* "Upload banner" centered label */}
+        <div className="ep-banner-label">
+          {savingBanner ? 'Uploading…' : bannerUrl ? 'Click to change banner' : 'Upload banner'}
+        </div>
+
         <input ref={bannerRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={pickBanner} />
       </div>
 
-      {/* Body */}
-      <div className="ep-body">
-        <button className="ep-back" onClick={onCancel}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
-
-        {/* Avatar */}
-        <div className="ep-avatar-wrap" onClick={() => avatarRef.current?.click()}>
-          {avatarUrl ? (
-            <img src={avatarUrl} alt="avatar" className="ep-avatar-img" />
-          ) : (
-            <div className="ep-avatar-letter">{avatarLetter}</div>
-          )}
-          <div className="ep-avatar-overlay">
-            {savingAvatar ? '…' : (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            )}
+      {/* ── Profile panel ── */}
+      <div className="ep-panel">
+        {/* Avatar + username row */}
+        <div className="ep-profile-row">
+          <div className="ep-avatar-wrap" onClick={() => avatarRef.current?.click()}>
+            {avatarUrl
+              ? <img src={avatarUrl} alt="avatar" className="ep-avatar-img" />
+              : <div className="ep-avatar-letter">{avatarLetter}</div>
+            }
+            <div className="ep-avatar-overlay">
+              {savingAvatar
+                ? <span style={{ fontSize: '.75rem' }}>…</span>
+                : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              }
+            </div>
+            <input ref={avatarRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={pickAvatar} />
           </div>
-          <input ref={avatarRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={pickAvatar} />
+
+          <div className="ep-user-info">
+            <div className="ep-username">@{username}</div>
+            {joinedAt && <div className="ep-joined">Joined {joinedAt}</div>}
+          </div>
         </div>
 
-        {/* Bio */}
-        <div className="ep-bio-section">
-          <textarea
-            className="ep-bio-input"
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            placeholder="Tell people about yourself…"
-            rows={4}
-            maxLength={200}
-          />
-          <div className="ep-bio-hint">Type @ to mention a user, $ to link a project.</div>
+        {/* Stats */}
+        <div className="ep-stats">
+          <div className="ep-stat"><span className="ep-stat-n">0</span><span className="ep-stat-l">Devlogs</span></div>
+          <div className="ep-stat"><span className="ep-stat-n">{projectCount}</span><span className="ep-stat-l">Projects</span></div>
+          <div className="ep-stat"><span className="ep-stat-n">0</span><span className="ep-stat-l">Ships</span></div>
+          <div className="ep-stat"><span className="ep-stat-n">0</span><span className="ep-stat-l">Votes</span></div>
         </div>
 
-        {/* Actions */}
-        <div className="ep-actions">
-          <button className="ep-btn-cancel" onClick={onCancel}>Cancel</button>
-          <button className="ep-btn-save" onClick={() => onSave(bio, bannerUrl, avatarUrl)}>Save</button>
+        {/* Bio textarea */}
+        <textarea
+          className="ep-bio-input"
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          placeholder="Tell people about yourself…"
+          maxLength={200}
+        />
+        <div className="ep-bio-hint">
+          Type <kbd>@</kbd> to mention a user, <kbd>$</kbd> to link a project.
+        </div>
+
+        {/* Verified badge */}
+        {!verifiedDismissed && (
+          <div className="ep-verified">
+            You&apos;re verified — your work is now public!{' '}
+            <button onClick={() => setVerifiedDismissed(true)} className="ep-verified-x">×</button>
+          </div>
+        )}
+
+        {/* Footer: following + actions */}
+        <div className="ep-footer">
+          <div className="ep-follow-counts">
+            <span><strong>0</strong> following</span>
+            <span><strong>0</strong> followers</span>
+          </div>
+          <div className="ep-actions">
+            <button className="ep-btn-cancel" onClick={onCancel}>Cancel</button>
+            <button className="ep-btn-save" onClick={() => onSave(bio, bannerUrl, avatarUrl)}>Save</button>
+          </div>
         </div>
       </div>
     </div>
@@ -249,6 +271,7 @@ export default function MyProjectsPage() {
       {editing && (
         <EditProfile
           initialBio={bio} initialBanner={bannerUrl} initialAvatar={avatarUrl} avatarLetter={avatarLetter}
+          username={username} joinedAt={formatJoined(joinedAt)} projectCount={projects.length}
           onSave={saveProfile} onCancel={() => setEditing(false)}
         />
       )}
