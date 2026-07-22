@@ -52,7 +52,9 @@ export default function Shop() {
 
         <div className="shop-grid">
           {shown.map((it) => (
-            <a key={it.name} href={requestMailto(it.name)} className="shop-card">
+            <a key={it.name} href={requestMailto(it.name)} className="shop-card"
+              onClick={() => fetch('/api/track', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'event', event_type: 'shop_request', page: '/shop', metadata: { product: it.name, category: it.category, price: it.price } }) }).catch(() => {})}>
+
               <div className="shop-card-img">
                 <img src={it.image} alt={it.name} className="shop-card-photo" />
               </div>

@@ -45,7 +45,13 @@ export default function Footer() {
       </div>
       <div className="site-foot-bottom">
         <span>© 2026 SFE Foundry — Alpharetta High School</span>
-        <span>Student-led <span style={{ color: 'var(--blue)' }}>•</span> Est. 2026</span>
+        <span className="site-foot-legal">
+          <Link href="/privacy">Privacy</Link>
+          <span style={{ color: 'var(--muted)' }}>·</span>
+          <Link href="/terms">Terms</Link>
+          <span style={{ color: 'var(--muted)' }}>·</span>
+          <Link href="/cookies">Cookies</Link>
+        </span>
       </div>
     </footer>
   );

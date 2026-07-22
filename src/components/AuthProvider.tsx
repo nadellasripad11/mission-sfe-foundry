@@ -31,6 +31,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [msgOk, setMsgOk] = useState(false);
+  const [privacyAgreed, setPrivacyAgreed] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -111,6 +112,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password || (authMode === 'signup' && !name)) return;
+    if (authMode === 'signup' && !privacyAgreed) { setMsgOk(false); setMessage('You must agree to the Privacy Policy and Terms of Service to sign up.'); return; }
     setLoading(true); setMessage('');
     const cleanEmail = email.trim().toLowerCase();
     try {
@@ -149,7 +151,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <button className="modal-x" onClick={() => setShowModal(false)} aria-label="Close">×</button>
             <div className="mtabs">
-              <button className={`mtab${authMode === 'signup' ? ' on' : ''}`} onClick={() => { setAuthMode('signup'); setMessage(''); }}>Sign Up</button>
+              <button className={`mtab${authMode === 'signup' ? ' on' : ''}`} onClick={() => { setAuthMode('signup'); setMessage(''); setPrivacyAgreed(false); }}>Sign Up</button>
               <button className={`mtab${authMode === 'signin' ? ' on' : ''}`} onClick={() => { setAuthMode('signin'); setMessage(''); }}>Sign In</button>
             </div>
             <div style={{ marginBottom: 20 }}>
@@ -176,7 +178,24 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
               <input className="input" type="email" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={loading} />
               <input className="input" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required disabled={loading} minLength={6} autoComplete={authMode === 'signup' ? 'new-password' : 'current-password'} />
               {authMode === 'signup' && <div className="hint">At least 6 characters.</div>}
-              <button type="submit" className="btn btn-solid btn-block" style={{ padding: 13, marginTop: 4 }} disabled={loading || !email || !password || (authMode === 'signup' && !name)}>
+              {authMode === 'signup' && (
+                <label className="privacy-check-label">
+                  <input
+                    type="checkbox"
+                    className="privacy-check-input"
+                    checked={privacyAgreed}
+                    onChange={(e) => setPrivacyAgreed(e.target.checked)}
+                    disabled={loading}
+                  />
+                  <span>
+                    I agree to the{' '}
+                    <a href="/privacy" target="_blank" rel="noopener noreferrer" className="privacy-check-link">Privacy Policy</a>
+                    {' '}and{' '}
+                    <a href="/terms" target="_blank" rel="noopener noreferrer" className="privacy-check-link">Terms of Service</a>
+                  </span>
+                </label>
+              )}
+              <button type="submit" className="btn btn-solid btn-block" style={{ padding: 13, marginTop: 4 }} disabled={loading || !email || !password || (authMode === 'signup' && (!name || !privacyAgreed))}>
                 {loading ? 'Please wait…' : (authMode === 'signup' ? 'Sign Up' : 'Sign In')}
               </button>
             </form>

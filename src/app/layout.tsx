@@ -40,6 +40,8 @@ export const metadata: Metadata = {
 };
 
 import AuthProvider from "../components/AuthProvider";
+import CookieBanner from "../components/CookieBanner";
+import PageTracker from "../components/PageTracker";
 
 export default function RootLayout({
   children,
@@ -53,6 +55,8 @@ export default function RootLayout({
     >
       <body className="min-h-full">
         <AuthProvider>{children}</AuthProvider>
+        <CookieBanner />
+        <PageTracker />
       </body>
     </html>
   );
