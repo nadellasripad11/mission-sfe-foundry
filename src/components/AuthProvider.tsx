@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { claimReferral } from '../lib/referrals';
 import ChatWidget from './ChatWidget';
 
 export type AppUser = { id: string; email: string; name: string | null };
@@ -130,6 +131,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
           setMsgOk(true);
           setMessage(data.session ? 'Account created! You are signed in.' : 'Account created! Check your email for a verification link.');
           setEmail(''); setPassword(''); setName('');
+          if (data.user) {
+            const pendingRef = typeof window !== 'undefined' ? localStorage.getItem('sfe_ref') : null;
+            if (pendingRef) {
+              claimReferral(data.user.id, pendingRef).finally(() => localStorage.removeItem('sfe_ref'));
+            }
+          }
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
