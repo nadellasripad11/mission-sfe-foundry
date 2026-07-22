@@ -47,7 +47,7 @@ export default function AchievementsPage() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [user, ready]);
+  }, [user?.id, ready]);
 
   if (!ready || !user) {
     return (

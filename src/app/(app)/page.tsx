@@ -20,13 +20,13 @@ export default function HomePage() {
 
   useEffect(() => {
     if (ready && user) {
-      router.push('/dashboard');
+      router.replace('/dashboard');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, user?.id]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
 
   // Don't render anything if user is redirecting
-  if (ready && user) {
+  if (!ready || user) {
     return null;
   }
 

@@ -58,13 +58,13 @@ export default function Sidebar() {
               </div>
             </div>
             <div className="sidebar-user-actions">
-              <button className="sidebar-action-btn" title="Settings" aria-label="Settings">
+              <button type="button" className="sidebar-action-btn" title="Settings" aria-label="Settings">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="3" />
                   <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m5.08 5.08l4.24 4.24M1 12h6m6 0h6M4.22 19.78l4.24-4.24m5.08-5.08l4.24-4.24" />
                 </svg>
               </button>
-              <button className="sidebar-action-btn danger" title="Sign Out" aria-label="Sign Out" onClick={signOut}>
+              <button type="button" className="sidebar-action-btn danger" title="Sign Out" aria-label="Sign Out" onClick={signOut}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
                 </svg>
