@@ -68,44 +68,27 @@ export function LogoHero({ size = 320, rings = false }: { size?: number; rings?:
   );
 }
 
-// Flat 3D slabs with soft shadow — home hero visual
+// Flat parallelogram stripes with soft drop shadow — home hero visual
+// Same proportions as the small header mark (Logo.tsx), scaled 8x.
 export function LogoHero3D({ size = 400 }: { size?: number }) {
+  const VW = 640, VH = 336;
+  const W = 80, TOP = 16, BOT = 304, SLANT = 128;
   const bars = [
-    { x: 110, top: '#20202A', edge: '#0E0E16', hi: '#3A3A48' },
-    { x: 178, top: '#2684C6', edge: '#1A5C8E', hi: '#4AA0DA' },
-    { x: 246, top: '#EB5F27', edge: '#B4451A', hi: '#F5824C' },
+    { x: 16,  fill: '#1A1A1A' },
+    { x: 200, fill: '#2684C6' },
+    { x: 384, fill: '#EB5F27' },
   ];
-  const W = 44, TOP = 150, BOT = 300, SLANT = 80, DX = 9, DY = 9;
-  const top   = (x: number) => `${x},${BOT} ${x+W},${BOT} ${x+W+SLANT},${TOP} ${x+SLANT},${TOP}`;
-  const depth = (x: number) =>
-    `${x},${BOT} ${x+W},${BOT} ${x+W+SLANT},${TOP} ${x+W+SLANT+DX},${TOP+DY} ${x+W+DX},${BOT+DY} ${x+DX},${BOT+DY}`;
-  const hi    = (x: number) =>
-    `${x+SLANT},${TOP} ${x+SLANT+6},${TOP} ${x+6},${BOT} ${x},${BOT}`;
+  const pts = (x: number) => `${x},${BOT} ${x + W},${BOT} ${x + W + SLANT},${TOP} ${x + SLANT},${TOP}`;
+  const h = Math.round(size * (VH / VW));
   return (
-    <svg width={size} height={size * 0.8} viewBox="0 0 400 400" fill="none" aria-hidden="true" style={{ display: 'block', maxWidth: '100%' }}>
+    <svg width={size} height={h} viewBox={`0 0 ${VW} ${VH}`} fill="none" aria-hidden="true" style={{ display: 'block', maxWidth: '100%' }}>
       <defs>
         <filter id="lh3d-shadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feDropShadow dx="-5" dy="14" stdDeviation="12" floodColor="#1A1A1A" floodOpacity="0.20" />
+          <feDropShadow dx="6" dy="16" stdDeviation="10" floodColor="#1A1A1A" floodOpacity="0.22" />
         </filter>
-        <radialGradient id="lh3d-glow" cx="50%" cy="45%" r="55%">
-          <stop offset="0%" stopColor="#FBF9F4" stopOpacity="0.9" />
-          <stop offset="100%" stopColor="#FBF9F4" stopOpacity="0" />
-        </radialGradient>
-        <radialGradient id="lh3d-floor" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#1A1A1A" stopOpacity="0.16" />
-          <stop offset="100%" stopColor="#1A1A1A" stopOpacity="0" />
-        </radialGradient>
       </defs>
-      <rect x="0" y="0" width="400" height="400" fill="url(#lh3d-glow)" />
-      <ellipse cx="230" cy="320" rx="150" ry="24" fill="url(#lh3d-floor)" />
       <g filter="url(#lh3d-shadow)">
-        {bars.map((b) => (
-          <g key={b.x}>
-            <polygon points={depth(b.x)} fill={b.edge} />
-            <polygon points={top(b.x)} fill={b.top} />
-            <polygon points={hi(b.x)} fill={b.hi} opacity="0.5" />
-          </g>
-        ))}
+        {bars.map((b) => <polygon key={b.x} points={pts(b.x)} fill={b.fill} />)}
       </g>
     </svg>
   );
