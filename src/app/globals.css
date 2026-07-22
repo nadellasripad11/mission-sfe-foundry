@@ -428,10 +428,13 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
   background: radial-gradient(circle at 30% 30%, rgba(242,101,34,.18), transparent 55%),
               radial-gradient(circle at 70% 70%, rgba(31,159,214,.18), transparent 55%),
               repeating-linear-gradient(45deg,#DED4C2,#DED4C2 10px,#D6CBB6 10px,#D6CBB6 20px); }
-.shop-card-body { padding:14px 16px 16px; display:flex; flex-direction:column; gap:4px; }
+.shop-card-body { padding:14px 16px 16px; display:flex; flex-direction:column; gap:6px; }
 .shop-card-cat { font-family:var(--mono); font-size:.62rem; letter-spacing:.1em; color:var(--muted); text-transform:uppercase; }
-.shop-card-name { font-family:'Outfit'; font-weight:800; font-size:.96rem; color:var(--ink); }
-.shop-card-tag { font-size:.78rem; color:var(--muted); font-style:italic; }
+.shop-card-name { font-family:'Outfit'; font-weight:800; font-size:.96rem; color:var(--ink); line-height:1.2; }
+.shop-card-desc { font-size:.78rem; color:var(--muted); line-height:1.4; }
+.shop-card-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:2px; }
+.shop-card-price { font-family:var(--mono); font-size:.75rem; font-weight:600; color:var(--orange); letter-spacing:.05em; }
+.shop-card-tag { font-size:.72rem; color:var(--faint); font-weight:500; padding:2px 6px; background:var(--panel); border-radius:4px; }
 .shop-card-cta { margin-top:8px; display:inline-flex; align-items:center; gap:5px; font-family:var(--mono); font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; color:var(--orange); }
 
 /* ── Missions ── */
