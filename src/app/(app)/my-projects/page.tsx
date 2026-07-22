@@ -263,12 +263,13 @@ export default function MyProjectsPage() {
       {/* Achievements Section */}
       <div className="profile-achievements">
         <h3 className="achievements-title">Achievements</h3>
-        <div className="achievements-count">0 / 11 earned</div>
-        <div className="achievements-grid">
-          <div className="achievement-badge" title="First Project">🚀</div>
-          <div className="achievement-badge" title="5 Projects">⭐</div>
-          <div className="achievement-badge" title="100 Votes">🏆</div>
+        <div className="achievements-progress">
+          <div className="achievements-count">{projects.length > 0 ? '1' : '0'} / 11 earned</div>
+          <div className="progress-bar">
+            <div className="progress-fill" style={{ width: `${(Math.min(projects.length, 11) / 11) * 100}%` }} />
+          </div>
         </div>
+        <Link href="/achievements" className="achievements-link">See all achievements →</Link>
       </div>
     </div>
   );

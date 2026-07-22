@@ -530,8 +530,8 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 /* ── Sidebar + App Layout (Stardance style - blended) ── */
 .app-container { display: flex; min-height: 100vh; background: var(--bg); }
 .sidebar {
-  position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: var(--bg);
-  border-right: 1px solid var(--line); padding: 20px 16px; display: flex; flex-direction: column;
+  position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: transparent;
+  border-right: none; padding: 20px 16px; display: flex; flex-direction: column;
   gap: 28px; z-index: 50;
 }
 .sidebar-logo {
@@ -786,32 +786,48 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 }
 
 .profile-achievements {
-  background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 20px;
-  display: flex; flex-direction: column; gap: 14px; height: fit-content;
+  background: var(--white); border: 1px solid var(--line); border-radius: 14px; padding: 24px;
+  display: flex; flex-direction: column; gap: 18px; height: fit-content;
 }
 
 .achievements-title {
-  font-family: 'Outfit'; font-weight: 700; font-size: 1rem; color: var(--ink); margin: 0;
+  font-family: 'Outfit'; font-weight: 700; font-size: 1.1rem; color: var(--ink); margin: 0;
   letter-spacing: -0.01em;
 }
 
 .achievements-count {
-  font-family: var(--mono); font-size: .7rem; letter-spacing: .06em; color: var(--muted);
-  text-transform: uppercase;
+  font-family: var(--mono); font-size: .75rem; letter-spacing: .06em; color: var(--muted);
+  text-transform: uppercase; margin: 0;
+}
+
+.achievements-progress {
+  display: flex; flex-direction: column; gap: 12px;
+}
+
+.progress-bar {
+  width: 100%; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%; background: linear-gradient(90deg, var(--orange), #FF7F50); border-radius: 3px;
+}
+
+.achievements-link {
+  display: inline-block; font-family: var(--mono); font-size: .75rem; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--orange); text-decoration: none; font-weight: 600;
+  transition: color .18s, transform .18s;
+}
+
+.achievements-link:hover {
+  color: #FF7F50; transform: translateX(2px);
 }
 
 .achievements-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  display: none;
 }
 
 .achievement-badge {
-  width: 52px; height: 52px; border-radius: 10px; background: var(--panel);
-  border: 1px solid var(--line); display: flex; align-items: center; justify-content: center;
-  font-size: 1.8rem; cursor: pointer; transition: transform .2s, border-color .2s;
-}
-
-.achievement-badge:hover {
-  border-color: var(--orange); transform: scale(1.1);
+  display: none;
 }
 
 .project-form-section {
