@@ -1606,3 +1606,82 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
   .rate-detail { max-height: none; border-right: none; border-bottom: 1px solid var(--line); }
   .rate-form-col { max-height: none; }
 }
+
+/* ── Rate page: random swipe card ── */
+@keyframes rateCardIn {
+  from { opacity: 0; transform: translateY(28px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+@keyframes rateCardOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(-24px) scale(0.96); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.rate-session-badge {
+  display: inline-flex; align-items: center;
+  background: var(--orange); color: #fff;
+  font-family: var(--mono); font-size: .72rem; font-weight: 700;
+  padding: 4px 14px; border-radius: 99px; letter-spacing: .06em;
+  margin-bottom: 24px;
+}
+
+.rate-card-shell {
+  max-width: 780px; margin: 0 auto;
+  background: var(--white); border: 1px solid var(--line);
+  border-radius: 18px; padding: 60px 40px;
+  text-align: center; color: var(--ink);
+}
+.rate-card-loading { display: flex; flex-direction: column; align-items: center; }
+.rate-spinner {
+  width: 36px; height: 36px; border: 3px solid var(--line);
+  border-top-color: var(--orange); border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+.rate-all-done { }
+
+.rate-swipe-card {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 0;
+  max-width: 960px; margin: 0 auto;
+  background: var(--white); border: 1px solid var(--line);
+  border-radius: 18px; overflow: hidden;
+  opacity: 0;
+}
+.rate-swipe-card.rate-card-in {
+  animation: rateCardIn .38s cubic-bezier(.22,1,.36,1) forwards;
+}
+.rate-swipe-card.rate-card-out {
+  animation: rateCardOut .35s ease forwards;
+}
+
+.rate-swipe-left {
+  padding: 36px 32px 40px;
+  border-right: 1px solid var(--line);
+  overflow-y: auto;
+}
+.rate-swipe-img {
+  width: 100%; max-height: 220px; object-fit: cover;
+  border-radius: 10px; margin-bottom: 20px;
+}
+.rate-swipe-title { font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.5rem; color: var(--ink); margin-bottom: 4px; }
+.rate-swipe-author { font-size: .85rem; color: var(--muted); margin-bottom: 12px; }
+.rate-swipe-desc { font-size: .92rem; color: var(--ink-soft); line-height: 1.65; }
+
+.rate-swipe-right {
+  padding: 28px 24px 32px;
+  background: var(--panel);
+  display: flex; flex-direction: column;
+}
+.rate-swipe-form-head {
+  font-family: 'Outfit', sans-serif; font-weight: 800;
+  font-size: 1.05rem; color: var(--ink); margin-bottom: 18px;
+}
+
+@media (max-width: 720px) {
+  .rate-swipe-card { grid-template-columns: 1fr; }
+  .rate-swipe-left { border-right: none; border-bottom: 1px solid var(--line); }
+}
