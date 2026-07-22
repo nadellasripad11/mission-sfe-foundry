@@ -519,11 +519,11 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 .tech-orange { color: var(--orange); opacity: 0.16; }
 
 /* Stronger blueprint background — home page only */
-.techbg-strong .tech-item { opacity: 0.22; }
-.techbg-strong .tech-label { opacity: 0.26; }
-.techbg-strong .tech-num { opacity: 0.28; }
-.techbg-strong .tech-blue { opacity: 0.38; }
-.techbg-strong .tech-orange { opacity: 0.42; }
+.techbg-strong .tech-item { opacity: 0.16; }
+.techbg-strong .tech-label { opacity: 0.18; }
+.techbg-strong .tech-num { opacity: 0.20; }
+.techbg-strong .tech-blue { opacity: 0.30; }
+.techbg-strong .tech-orange { opacity: 0.34; }
 @keyframes tfloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-18px); } }
 @keyframes tdrift { 0%,100% { transform: translate(0,0); } 50% { transform: translate(12px,-14px); } }
 @keyframes tspin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
