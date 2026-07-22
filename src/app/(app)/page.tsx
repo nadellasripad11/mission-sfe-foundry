@@ -18,7 +18,7 @@ function HeroDecor() {
   return (
     <div className="hero-decor" aria-hidden="true">
       <div className="tech-item tech-num" style={{ left: '70.5%', top: '2%' }}>{DOTS}</div>
-      <div className="tech-item tech-label" style={{ left: '70.5%', top: '9%' }}>Execution</div>
+      <div className="tech-item tech-label" style={{ left: '70.5%', top: '17%' }}>Execution</div>
       <div className="tech-item tech-orange" style={{ left: '38%', top: '20%' }}>{PLUS}</div>
       <div className="tech-item tech-num" style={{ left: '79%', top: '31%' }}>× 10³</div>
       <div className="tech-item tech-num tech-blue" style={{ left: '74.5%', top: '50%' }}>88</div>
