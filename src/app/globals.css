@@ -1472,3 +1472,137 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 .dash-section-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
 .dash-section-title { font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.2rem; margin: 0; }
 .dash-section-link { font-size: .82rem; color: var(--orange); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
+
+/* ── Rate page 3-column layout ── */
+.rate-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr 320px;
+  gap: 0;
+  min-height: calc(100vh - 220px);
+  align-items: stretch;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 60px;
+}
+
+/* Left: project picker */
+.rate-picker {
+  border-right: 1px solid var(--line);
+  background: var(--white);
+  overflow-y: auto;
+  max-height: calc(100vh - 220px);
+  position: sticky;
+  top: 62px;
+}
+.rate-picker-head {
+  font-family: var(--mono);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  background: var(--white);
+  z-index: 1;
+}
+.rate-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  transition: background .15s;
+}
+.rate-picker-item:hover { background: var(--panel); }
+.rate-picker-item.active { background: var(--panel); border-left: 3px solid var(--orange); padding-left: 11px; }
+.rate-picker-thumb { width: 40px; height: 32px; object-fit: cover; border-radius: 5px; flex-shrink: 0; }
+.rate-picker-info { flex: 1; min-width: 0; }
+.rate-picker-title { font-weight: 700; font-size: .82rem; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rate-picker-author { font-size: .74rem; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rate-picker-score { font-size: .72rem; color: var(--orange); font-weight: 600; font-family: var(--mono); margin-top: 3px; }
+.rate-picker-unrated { font-size: .72rem; color: var(--faint); margin-top: 3px; }
+
+/* Center: project detail */
+.rate-detail {
+  padding: 28px 28px 40px;
+  border-right: 1px solid var(--line);
+  overflow-y: auto;
+  max-height: calc(100vh - 220px);
+}
+.rate-detail-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rate-detail-img {
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+.rate-detail-title { font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.4rem; color: var(--ink); margin-bottom: 4px; }
+.rate-detail-author { font-size: .85rem; color: var(--muted); margin-bottom: 12px; }
+.rate-detail-desc { font-size: .9rem; color: var(--ink-soft); line-height: 1.6; }
+
+.rate-detail-scores {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.rate-detail-scores-title {
+  font-family: var(--mono);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.rate-detail-score-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.rate-detail-score-label { font-size: .8rem; color: var(--ink); width: 90px; flex-shrink: 0; font-weight: 600; }
+.rate-detail-bar-wrap { flex: 1; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.rate-detail-bar { height: 100%; background: var(--orange); border-radius: 3px; transition: width .4s ease; }
+.rate-detail-score-val { font-size: .8rem; color: var(--orange); font-weight: 700; font-family: var(--mono); width: 28px; text-align: right; flex-shrink: 0; }
+
+/* Right: rating form */
+.rate-form-col {
+  background: var(--panel);
+  overflow-y: auto;
+  max-height: calc(100vh - 220px);
+  padding: 20px 18px;
+}
+.rate-form-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px 18px;
+}
+.rate-form-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--ink);
+  margin-bottom: 18px;
+}
+
+@media (max-width: 900px) {
+  .rate-layout { grid-template-columns: 1fr; }
+  .rate-picker { max-height: 280px; position: static; }
+  .rate-detail { max-height: none; border-right: none; border-bottom: 1px solid var(--line); }
+  .rate-form-col { max-height: none; }
+}
