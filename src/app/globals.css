@@ -1195,14 +1195,14 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 .mp-joined { font-size: .78rem; color: var(--muted); margin-top: 2px; font-family: var(--mono); }
 .mp-bio { font-size: .9rem; color: var(--ink-soft); margin-top: 6px; line-height: 1.5; }
 
-.mp-ship-btn {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 10px 22px; border-radius: 10px; font-weight: 800; font-size: .88rem;
+.mp-new-project-btn {
+  margin-left: auto;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 16px; border-radius: 8px; font-weight: 700; font-size: .82rem;
   background: var(--orange); color: #fff; border: none; cursor: pointer;
-  transition: opacity .15s; flex-shrink: 0; align-self: flex-end; margin-bottom: 2px;
-  letter-spacing: .02em;
+  transition: opacity .15s; letter-spacing: .01em;
 }
-.mp-ship-btn:hover { opacity: .88; }
+.mp-new-project-btn:hover { opacity: .88; }
 
 .mp-stats {
   display: flex; gap: 28px; padding: 14px 24px;

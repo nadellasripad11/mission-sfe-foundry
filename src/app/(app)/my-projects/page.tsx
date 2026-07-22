@@ -348,9 +348,6 @@ export default function MyProjectsPage() {
               {joinedAt && <div className="mp-joined">Joined {formatJoined(joinedAt)}</div>}
               {bio && <div className="mp-bio">{bio}</div>}
             </div>
-            <button className="mp-ship-btn" onClick={() => setShowForm(s => !s)}>
-              {showForm ? 'Close' : 'Ship Project'} <IconArrow size={15} />
-            </button>
           </div>
 
           {/* Stats */}
@@ -373,11 +370,14 @@ export default function MyProjectsPage() {
           </div>
         )}
 
-        {/* Tabs */}
+        {/* Tabs + New Project */}
         <div className="project-tabs">
           <button className={`project-tab${tab === 'feed' ? ' active' : ''}`} onClick={() => setTab('feed')}>Feed</button>
           <button className={`project-tab${tab === 'projects' ? ' active' : ''}`} onClick={() => setTab('projects')}>
             Projects ({projects.length})
+          </button>
+          <button className="mp-new-project-btn" onClick={() => { setTab('projects'); setShowForm(s => !s); }}>
+            {showForm ? '✕ Close' : '+ New Project'}
           </button>
         </div>
 
