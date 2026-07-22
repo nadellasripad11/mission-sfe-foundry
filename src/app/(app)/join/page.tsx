@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { useAuth } from '../../../components/AuthProvider';
 
-export default function JoinPage() {
+function JoinInner() {
   const params = useSearchParams();
   const router = useRouter();
   const { openAuth, user } = useAuth();
@@ -15,14 +16,20 @@ export default function JoinPage() {
       localStorage.setItem('sfe_ref', ref.toUpperCase());
     }
     if (user) {
-      // Already signed in — go to dashboard
       router.replace('/dashboard');
     } else {
-      // Open signup modal
       openAuth('signup');
       router.replace('/');
     }
   }, []);
 
   return null;
+}
+
+export default function JoinPage() {
+  return (
+    <Suspense>
+      <JoinInner />
+    </Suspense>
+  );
 }
