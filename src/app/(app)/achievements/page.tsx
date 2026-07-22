@@ -5,19 +5,33 @@ import { useEffect, useState } from 'react';
 import { getMyProjects } from '../../../lib/projects';
 import Link from 'next/link';
 import { IconArrow } from '../../../components/icons';
+import {
+  IconFirstProject,
+  IconMultiProject,
+  IconProlic,
+  IconVoted,
+  IconHundredVotes,
+  IconHardware,
+  IconAI,
+  IconStreak,
+  IconCommunity,
+  IconFounder,
+  IconMystery,
+  IconLock,
+} from '../../../components/AchievementIcons';
 
 const ACHIEVEMENTS = [
-  { id: 1, title: 'First Project', description: 'Ship your first project.', icon: '🚀', earned: false },
-  { id: 2, title: '5 Projects', description: 'Ship 5 projects.', icon: '⭐', earned: false },
-  { id: 3, title: 'Ultra Prolific', description: 'Ship 10 projects.', icon: '👑', earned: false },
-  { id: 4, title: 'Voted For', description: 'Get 5 votes on a project.', icon: '🎯', earned: false },
-  { id: 5, title: '100 Votes', description: 'Get 100 total votes.', icon: '🏆', earned: false },
-  { id: 6, title: 'Hardware Builder', description: 'Ship a hardware project.', icon: '🔧', earned: false },
-  { id: 7, title: 'AI Pioneer', description: 'Ship a project using AI.', icon: '🤖', earned: false },
-  { id: 8, title: '7-Day Streak', description: 'Contribute 7 days in a row.', icon: '🔥', earned: false },
-  { id: 9, title: 'Community Champion', description: 'Rate 20 projects.', icon: '💪', earned: false },
-  { id: 10, title: 'Founder', description: 'Ship in the SFE Foundry launch month.', icon: '⚡', earned: false },
-  { id: 11, title: 'Mystery Badge', description: 'Unknown achievement unlocked...', icon: '❓', earned: false },
+  { id: 1, title: 'First Project', description: 'Ship your first project.', Icon: IconFirstProject, earned: false },
+  { id: 2, title: '5 Projects', description: 'Ship 5 projects.', Icon: IconMultiProject, earned: false },
+  { id: 3, title: 'Ultra Prolific', description: 'Ship 10 projects.', Icon: IconProlic, earned: false },
+  { id: 4, title: 'Voted For', description: 'Get 5 votes on a project.', Icon: IconVoted, earned: false },
+  { id: 5, title: '100 Votes', description: 'Get 100 total votes.', Icon: IconHundredVotes, earned: false },
+  { id: 6, title: 'Hardware Builder', description: 'Ship a hardware project.', Icon: IconHardware, earned: false },
+  { id: 7, title: 'AI Pioneer', description: 'Ship a project using AI.', Icon: IconAI, earned: false },
+  { id: 8, title: '7-Day Streak', description: 'Contribute 7 days in a row.', Icon: IconStreak, earned: false },
+  { id: 9, title: 'Community Champion', description: 'Rate 20 projects.', Icon: IconCommunity, earned: false },
+  { id: 10, title: 'Founder', description: 'Ship in the SFE Foundry launch month.', Icon: IconFounder, earned: false },
+  { id: 11, title: 'Mystery Badge', description: 'Unknown achievement unlocked...', Icon: IconMystery, earned: false },
 ];
 
 export default function AchievementsPage() {
@@ -97,11 +111,14 @@ export default function AchievementsPage() {
                 transition: 'all 0.18s',
               }}
             >
-              {!isEarned && (
-                <div style={{ position: 'absolute', top: '12px', right: '12px', fontSize: '2rem' }}>🔒</div>
-              )}
-
-              <div style={{ fontSize: '3rem', marginBottom: '12px' }}>{achievement.icon}</div>
+              <div style={{ position: 'relative', marginBottom: '12px', width: '48px', height: '48px', color: isEarned ? 'var(--orange)' : 'var(--muted)' }}>
+                <achievement.Icon size={48} />
+                {!isEarned && (
+                  <div style={{ position: 'absolute', top: '-6px', right: '-6px', background: 'var(--ink)', color: 'var(--white)', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--white)' }}>
+                    <IconLock size={16} />
+                  </div>
+                )}
+              </div>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--ink)', marginBottom: '6px', margin: 0 }}>
                 {achievement.title}
               </h3>
