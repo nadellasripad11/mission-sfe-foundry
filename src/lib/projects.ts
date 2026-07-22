@@ -130,13 +130,19 @@ export async function submitRating(input: {
   originality: number; technicality: number; usability: number; impact: number;
   feedback: string;
 }) {
-  // Check if rating already exists for this user+project
-  const { data: existing } = await supabase
+  // Verify session is active
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) throw new Error('Not authenticated — please sign in again.');
+
+  // Check if rating already exists
+  const { data: existing, error: selectErr } = await supabase
     .from('ratings')
     .select('id')
     .eq('project_id', input.project_id)
     .eq('user_id', input.user_id)
     .maybeSingle();
+
+  if (selectErr) throw new Error(`Select failed: ${selectErr.message} (${selectErr.code})`);
 
   if (existing) {
     const { error } = await supabase
@@ -150,12 +156,12 @@ export async function submitRating(input: {
       })
       .eq('project_id', input.project_id)
       .eq('user_id', input.user_id);
-    if (error) throw error;
+    if (error) throw new Error(`Update failed: ${error.message} (${error.code})`);
   } else {
     const { error } = await supabase
       .from('ratings')
       .insert(input);
-    if (error) throw error;
+    if (error) throw new Error(`Insert failed: ${error.message} (${error.code})`);
   }
 }
 
