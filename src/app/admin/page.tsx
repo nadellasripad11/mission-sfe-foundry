@@ -210,7 +210,7 @@ function Dashboard() {
             )}
             Refresh
           </button>
-          <button className="adm-btn adm-btn-danger" onClick={() => { sessionStorage.removeItem('adm-auth'); window.location.reload(); }}>
+          <button className="adm-btn adm-btn-danger" onClick={() => { sessionStorage.removeItem('adm-auth'); window.location.href = '/'; }}>
             Sign Out
           </button>
         </div>
