@@ -11,6 +11,8 @@ import {
 } from '../../../../lib/projects';
 import { IconArrow } from '../../../../components/icons';
 
+const BUZZ_QUESTIONS_KEYS = ['inspiration', 'how_built', 'biggest_challenge', 'proud_of'];
+
 const CATEGORIES: { key: 'originality' | 'technicality' | 'usability' | 'impact'; label: string; desc: string }[] = [
   { key: 'originality', label: 'Originality', desc: 'How unique or creative is the core idea?' },
   { key: 'technicality', label: 'Technicality', desc: 'How impressive is the technical execution?' },
@@ -82,7 +84,7 @@ export default function ProjectPage() {
       if (mine) {
         setMyRating(mine);
         setRating({ originality: mine.originality, technicality: mine.technicality, usability: mine.usability, impact: mine.impact });
-        setFeedback(mine.feedback);
+        setFeedback(mine.feedback ?? '');
         setRateDone(true);
       }
     }
@@ -297,5 +299,3 @@ export default function ProjectPage() {
     </div>
   );
 }
-
-const BUZZ_QUESTIONS_KEYS = ['inspiration', 'how_built', 'biggest_challenge', 'proud_of'];
