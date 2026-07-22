@@ -324,8 +324,20 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 .feature-t { font-family:'Outfit'; font-weight:800; font-size:.92rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; }
 .feature-d { color:var(--muted); font-size:.86rem; line-height:1.6; max-width:220px; margin:0 auto; }
 
-/* ── Hero dark actions row already styled; visual holds 3D logo ── */
-.hero-visual { height:auto; display:flex; align-items:center; justify-content:center; }
+/* ── Hero visual: fixed-aspect box so the stripe + its annotation cluster always
+   keep the same relative geometry no matter the viewport width ── */
+.hero-visual { position:relative; width:100%; max-width:560px; margin:0 auto; aspect-ratio:1.38; }
+.hero-stripes { position:absolute; left:17.6%; top:33%; width:49.5%; z-index:1; }
+.hero-stripes svg { width:100%; height:auto; display:block; }
+
+/* Scoped annotation cluster positioned as % of the hero-visual box (not the viewport) */
+.hero-decor { position:absolute; inset:0; pointer-events:none; z-index:0; }
+.hero-decor .tech-item { position:absolute; opacity:0.22; }
+.hero-decor .tech-label { opacity:0.26; }
+.hero-decor .tech-num { opacity:0.30; font-size:1.1rem; }
+.hero-decor .tech-blue { opacity:0.4; }
+.hero-decor .tech-orange { opacity:0.42; }
+@media (max-width: 768px) { .hero-visual { display:none; } }
 
 /* ── Date badge (shared) ── */
 .ev-date { flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center;

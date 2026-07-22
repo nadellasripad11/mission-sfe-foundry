@@ -9,6 +9,27 @@ import {
   LogoHero3D, IconBulb, IconCode, IconTrophy, IconUsers, IconArrow,
   IconLayers, IconInfinity,
 } from '../../components/icons';
+import { DOTS, PLUS, RING } from '../../components/TechBackground';
+
+// Scoped copy of the "Execution / dots / + / ×10³ / 88 / const vision / ring / Iterate"
+// cluster, positioned as % of the hero-visual box itself (not the viewport) so it always
+// hugs the stripe graphic the same way regardless of screen size.
+function HeroDecor() {
+  return (
+    <div className="hero-decor" aria-hidden="true">
+      <div className="tech-item tech-num" style={{ left: '70.5%', top: '2%' }}>{DOTS}</div>
+      <div className="tech-item tech-label" style={{ left: '70.5%', top: '9%' }}>Execution</div>
+      <div className="tech-item tech-orange" style={{ left: '38%', top: '20%' }}>{PLUS}</div>
+      <div className="tech-item tech-num" style={{ left: '79%', top: '31%' }}>× 10³</div>
+      <div className="tech-item tech-num tech-blue" style={{ left: '74.5%', top: '50%' }}>88</div>
+      <div className="tech-item" style={{ left: '66%', top: '67%' }}>
+        <pre>{`const vision = {\n  build: true,\n  scale: true,\n  impact: true\n}`}</pre>
+      </div>
+      <div className="tech-item" style={{ left: '19%', top: '78%' }}>{RING}</div>
+      <div className="tech-item tech-label" style={{ left: '58%', top: '96%' }}>Iterate</div>
+    </div>
+  );
+}
 
 const FEATURES = [
   { Icon: IconBulb,   t: 'Entrepreneurship', d: 'Learn, build, and launch with real-world impact.' },
@@ -79,7 +100,10 @@ export default function HomePage() {
             <Link href="/about" className="btn-ghost">LEARN MORE</Link>
           </div>
         </div>
-        <div className="hero-visual"><LogoHero3D size={380} /></div>
+        <div className="hero-visual">
+          <HeroDecor />
+          <div className="hero-stripes"><LogoHero3D size={380} /></div>
+        </div>
       </section>
 
       {/* ── Feature columns ── */}
