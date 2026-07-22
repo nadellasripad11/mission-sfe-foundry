@@ -268,17 +268,16 @@ export default function MyProjectsPage() {
 
   return (
     <div className="my-projects-page">
-      {editing && (
-        <EditProfile
-          initialBio={bio} initialBanner={bannerUrl} initialAvatar={avatarUrl} avatarLetter={avatarLetter}
-          username={username} joinedAt={formatJoined(joinedAt)} projectCount={projects.length}
-          onSave={saveProfile} onCancel={() => setEditing(false)}
-        />
-      )}
-
       <div className="mp-main">
-        {/* Profile card */}
+        {/* Profile card — switches between view and edit mode inline */}
         <div className="mp-profile-card">
+        {editing ? (
+          <EditProfile
+            initialBio={bio} initialBanner={bannerUrl} initialAvatar={avatarUrl} avatarLetter={avatarLetter}
+            username={username} joinedAt={formatJoined(joinedAt)} projectCount={projects.length}
+            onSave={saveProfile} onCancel={() => setEditing(false)}
+          />
+        ) : (<>
           {/* Banner */}
           <div className="mp-banner" onClick={() => setEditing(true)}
             style={bannerUrl ? { backgroundImage: `url(${bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
@@ -310,6 +309,7 @@ export default function MyProjectsPage() {
 
           {/* Edit profile link */}
           <button className="mp-edit-link" onClick={() => setEditing(true)}>Edit profile</button>
+        </>)}
         </div>
 
         {/* Ship form */}
