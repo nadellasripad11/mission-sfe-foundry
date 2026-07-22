@@ -93,7 +93,10 @@ export default function RatePage() {
       await submitRating({ project_id: selected.id, user_id: user.id, ...score, feedback: feedback.trim() });
       const [r, mine] = await Promise.all([getProjectRatings(selected.id), getMyRating(selected.id, user.id)]);
       setRatings(r); setMyRating(mine); setRateDone(true);
-    } catch { setRateErr('Something went wrong. Try again.'); }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setRateErr(`Error: ${msg}`);
+    }
     finally { setSubmitting(false); }
   };
 
