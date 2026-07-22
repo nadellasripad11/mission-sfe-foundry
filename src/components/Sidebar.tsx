@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from './AuthProvider';
 import SFELogo from './SFELogo';
-import { IconRocket, IconBell, IconStar, IconCalendar, IconCart, IconCode, IconUser } from './SidebarIcons';
 import { useState } from 'react';
 
 export default function Sidebar() {
@@ -15,13 +14,13 @@ export default function Sidebar() {
   const isActive = (path: string) => pathname === path || pathname?.startsWith(path + '/');
 
   const navItems = [
-    { href: '/dashboard', label: 'Home', Icon: IconRocket },
-    { href: '/display', label: 'Display', Icon: IconBell },
-    { href: '/rate', label: 'Rate', Icon: IconStar },
-    { href: '/mission', label: 'Missions', Icon: IconCalendar },
-    { href: '/shop', label: 'Shop', Icon: IconCart },
-    { href: '/resources', label: 'Resources', Icon: IconCode },
-    { href: '/my-projects', label: 'My Projects', Icon: IconUser },
+    { href: '/dashboard', label: 'Home', emoji: '🚀' },
+    { href: '/display', label: 'Display', emoji: '🔔' },
+    { href: '/rate', label: 'Rate', emoji: '📓' },
+    { href: '/mission', label: 'Missions', emoji: '📅' },
+    { href: '/shop', label: 'Shop', emoji: '🛒' },
+    { href: '/resources', label: 'Resources', emoji: '📕' },
+    { href: '/my-projects', label: 'My Projects', emoji: '👤' },
   ];
 
   return (
@@ -33,14 +32,14 @@ export default function Sidebar() {
 
       {/* Nav items */}
       <nav className="sidebar-nav">
-        {navItems.map(({ href, label, Icon }) => (
+        {navItems.map(({ href, label, emoji }) => (
           <Link
             key={href}
             href={href}
             className={`sidebar-link ${isActive(href) ? 'active' : ''}`}
             title={label}
           >
-            <Icon size={24} />
+            <span className="sidebar-emoji" aria-hidden="true">{emoji}</span>
             <span className="sidebar-label">{label}</span>
           </Link>
         ))}
