@@ -125,7 +125,7 @@ export default function DashboardPage() {
                     <div className="proj-title">{p.title}</div>
                     <div className="proj-author">by {p.author_name || 'Anonymous'}</div>
                     <p className="proj-desc">{p.description}</p>
-                    {p.buzz && <div className="display-buzz-hint">📖 Builder story inside</div>}
+                    {p.buzz && <div className="display-buzz-hint">Builder story inside</div>}
                     {p.count > 0 ? (
                       <div className="rate-card-scores" style={{ marginTop: 8 }}>
                         {(['originality', 'technicality', 'usability', 'impact'] as const).map(k => (

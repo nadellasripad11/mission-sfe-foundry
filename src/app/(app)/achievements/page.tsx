@@ -133,7 +133,7 @@ export default function AchievementsPage() {
               onClick={copyLink}
               style={{ whiteSpace: 'nowrap', minWidth: 110 }}
             >
-              {copied ? '✓ Copied!' : 'Copy Link'}
+              {copied ? 'Copied!' : 'Copy Link'}
             </button>
           </div>
         ) : null}
@@ -173,7 +173,10 @@ export default function AchievementsPage() {
                   </div>
                 )}
                 {earned && (
-                  <div style={{ fontSize: '.78rem', fontWeight: 600, color: badge.color, fontFamily: 'var(--mono)' }}>✓ Earned</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '.78rem', fontWeight: 600, color: badge.color, fontFamily: 'var(--mono)' }}>
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    Earned
+                  </div>
                 )}
               </div>
             );
@@ -209,7 +212,10 @@ export default function AchievementsPage() {
               <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--ink)', marginBottom: 6 }}>{achievement.title}</h3>
               <p style={{ fontSize: '.88rem', color: 'var(--faint)', marginBottom: 12 }}>{achievement.description}</p>
               {isEarned
-                ? <div style={{ fontSize: '.8rem', fontWeight: 600, color: 'var(--orange)', fontFamily: 'var(--mono)' }}>✓ Earned</div>
+                ? <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '.8rem', fontWeight: 600, color: 'var(--orange)', fontFamily: 'var(--mono)' }}>
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    Earned
+                  </div>
                 : <div style={{ fontSize: '.8rem', color: 'var(--muted)', fontFamily: 'var(--mono)' }}>Locked</div>
               }
             </div>

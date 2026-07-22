@@ -76,7 +76,7 @@ export default function DisplayPage() {
                         {p.tags.map((t) => <span key={t} className="tag mini">#{t}</span>)}
                       </div>
                     )}
-                    {p.buzz && <div className="display-buzz-hint">📖 Builder story inside</div>}
+                    {p.buzz && <div className="display-buzz-hint">Builder story inside</div>}
                     <div className="proj-actions">
                       {p.count > 0
                         ? <span className="proj-rating">Overall {p.overall.toFixed(1)}/5 <span style={{ color: 'var(--faint)' }}>({p.count})</span></span>

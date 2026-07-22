@@ -221,9 +221,9 @@ function ShipForm({ userId, authorName, onDone }: { userId: string; authorName: 
         ))}
         {err && <div className="msg-err">{err}</div>}
         <div className="form-actions">
-          <button type="button" className="btn-ghost" onClick={() => setStep('details')}>← Back</button>
+          <button type="button" className="btn-ghost" onClick={() => setStep('details')} style={{display:'inline-flex',alignItems:'center',gap:6}}><IconArrow size={14} style={{transform:'rotate(180deg)'}}/> Back</button>
           <button className="btn-primary" type="submit" disabled={saving}>
-            {saving ? 'Publishing…' : 'Ship Project →'}
+            {saving ? 'Publishing…' : <span style={{display:'inline-flex',alignItems:'center',gap:6}}>Ship Project <IconArrow size={14}/></span>}
           </button>
         </div>
         <p className="buzz-skip-hint">Skip any questions you prefer not to answer — they won&apos;t be shown if empty.</p>
@@ -266,7 +266,7 @@ function ShipForm({ userId, authorName, onDone }: { userId: string; authorName: 
       )}
       {err && <div className="msg-err">{err}</div>}
       <button className="btn-primary" type="submit" style={{ marginTop: 16, width: '100%' }}>
-        Next: Tell Your Story →
+        <span style={{display:'inline-flex',alignItems:'center',gap:6}}>Next: Tell Your Story <IconArrow size={14}/></span>
       </button>
     </form>
   );
@@ -402,7 +402,7 @@ export default function MyProjectsPage() {
           <div className="achievements-count">{projects.length > 0 ? '1' : '0'} / 11 earned</div>
           <div className="progress-bar"><div className="progress-fill" style={{ width: `${(Math.min(projects.length, 11) / 11) * 100}%` }} /></div>
         </div>
-        <Link href="/achievements" className="achievements-link">See all achievements →</Link>
+        <Link href="/achievements" className="achievements-link" style={{display:'inline-flex',alignItems:'center',gap:4}}>See all achievements <IconArrow size={12}/></Link>
       </div>
     </div>
   );

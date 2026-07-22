@@ -135,7 +135,7 @@ export default function ProfilePage() {
           <div className="widget-stat">0 / 5</div>
           <div className="widget-substat">earned</div>
           <Link href="#" style={{ display: 'block', marginTop: 12, color: 'var(--orange)', textDecoration: 'none', fontSize: '.9rem', fontWeight: 600 }}>
-            See all achievements →
+            See all achievements
           </Link>
         </div>
       </aside>

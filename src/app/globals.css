@@ -1445,7 +1445,7 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 .rate-card-score { display: flex; flex-direction: column; align-items: center; gap: 1px; background: var(--panel); border: 1px solid var(--line); border-radius: 7px; padding: 4px 8px; }
 .rate-card-score-label { font-size: .6rem; font-weight: 700; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
 .rate-card-score-val { font-family: var(--mono); font-size: .78rem; font-weight: 700; color: var(--orange); }
-.display-buzz-hint { font-size: .76rem; color: var(--muted); margin-top: 6px; }
+.display-buzz-hint { font-size: .76rem; color: var(--orange); margin-top: 6px; font-weight: 600; letter-spacing: .02em; }
 
 /* ── Social Buzz Feed (Dashboard) ────────────────────────────────────────── */
 .buzz-feed-section { margin-bottom: 36px; }

@@ -151,7 +151,7 @@ export default function RatePage() {
 
         ) : phase === 'done' || !current ? (
           <div className="rate-card-shell rate-all-done">
-            <div style={{ fontSize: '2.5rem', marginBottom: 16 }}>🎉</div>
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style={{ marginBottom: 16 }}><circle cx="24" cy="24" r="22" stroke="var(--orange)" strokeWidth="2"/><path d="M14 24l7 7 13-13" stroke="var(--orange)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
             <h2 style={{ fontFamily: 'Outfit', fontWeight: 800, fontSize: '1.6rem', marginBottom: 8 }}>All caught up!</h2>
             <p style={{ color: 'var(--muted)', marginBottom: 24 }}>
               {rated > 0 ? `You rated ${rated} project${rated !== 1 ? 's' : ''} this session. Come back when new ones are shipped.` : 'No unrated projects left. Check back after more projects are shipped.'}

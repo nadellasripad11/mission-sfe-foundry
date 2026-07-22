@@ -22,10 +22,10 @@ const CATEGORIES: { key: 'originality' | 'technicality' | 'usability' | 'impact'
 ];
 
 const BUZZ_LABELS: Record<string, string> = {
-  inspiration: '💡 What sparked the idea',
-  how_built: '🔧 How it was built',
-  biggest_challenge: '🧗 Biggest challenge',
-  proud_of: '🏆 Most proud of',
+  inspiration: 'What sparked the idea',
+  how_built: 'How it was built',
+  biggest_challenge: 'Biggest challenge',
+  proud_of: 'Most proud of',
 };
 
 function ScoreBar({ value, max = 5 }: { value: number; max?: number }) {
