@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../../components/AuthProvider';
 import { supabase } from '../../../lib/supabaseClient';
-import { createProject, deleteProject, getMyProjects, type Project } from '../../../lib/projects';
+import { createProject, deleteProject, getMyProjects, type Project, type SocialBuzz } from '../../../lib/projects';
 import { uploadImage } from '../../../lib/uploadImage';
 import { IconArrow, IconClose } from '../../../components/icons';
 
@@ -151,13 +151,22 @@ function EditProfile({
 }
 
 // ── Ship project form ─────────────────────────────────────────────────────────
+const BUZZ_QUESTIONS: { key: keyof SocialBuzz; label: string; placeholder: string }[] = [
+  { key: 'inspiration', label: 'What made you think of this idea?', placeholder: 'The spark that started it all…' },
+  { key: 'how_built', label: 'How did you build it? What tools or tech did you use?', placeholder: 'Walk us through your process and stack…' },
+  { key: 'biggest_challenge', label: 'What was the biggest challenge you faced?', placeholder: 'The hardest part of building this…' },
+  { key: 'proud_of', label: "What's one thing you're most proud of?", placeholder: 'The feature or moment that made it worth it…' },
+];
+
 function ShipForm({ userId, authorName, onDone }: { userId: string; authorName: string; onDone: () => void }) {
+  const [step, setStep] = useState<'details' | 'buzz'>('details');
   const [title, setTitle] = useState('Untitled');
   const [description, setDescription] = useState('');
   const [url, setUrl] = useState('');
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [pending, setPending] = useState<File[]>([]);
+  const [buzz, setBuzz] = useState<SocialBuzz>({ inspiration: '', how_built: '', biggest_challenge: '', proud_of: '' });
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
 
@@ -167,23 +176,63 @@ function ShipForm({ userId, authorName, onDone }: { userId: string; authorName: 
     setTags([...tags, t]); setTagInput('');
   };
 
-  const submit = async (e: React.FormEvent) => {
+  const goToBuzz = (e: React.FormEvent) => {
     e.preventDefault(); setErr('');
     if (!title.trim() || !description.trim() || !url.trim()) return setErr('Title, description and link are required.');
     if (pending.length === 0) return setErr('Add at least one screenshot.');
     if (tags.length === 0) return setErr('Add at least one tag.');
+    setStep('buzz');
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault(); setErr('');
+    const filledBuzz = BUZZ_QUESTIONS.filter(q => buzz[q.key].trim().length > 0);
+    const finalBuzz = filledBuzz.length === BUZZ_QUESTIONS.length ? buzz : null;
     setSaving(true);
     try {
       const urls: string[] = [];
       for (const f of pending) urls.push(await uploadImage(f, userId));
-      await createProject({ user_id: userId, author_name: authorName, title: title.trim(), description: description.trim(), url: url.trim(), screenshots: urls, tags });
+      await createProject({ user_id: userId, author_name: authorName, title: title.trim(), description: description.trim(), url: url.trim(), screenshots: urls, tags, buzz: finalBuzz });
       onDone();
     } catch (e: unknown) { setErr(e instanceof Error ? e.message : 'Something went wrong.'); }
     finally { setSaving(false); }
   };
 
+  if (step === 'buzz') {
+    return (
+      <form className="project-form" onSubmit={submit}>
+        <div className="buzz-header">
+          <div className="buzz-badge">Social Buzz</div>
+          <h2>Tell your story</h2>
+          <p className="buzz-sub">These answers appear on your project page and the homepage feed. All optional — but the community loves reading them.</p>
+        </div>
+        {BUZZ_QUESTIONS.map(q => (
+          <div key={q.key}>
+            <label className="form-label buzz-q">{q.label}</label>
+            <textarea
+              className="form-input buzz-textarea"
+              rows={3}
+              placeholder={q.placeholder}
+              value={buzz[q.key]}
+              onChange={e => setBuzz(b => ({ ...b, [q.key]: e.target.value }))}
+              style={{ resize: 'vertical' }}
+            />
+          </div>
+        ))}
+        {err && <div className="msg-err">{err}</div>}
+        <div className="form-actions">
+          <button type="button" className="btn-ghost" onClick={() => setStep('details')}>← Back</button>
+          <button className="btn-primary" type="submit" disabled={saving}>
+            {saving ? 'Publishing…' : 'Ship Project →'}
+          </button>
+        </div>
+        <p className="buzz-skip-hint">Skip any questions you prefer not to answer — they won&apos;t be shown if empty.</p>
+      </form>
+    );
+  }
+
   return (
-    <form className="project-form" onSubmit={submit}>
+    <form className="project-form" onSubmit={goToBuzz}>
       <h2>Ship Your Project</h2>
       <label className="form-label">Title *</label>
       <input className="form-input" value={title} onChange={e => setTitle(e.target.value)} required />
@@ -216,8 +265,8 @@ function ShipForm({ userId, authorName, onDone }: { userId: string; authorName: 
         </div>
       )}
       {err && <div className="msg-err">{err}</div>}
-      <button className="btn-primary" type="submit" disabled={saving} style={{ marginTop: 16, width: '100%' }}>
-        {saving ? 'Publishing…' : 'Ship Project →'}
+      <button className="btn-primary" type="submit" style={{ marginTop: 16, width: '100%' }}>
+        Next: Tell Your Story →
       </button>
     </form>
   );

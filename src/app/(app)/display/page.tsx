@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+
 import Footer from '../../../components/Footer';
 import { getProjects, type ProjectWithRating } from '../../../lib/projects';
 import { IconArrow } from '../../../components/icons';
@@ -63,23 +64,28 @@ export default function DisplayPage() {
         ) : (
           <div className="proj-grid" style={{ marginTop: 22 }}>
             {shown.map((p) => (
-              <article key={p.id} className="proj-card">
-                {p.screenshots[0] && <div className="proj-shot"><img src={p.screenshots[0]} alt="" /></div>}
-                <div className="proj-body">
-                  <div className="proj-title">{p.title}</div>
-                  <div className="proj-author">by {p.author_name || 'Anonymous'}</div>
-                  <p className="proj-desc">{p.description}</p>
-                  {p.tags.length > 0 && (
-                    <div className="tag-row" style={{ marginTop: 4 }}>
-                      {p.tags.map((t) => <span key={t} className="tag mini">#{t}</span>)}
+              <Link key={p.id} href={`/project/${p.id}`} style={{ textDecoration: 'none' }}>
+                <article className="proj-card rate-card-hover">
+                  {p.screenshots[0] && <div className="proj-shot"><img src={p.screenshots[0]} alt="" /></div>}
+                  <div className="proj-body">
+                    <div className="proj-title">{p.title}</div>
+                    <div className="proj-author">by {p.author_name || 'Anonymous'}</div>
+                    <p className="proj-desc">{p.description}</p>
+                    {p.tags.length > 0 && (
+                      <div className="tag-row" style={{ marginTop: 4 }}>
+                        {p.tags.map((t) => <span key={t} className="tag mini">#{t}</span>)}
+                      </div>
+                    )}
+                    {p.buzz && <div className="display-buzz-hint">📖 Builder story inside</div>}
+                    <div className="proj-actions">
+                      {p.count > 0
+                        ? <span className="proj-rating">Overall {p.overall.toFixed(1)}/9 <span style={{ color: 'var(--faint)' }}>({p.count})</span></span>
+                        : <span style={{ color: 'var(--faint)', fontSize: '.82rem' }}>No ratings yet</span>
+                      }
                     </div>
-                  )}
-                  <div className="proj-actions">
-                    {/^https?:\/\//.test(p.url) && <a href={p.url} target="_blank" rel="noopener noreferrer" className="btn-ghost btn-sm">Open</a>}
-                    <div className="proj-rating">★ {p.count > 0 ? p.avg.toFixed(1) : '—'} <span style={{ color: 'var(--faint)' }}>({p.count})</span></div>
                   </div>
-                </div>
-              </article>
+                </article>
+              </Link>
             ))}
           </div>
         )}
