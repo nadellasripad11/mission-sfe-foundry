@@ -79,7 +79,30 @@ export default function HomePage() {
             <Link href="/about" className="btn-ghost">LEARN MORE</Link>
           </div>
         </div>
-        <div className="hero-visual"><LogoHero3D size={340} /></div>
+        <div className="hero-visual">
+          <div className="hero-orbit" aria-hidden="true">
+            <span className="hero-orbit-ring" style={{ width: 260, height: 260, top: '2%', left: '18%' }} />
+            <span className="hero-orbit-item hero-orbit-label" style={{ top: '4%', left: '30%' }}>Strategy</span>
+            <span className="hero-orbit-item hero-orbit-label" style={{ top: '10%', right: '6%' }}>Growth</span>
+            <span className="hero-orbit-item hero-orbit-label" style={{ top: '30%', right: '-2%' }}>Execution</span>
+            <span className="hero-orbit-item hero-orbit-num" style={{ top: '2%', right: '2%' }}>04</span>
+            <span className="hero-orbit-item hero-orbit-num" style={{ top: '22%', right: '18%' }}>003</span>
+            <span className="hero-orbit-item hero-orbit-num blue" style={{ top: '58%', right: '4%' }}>88</span>
+            <span className="hero-orbit-item hero-orbit-num" style={{ top: '46%', right: '-8%' }}>×10³</span>
+            <span className="hero-orbit-item hero-orbit-label" style={{ bottom: '10%', left: '2%' }}>Innovate</span>
+            <span className="hero-orbit-item hero-orbit-label" style={{ bottom: '4%', left: '32%' }}>Scalability</span>
+            <span className="hero-orbit-item hero-orbit-label" style={{ bottom: '16%', right: '2%' }}>Iterate</span>
+            <span className="hero-orbit-item hero-orbit-num orange" style={{ bottom: '2%', left: '14%' }}>05</span>
+            <span className="hero-orbit-plus" style={{ position: 'absolute', top: '14%', left: '38%' }}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4"><path d="M7 1v12M1 7h12" /></svg>
+            </span>
+            <span className="hero-orbit-plus orange" style={{ position: 'absolute', bottom: '20%', left: '46%' }}>
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4"><path d="M7 1v12M1 7h12" /></svg>
+            </span>
+            <span className="hero-orbit-dot" style={{ top: '48%', left: '30%' }} />
+          </div>
+          <LogoHero3D size={340} />
+        </div>
       </section>
 
       {/* ── Feature columns ── */}

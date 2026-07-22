@@ -325,7 +325,20 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 .feature-d { color:var(--muted); font-size:.86rem; line-height:1.6; max-width:220px; margin:0 auto; }
 
 /* ── Hero dark actions row already styled; visual holds 3D logo ── */
-.hero-visual { height:auto; display:flex; align-items:center; justify-content:center; }
+.hero-visual { height:auto; display:flex; align-items:center; justify-content:center; position:relative; padding:30px; }
+
+/* ── Decorative annotations orbiting the hero stripe graphic ── */
+.hero-orbit { position:absolute; inset:0; pointer-events:none; z-index:0; }
+.hero-orbit-item { position:absolute; font-family:var(--mono); color:var(--ink); white-space:nowrap; }
+.hero-orbit-label { font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); opacity:.55; }
+.hero-orbit-num { font-size:1.1rem; font-weight:500; color:var(--muted); opacity:.4; }
+.hero-orbit-num.blue { color:var(--blue); opacity:.55; }
+.hero-orbit-num.orange { color:var(--orange); opacity:.5; }
+.hero-orbit-plus { color:var(--blue); opacity:.5; }
+.hero-orbit-plus.orange { color:var(--orange); }
+.hero-orbit-ring { position:absolute; border:1px dashed var(--line); border-radius:50%; opacity:.7; }
+.hero-orbit-dot { position:absolute; width:5px; height:5px; border-radius:50%; background:var(--line); }
+@media (max-width: 768px) { .hero-orbit { display:none; } }
 
 /* ── Date badge (shared) ── */
 .ev-date { flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center;

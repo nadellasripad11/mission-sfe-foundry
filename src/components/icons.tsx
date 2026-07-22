@@ -71,11 +71,11 @@ export function LogoHero({ size = 320, rings = false }: { size?: number; rings?:
 // Flat 3D slabs with soft shadow — home hero visual
 export function LogoHero3D({ size = 400 }: { size?: number }) {
   const bars = [
-    { x: 96,  top: '#20202A', edge: '#0E0E16', hi: '#3A3A48' },
-    { x: 176, top: '#2684C6', edge: '#1A5C8E', hi: '#4AA0DA' },
-    { x: 256, top: '#EB5F27', edge: '#B4451A', hi: '#F5824C' },
+    { x: 110, top: '#20202A', edge: '#0E0E16', hi: '#3A3A48' },
+    { x: 178, top: '#2684C6', edge: '#1A5C8E', hi: '#4AA0DA' },
+    { x: 246, top: '#EB5F27', edge: '#B4451A', hi: '#F5824C' },
   ];
-  const W = 40, TOP = 150, BOT = 300, SLANT = 80, DX = 9, DY = 9;
+  const W = 44, TOP = 150, BOT = 300, SLANT = 80, DX = 9, DY = 9;
   const top   = (x: number) => `${x},${BOT} ${x+W},${BOT} ${x+W+SLANT},${TOP} ${x+SLANT},${TOP}`;
   const depth = (x: number) =>
     `${x},${BOT} ${x+W},${BOT} ${x+W+SLANT},${TOP} ${x+W+SLANT+DX},${TOP+DY} ${x+W+DX},${BOT+DY} ${x+DX},${BOT+DY}`;
@@ -87,7 +87,17 @@ export function LogoHero3D({ size = 400 }: { size?: number }) {
         <filter id="lh3d-shadow" x="-50%" y="-50%" width="200%" height="200%">
           <feDropShadow dx="-5" dy="14" stdDeviation="12" floodColor="#1A1A1A" floodOpacity="0.20" />
         </filter>
+        <radialGradient id="lh3d-glow" cx="50%" cy="45%" r="55%">
+          <stop offset="0%" stopColor="#FBF9F4" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#FBF9F4" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="lh3d-floor" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#1A1A1A" stopOpacity="0.16" />
+          <stop offset="100%" stopColor="#1A1A1A" stopOpacity="0" />
+        </radialGradient>
       </defs>
+      <rect x="0" y="0" width="400" height="400" fill="url(#lh3d-glow)" />
+      <ellipse cx="230" cy="320" rx="150" ry="24" fill="url(#lh3d-floor)" />
       <g filter="url(#lh3d-shadow)">
         {bars.map((b) => (
           <g key={b.x}>
