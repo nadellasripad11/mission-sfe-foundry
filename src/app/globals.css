@@ -181,7 +181,8 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 .band-text { color:var(--muted); font-size:1rem; line-height:1.7; margin-top:14px; max-width:520px; }
 
 /* Hero */
-.hero { display:grid; grid-template-columns: 1.15fr .85fr; gap:40px; align-items:center; padding: clamp(40px, 7vw, 80px) 0 clamp(36px, 5vw, 56px); }
+.hero { position:relative; display:grid; grid-template-columns: 1.15fr .85fr; gap:40px; align-items:center; padding: clamp(40px, 7vw, 80px) 0 clamp(36px, 5vw, 56px); }
+.hero-inner, .hero-visual { position:relative; z-index:1; }
 .hero-eyebrow { font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:20px; }
 .hero-title { font-family:'Outfit'; font-weight:900; font-size:clamp(2.4rem,6vw,4.2rem); line-height:.98; letter-spacing:-0.03em; text-transform:uppercase; color:var(--ink); }
 .hero-title .o { color:var(--orange); }
@@ -324,20 +325,17 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 .feature-t { font-family:'Outfit'; font-weight:800; font-size:.92rem; text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px; }
 .feature-d { color:var(--muted); font-size:.86rem; line-height:1.6; max-width:220px; margin:0 auto; }
 
-/* ── Hero visual: fixed-aspect box so the stripe + its annotation cluster always
-   keep the same relative geometry no matter the viewport width ── */
-.hero-visual { position:relative; width:100%; max-width:560px; margin:0 auto; aspect-ratio:1.38; }
-.hero-stripes { position:absolute; left:17.6%; top:33%; width:49.5%; z-index:1; }
-.hero-stripes svg { width:100%; height:auto; display:block; }
+.hero-visual { height:auto; display:flex; align-items:center; justify-content:center; }
 
-/* Scoped annotation cluster positioned as % of the hero-visual box (not the viewport) */
-.hero-decor { position:absolute; inset:0; pointer-events:none; z-index:0; }
-.hero-decor .tech-item { position:absolute; opacity:0.22; }
-.hero-decor .tech-label { opacity:0.26; }
-.hero-decor .tech-num { opacity:0.30; font-size:1.1rem; }
-.hero-decor .tech-blue { opacity:0.4; }
-.hero-decor .tech-orange { opacity:0.42; }
-@media (max-width: 768px) { .hero-visual { display:none; } }
+/* Full hero blueprint-annotation cluster, positioned as % of the .hero box itself
+   (not the viewport) so it always sits the same way regardless of screen size. */
+.hero-decor { position:absolute; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+.hero-decor .tech-item { position:absolute; opacity:0.16; font-family:var(--mono); color:var(--ink); white-space:pre; font-size:.78rem; line-height:1.5; }
+.hero-decor .tech-label { opacity:0.18; font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+.hero-decor .tech-num { opacity:0.20; font-size:1.3rem; font-weight:500; color:var(--muted); }
+.hero-decor .tech-blue { opacity:0.32; color:var(--blue); }
+.hero-decor .tech-orange { opacity:0.36; color:var(--orange); }
+@media (max-width: 768px) { .hero-decor { display:none; } }
 
 /* ── Date badge (shared) ── */
 .ev-date { flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center;

@@ -11,22 +11,41 @@ import {
 } from '../../components/icons';
 import { DOTS, PLUS, RING } from '../../components/TechBackground';
 
-// Scoped copy of the "Execution / dots / + / ×10³ / 88 / const vision / ring / Iterate"
-// cluster, positioned as % of the hero-visual box itself (not the viewport) so it always
-// hugs the stripe graphic the same way regardless of screen size.
+// Full blueprint-annotation composition for the hero section, positioned as % of the
+// .hero box itself (not the viewport) so it always sits the same way regardless of
+// screen size — replaces the global TechBackground on this page (see TechBackground.tsx).
 function HeroDecor() {
   return (
     <div className="hero-decor" aria-hidden="true">
-      <div className="tech-item tech-num" style={{ left: '70.5%', top: '2%' }}>{DOTS}</div>
-      <div className="tech-item tech-label" style={{ left: '70.5%', top: '17%' }}>Execution</div>
-      <div className="tech-item tech-orange" style={{ left: '38%', top: '20%' }}>{PLUS}</div>
-      <div className="tech-item tech-num" style={{ left: '79%', top: '31%' }}>× 10³</div>
-      <div className="tech-item tech-num tech-blue" style={{ left: '74.5%', top: '50%' }}>88</div>
-      <div className="tech-item" style={{ left: '66%', top: '67%' }}>
+      <div className="tech-item" style={{ left: '1%', top: '9%' }}>
+        <pre>{`function build() {\n  ideas = validate();\n  build(ideas);\n  return impact;\n}`}</pre>
+      </div>
+      <div className="tech-item tech-num" style={{ left: '4%', top: '2%' }}>07</div>
+      <div className="tech-item tech-label" style={{ left: '39%', top: '5%' }}>Strategy</div>
+      <div className="tech-item tech-num" style={{ left: '38%', top: '15%' }}>23</div>
+      <div className="tech-item" style={{ left: '19%', top: '24%' }}>{RING}</div>
+      <div className="tech-item" style={{ left: '4%', top: '27%' }}>
+        <pre>{`34.0522° N\n84.3880° W`}</pre>
+      </div>
+      <div className="tech-item tech-num" style={{ left: '3%', top: '38%' }}>19</div>
+      <div className="tech-item tech-label" style={{ left: '11%', top: '54%' }}>Innovate</div>
+
+      <div className="tech-item tech-num" style={{ right: '5%', top: '2%' }}>04</div>
+      <div className="tech-item tech-label" style={{ right: '22%', top: '10%' }}>Growth</div>
+      <div className="tech-item tech-orange" style={{ right: '30%', top: '20%' }}>{PLUS}</div>
+      <div className="tech-item tech-num" style={{ right: '14%', top: '9%' }}>{DOTS}</div>
+      <div className="tech-item tech-label" style={{ right: '9%', top: '22%' }}>Execution</div>
+      <div className="tech-item tech-num" style={{ right: '5%', top: '32%' }}>× 10³</div>
+      <div className="tech-item tech-num tech-blue" style={{ right: '11%', top: '46%' }}>88</div>
+      <div className="tech-item" style={{ right: '8%', top: '58%' }}>
         <pre>{`const vision = {\n  build: true,\n  scale: true,\n  impact: true\n}`}</pre>
       </div>
-      <div className="tech-item" style={{ left: '19%', top: '78%' }}>{RING}</div>
-      <div className="tech-item tech-label" style={{ left: '58%', top: '96%' }}>Iterate</div>
+
+      <div className="tech-item tech-num tech-orange" style={{ left: '19%', bottom: '2%' }}>10101</div>
+      <div className="tech-item tech-label" style={{ left: '36%', bottom: '9%' }}>Scalability</div>
+      <div className="tech-item tech-num" style={{ left: '41%', bottom: '19%' }}>12</div>
+      <div className="tech-item tech-label" style={{ right: '15%', bottom: '9%' }}>Iterate</div>
+      <div className="tech-item tech-num" style={{ right: '19%', bottom: '4%' }}>01010</div>
     </div>
   );
 }
@@ -86,6 +105,7 @@ export default function HomePage() {
 
       {/* ── Hero ── */}
       <section className="hero">
+        <HeroDecor />
         <div className="hero-inner">
           <div className="hero-eyebrow">// Student innovation · Alpharetta High School</div>
           <h1 className="hero-title">
@@ -100,10 +120,7 @@ export default function HomePage() {
             <Link href="/about" className="btn-ghost">LEARN MORE</Link>
           </div>
         </div>
-        <div className="hero-visual">
-          <HeroDecor />
-          <div className="hero-stripes"><LogoHero3D size={380} /></div>
-        </div>
+        <div className="hero-visual"><LogoHero3D size={380} /></div>
       </section>
 
       {/* ── Feature columns ── */}

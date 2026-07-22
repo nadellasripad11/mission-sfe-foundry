@@ -47,17 +47,15 @@ const ITEMS: { id: string; top?: string; bottom?: string; left?: string; right?:
   { id: 'n12', bottom: '36%', left: '42%', anim: 't-drift', cls: 'tech-item tech-num', node: '12' },
 ];
 
-// These are precisely re-placed as a scoped cluster around the hero stripe graphic
-// on the home page (see HeroDecor in page.tsx) — hide the global copies there to avoid duplicates.
-const HOME_HERO_CLUSTER_IDS = ['execution', 'dots-tr', 'plus-tr', 'x10cubed', 'n88', 'vision-code', 'ring-tl', 'iterate'];
-
 export default function TechBackground() {
   const pathname = usePathname();
-  const strong = pathname === '/';
-  const items = strong ? ITEMS.filter((it) => !HOME_HERO_CLUSTER_IDS.includes(it.id)) : ITEMS;
+  // The home page owns its full hero annotation composition via a scoped HeroDecor
+  // (see page.tsx) so it always sits relative to the hero box, not the viewport —
+  // this global, viewport-fixed version would otherwise drift and duplicate it.
+  if (pathname === '/') return null;
   return (
-    <div className={`techbg${strong ? ' techbg-strong' : ''}`} aria-hidden="true">
-      {items.map((it, i) => (
+    <div className="techbg" aria-hidden="true">
+      {ITEMS.map((it, i) => (
         <div
           key={it.id}
           className={`${it.cls} ${it.anim}`}
