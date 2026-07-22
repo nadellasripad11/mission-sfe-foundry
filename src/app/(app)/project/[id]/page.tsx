@@ -109,7 +109,11 @@ export default function ProjectPage() {
       await submitRating({ project_id: id, user_id: user.id, ...rating, feedback: feedback.trim() });
       const [r, mine] = await Promise.all([getProjectRatings(id), getMyRating(id, user.id)]);
       setRatings(r); setMyRating(mine); setRateDone(true);
-    } catch { setRateErr('Something went wrong. Try again.'); }
+    } catch (err: unknown) {
+      console.error('submitRating error:', err);
+      const msg = err instanceof Error ? err.message : JSON.stringify(err);
+      setRateErr(`Error: ${msg}`);
+    }
     finally { setSubmitting(false); }
   };
 
