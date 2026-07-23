@@ -72,8 +72,8 @@ export function LogoHero({ size = 320, rings = false }: { size?: number; rings?:
 // Thin bars, tight gaps: gap is well under the bar width so the three
 // read as one compact mark, not three spread-out blocks.
 export function LogoHero3D({ size = 400 }: { size?: number }) {
-  const VW = 380, VH = 336;
-  const W = 55, TOP = 16, BOT = 304, SLANT = 128, STEP = 95;
+  const VW = 470, VH = 336;
+  const W = 55, TOP = 16, BOT = 304, SLANT = 190, STEP = 95;
   const bars = [
     { x: 16,           fill: '#1A1A1A' },
     { x: 16 + STEP,     fill: '#2684C6' },
