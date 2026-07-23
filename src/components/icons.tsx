@@ -68,15 +68,16 @@ export function LogoHero({ size = 320, rings = false }: { size?: number; rings?:
   );
 }
 
-// Flat parallelogram stripes with soft drop shadow — home hero visual
-// Same proportions as the small header mark (Logo.tsx), scaled 8x.
+// Flat parallelogram stripes with soft drop shadow — home hero visual.
+// Thin bars, tight gaps: gap is well under the bar width so the three
+// read as one compact mark, not three spread-out blocks.
 export function LogoHero3D({ size = 400 }: { size?: number }) {
-  const VW = 640, VH = 336;
-  const W = 80, TOP = 16, BOT = 304, SLANT = 128;
+  const VW = 380, VH = 336;
+  const W = 55, TOP = 16, BOT = 304, SLANT = 128, STEP = 77;
   const bars = [
-    { x: 16,  fill: '#1A1A1A' },
-    { x: 200, fill: '#2684C6' },
-    { x: 384, fill: '#EB5F27' },
+    { x: 16,           fill: '#1A1A1A' },
+    { x: 16 + STEP,     fill: '#2684C6' },
+    { x: 16 + STEP * 2, fill: '#EB5F27' },
   ];
   const pts = (x: number) => `${x},${BOT} ${x + W},${BOT} ${x + W + SLANT},${TOP} ${x + SLANT},${TOP}`;
   const h = Math.round(size * (VH / VW));

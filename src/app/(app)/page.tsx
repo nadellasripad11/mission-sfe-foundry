@@ -120,7 +120,7 @@ export default function HomePage() {
             <Link href="/about" className="btn-ghost">LEARN MORE</Link>
           </div>
         </div>
-        <div className="hero-visual"><LogoHero3D size={380} /></div>
+        <div className="hero-visual"><LogoHero3D size={225} /></div>
       </section>
 
       {/* ── Feature columns ── */}
