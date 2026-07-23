@@ -23,6 +23,7 @@ function HeroDecor() {
       <div className="tech-item tech-num" style={{ left: '4%', top: '2%' }}>07</div>
       <div className="tech-item tech-label" style={{ left: '39%', top: '5%' }}>Strategy</div>
       <div className="tech-item tech-num" style={{ left: '38%', top: '15%' }}>23</div>
+      <div className="tech-item tech-num" style={{ left: '52%', top: '20%' }}>23</div>
       <div className="tech-item" style={{ left: '19%', top: '24%' }}>{RING}</div>
       <div className="tech-item" style={{ left: '4%', top: '27%' }}>
         <pre>{`34.0522° N\n84.3880° W`}</pre>
@@ -36,7 +37,8 @@ function HeroDecor() {
       <div className="tech-item tech-num" style={{ right: '14%', top: '9%' }}>{DOTS}</div>
       <div className="tech-item tech-label" style={{ right: '9%', top: '22%' }}>Execution</div>
       <div className="tech-item tech-num" style={{ right: '5%', top: '32%' }}>× 10³</div>
-      <div className="tech-item tech-num tech-blue" style={{ right: '11%', top: '46%' }}>88</div>
+      <div className="tech-item tech-num" style={{ right: '3%', top: '42%' }}>003</div>
+      <div className="tech-item tech-num tech-blue" style={{ right: '4%', top: '52%' }}>88</div>
       <div className="tech-item" style={{ right: '8%', top: '58%' }}>
         <pre>{`const vision = {\n  build: true,\n  scale: true,\n  impact: true\n}`}</pre>
       </div>
@@ -120,7 +122,7 @@ export default function HomePage() {
             <Link href="/about" className="btn-ghost">LEARN MORE</Link>
           </div>
         </div>
-        <div className="hero-visual"><LogoHero3D size={225} /></div>
+        <div className="hero-visual"><LogoHero3D size={260} /></div>
       </section>
 
       {/* ── Feature columns ── */}
