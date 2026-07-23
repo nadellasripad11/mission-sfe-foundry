@@ -33,7 +33,7 @@ export default function AboutPage() {
             ))}
           </div>
         </div>
-        <div className="about-visual"><LogoHero3D size={420} /></div>
+        <div className="about-visual"><LogoHero3D size={260} /></div>
       </section>
 
       <section className="band">
