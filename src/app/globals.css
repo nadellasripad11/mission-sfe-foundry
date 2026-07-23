@@ -2,8 +2,8 @@
 @import "tailwindcss";
 
 :root {
-  --cream: #ECE5D8;
-  --cream-lo: #E4DCCC;
+  --cream: #F5E7DC;
+  --cream-lo: #EDDED0;
   --panel: #F6F2EA;
   --white: #FBF9F4;
   --ink: #1A1A1A;
@@ -20,8 +20,6 @@
 
 html { scroll-behavior: smooth; }
 body { background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; }
-body.bg-bright { background: #F5E7DC; }
-body.bg-bright .topbar { background: rgba(245,231,220,.82); }
 h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; letter-spacing: -0.025em; }
 body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 ::selection { background: rgba(31,159,214,0.22); }
@@ -34,7 +32,7 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
   position: fixed; top: 0; left: 0; right: 0; height: 62px; z-index: 90;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 clamp(18px, 4vw, 40px);
-  background: rgba(236,229,216,.82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  background: rgba(245,231,220,.82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--line);
 }
 
