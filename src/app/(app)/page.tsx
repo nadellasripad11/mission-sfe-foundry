@@ -9,7 +9,7 @@ import {
   LogoHero3D, IconBulb, IconCode, IconTrophy, IconUsers, IconArrow,
   IconLayers, IconInfinity,
 } from '../../components/icons';
-import { DOTS, PLUS, RING } from '../../components/TechBackground';
+import { DOTS, PLUS } from '../../components/TechBackground';
 
 // Full blueprint-annotation composition for the hero section, positioned as % of the
 // .hero box itself (not the viewport) so it always sits the same way regardless of
@@ -20,34 +20,48 @@ function HeroDecor() {
       <div className="tech-item" style={{ left: '1%', top: '9%' }}>
         <pre>{`function build() {\n  ideas = validate();\n  build(ideas);\n  return impact;\n}`}</pre>
       </div>
-      <div className="tech-item tech-num" style={{ left: '4%', top: '2%' }}>07</div>
-      <div className="tech-item tech-label" style={{ left: '39%', top: '5%' }}>Strategy</div>
-      <div className="tech-item tech-num" style={{ left: '38%', top: '15%' }}>23</div>
-      <div className="tech-item tech-num" style={{ left: '52%', top: '20%' }}>23</div>
-      <div className="tech-item" style={{ left: '19%', top: '24%' }}>{RING}</div>
       <div className="tech-item" style={{ left: '4%', top: '27%' }}>
         <pre>{`34.0522° N\n84.3880° W`}</pre>
       </div>
-      <div className="tech-item tech-num" style={{ left: '3%', top: '38%' }}>19</div>
-      <div className="tech-item tech-label" style={{ left: '11%', top: '54%' }}>Innovate</div>
 
-      <div className="tech-item tech-num" style={{ right: '5%', top: '2%' }}>04</div>
-      <div className="tech-item tech-label" style={{ right: '22%', top: '10%' }}>Growth</div>
-      <div className="tech-item tech-orange" style={{ right: '30%', top: '20%' }}>{PLUS}</div>
-      <div className="tech-item tech-num" style={{ right: '14%', top: '9%' }}>{DOTS}</div>
-      <div className="tech-item tech-label" style={{ right: '9%', top: '22%' }}>Execution</div>
-      <div className="tech-item tech-num" style={{ right: '5%', top: '32%' }}>× 10³</div>
-      <div className="tech-item tech-num" style={{ right: '3%', top: '42%' }}>003</div>
-      <div className="tech-item tech-num tech-blue" style={{ right: '4%', top: '52%' }}>88</div>
-      <div className="tech-item" style={{ right: '8%', top: '58%' }}>
+      {/* dashed orbit arc + its dot/circle markers, and the numbers riding along it */}
+      <svg className="tech-item" style={{ left: '20%', top: '4%', width: '38%', height: '38%', opacity: 1 }} viewBox="0 0 100 100" fill="none">
+        <path d="M 95 30 A 78 78 0 0 0 30 95" stroke="currentColor" strokeWidth="0.8" strokeDasharray="2 4" />
+      </svg>
+      <div className="tech-item" style={{ left: '36%', top: '11%', width: 6, height: 6, borderRadius: '50%', background: 'currentColor' }} />
+      <div className="tech-item" style={{ left: '22%', top: '19%', width: 10, height: 10, borderRadius: '50%', border: '1px solid currentColor' }} />
+      <div className="tech-item" style={{ left: '18%', top: '37%', width: 28, height: 28, borderRadius: '50%', border: '1px solid currentColor' }} />
+
+      <div className="tech-item tech-num" style={{ left: '2%', top: '2%' }}>07</div>
+      <div className="tech-item tech-label" style={{ left: '58%', top: '8%' }}>Strategy</div>
+      <div className="tech-item" style={{ left: '57%', top: '9.5%', width: 1, height: 30, background: 'currentColor', opacity: 0.5 }} />
+      <div className="tech-item tech-num" style={{ left: '40%', top: '21%' }}>23</div>
+      <div className="tech-item tech-num" style={{ left: '57%', top: '24%' }}>23</div>
+      <div className="tech-item tech-num" style={{ left: '9%', top: '65%' }}>19</div>
+      <div className="tech-item tech-label" style={{ left: '11%', top: '76%' }}>Innovate</div>
+      <div className="tech-item tech-orange" style={{ left: '14%', top: '70%' }}>{PLUS}</div>
+
+      <div className="tech-item tech-num" style={{ right: '5%', top: '13%' }}>04</div>
+      <div className="tech-item tech-label" style={{ right: '11%', top: '22%' }}>Growth</div>
+      <div className="tech-item tech-orange" style={{ right: '23%', top: '18%' }}>{PLUS}</div>
+      <div className="tech-item tech-num" style={{ right: '10%', top: '28%' }}>{DOTS}</div>
+      <div className="tech-item tech-num" style={{ right: '6%', top: '45%' }}>003</div>
+      <div className="tech-item tech-orange" style={{ right: '15%', top: '61%' }}>{PLUS}</div>
+      <div className="tech-item tech-num tech-blue" style={{ right: '6%', top: '61%' }}>88</div>
+      <div className="tech-item tech-label" style={{ right: '9%', top: '70%' }}>Execution</div>
+      <svg className="tech-item" style={{ left: '68%', top: '65%', width: '17%', height: '7%' }} viewBox="0 0 100 40" fill="none">
+        <path d="M 2 2 L 60 34" stroke="currentColor" strokeWidth="0.8" />
+      </svg>
+      <div className="tech-item tech-num" style={{ left: '57%', top: '75%' }}>12</div>
+      <div className="tech-item tech-num" style={{ right: '2%', top: '75%' }}>05</div>
+
+      <div className="tech-item" style={{ left: '68%', top: '79%' }}>
         <pre>{`const vision = {\n  build: true,\n  scale: true,\n  impact: true\n}`}</pre>
       </div>
-
-      <div className="tech-item tech-num tech-orange" style={{ left: '19%', bottom: '2%' }}>10101</div>
-      <div className="tech-item tech-label" style={{ left: '36%', bottom: '9%' }}>Scalability</div>
-      <div className="tech-item tech-num" style={{ left: '41%', bottom: '19%' }}>12</div>
-      <div className="tech-item tech-label" style={{ right: '15%', bottom: '9%' }}>Iterate</div>
-      <div className="tech-item tech-num" style={{ right: '19%', bottom: '4%' }}>01010</div>
+      <div className="tech-item tech-num tech-orange" style={{ left: '19%', top: '86%' }}>10101</div>
+      <div className="tech-item tech-label" style={{ left: '36%', top: '79%' }}>Scalability</div>
+      <div className="tech-item tech-label" style={{ left: '2%', top: '79%' }}>Iterate</div>
+      <div className="tech-item tech-num" style={{ left: '46%', top: '86%' }}>01010</div>
     </div>
   );
 }
