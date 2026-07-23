@@ -20,6 +20,8 @@
 
 html { scroll-behavior: smooth; }
 body { background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; }
+body.bg-bright { background: #F5E7DC; }
+body.bg-bright .topbar { background: rgba(245,231,220,.82); }
 h1, h2, h3, h4 { font-family: 'Outfit', sans-serif; letter-spacing: -0.025em; }
 body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 ::selection { background: rgba(31,159,214,0.22); }
