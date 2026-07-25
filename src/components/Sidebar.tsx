@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from './AuthProvider';
-import SFELogo from './SFELogo';
+import { LogoMark } from './Logo';
 import { IconRocket, IconBell, IconRate, IconCalendar, IconCart, IconResources, IconUser } from './SidebarIcons';
 import { useState } from 'react';
 
@@ -28,7 +28,11 @@ export default function Sidebar() {
     <aside className="sidebar">
       {/* Logo */}
       <Link href="/dashboard" className="sidebar-logo">
-        <SFELogo size={100} />
+        <LogoMark size={32} />
+        <span className="sidebar-logo-text">
+          <span className="logo-name">SFE</span>
+          <span className="logo-sub">FOUNDRY</span>
+        </span>
       </Link>
 
       {/* Nav items */}
