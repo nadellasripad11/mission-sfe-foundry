@@ -6,6 +6,8 @@ import { useAuth } from '../../../components/AuthProvider';
 import { getProjects, type ProjectWithRating } from '../../../lib/projects';
 import { IconArrow } from '../../../components/icons';
 import RngWidget from '../../../components/RngWidget';
+import SocialBar from '../../../components/SocialBar';
+import { getSocialCounts, type SocialCounts } from '../../../lib/projectSocial';
 
 const BUZZ_KEYS = ['inspiration', 'how_built', 'biggest_challenge', 'proud_of'] as const;
 const BODY_PREVIEW_LEN = 260;
@@ -22,9 +24,10 @@ function timeAgo(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-function BuzzPost({ p }: { p: ProjectWithRating }) {
+function BuzzPost({ p, initialCounts }: { p: ProjectWithRating; initialCounts: SocialCounts }) {
   const [expanded, setExpanded] = useState(false);
   const [imgIndex, setImgIndex] = useState(0);
+  const [social, setSocial] = useState(initialCounts);
 
   const buzzMap = p.buzz as Record<string, string>;
   const paragraph = BUZZ_KEYS.map(k => buzzMap[k]?.trim()).filter(Boolean).join(' ');
@@ -74,6 +77,7 @@ function BuzzPost({ p }: { p: ProjectWithRating }) {
       <div className="buzz-post-footer">
         <Link href={`/project/${p.id}`} className="buzz-post-link">View project <IconArrow size={13} /></Link>
       </div>
+      <SocialBar projectId={p.id} counts={social} onCountsChange={setSocial} />
     </article>
   );
 }
@@ -101,6 +105,13 @@ export default function DashboardPage() {
 
   // Projects with Social Buzz for the buzz feed
   const buzzProjects = projects.filter(p => p.buzz && Object.values(p.buzz as Record<string, string>).some(v => v?.trim()));
+
+  const [socialCounts, setSocialCounts] = useState<Record<string, SocialCounts>>({});
+  useEffect(() => {
+    if (buzzProjects.length === 0) return;
+    getSocialCounts(buzzProjects.map(p => p.id), user?.id).then(setSocialCounts).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projects.length, user?.id]);
 
   if (loading) {
     return (
@@ -146,7 +157,13 @@ export default function DashboardPage() {
           </div>
           <div className="dashboard-buzz-row">
             <div className="buzz-post-list">
-              {buzzProjects.slice(0, 6).map(p => <BuzzPost key={p.id} p={p} />)}
+              {buzzProjects.slice(0, 6).map(p => (
+                <BuzzPost
+                  key={p.id}
+                  p={p}
+                  initialCounts={socialCounts[p.id] ?? { likes: 0, comments: 0, views: 0, likedByMe: false }}
+                />
+              ))}
             </div>
             <RngWidget />
           </div>

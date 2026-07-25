@@ -23,6 +23,8 @@ export const IconLayers = (p: P) => <S {...p}><path d="m12 3 9 5-9 5-9-5 9-5Z" /
 export const IconInfinity = (p: P) => <S {...p}><path d="M7 8.5a3.5 3.5 0 1 0 0 7c2.5 0 3.5-3.5 5-3.5s2.5 3.5 5 3.5a3.5 3.5 0 1 0 0-7c-2.5 0-3.5 3.5-5 3.5S9.5 8.5 7 8.5Z" /></S>;
 export const IconTarget = (p: P) => <S {...p}><circle cx="12" cy="12" r="8.5" /><circle cx="12" cy="12" r="4.5" /><circle cx="12" cy="12" r=".8" fill="currentColor" /></S>;
 export const IconEye = (p: P) => <S {...p}><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z" /><circle cx="12" cy="12" r="3" /></S>;
+export const IconHeart = (p: P & { fill?: boolean }) => <S {...p} fill={p.fill}><path d="M12 20.5s-7.5-4.6-9.8-9.2C.6 7.8 2.3 4.5 5.7 4c2-.3 3.9.6 5 2.3l1.3 1.9 1.3-1.9c1.1-1.7 3-2.6 5-2.3 3.4.5 5.1 3.8 3.5 7.3-2.3 4.6-9.8 9.2-9.8 9.2Z" /></S>;
+export const IconComment = (p: P) => <S {...p}><path d="M4 4.5h16a1 1 0 0 1 1 1V16a1 1 0 0 1-1 1H9l-4.5 4V17H4a1 1 0 0 1-1-1V5.5a1 1 0 0 1 1-1Z" /></S>;
 export const IconSpark = (p: P) => <S {...p}><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8" /></S>;
 export const IconArrow = (p: P) => <S {...p}><path d="M5 12h14M13 6l6 6-6 6" /></S>;
 export const IconChevron = (p: P) => <S {...p}><path d="m9 6 6 6-6 6" /></S>;

@@ -11,6 +11,8 @@ import {
 } from '../../../../lib/projects';
 import { IconArrow } from '../../../../components/icons';
 import StarRating from '../../../../components/StarRating';
+import SocialBar from '../../../../components/SocialBar';
+import { getSocialCounts, incrementView, type SocialCounts } from '../../../../lib/projectSocial';
 
 const BUZZ_QUESTIONS_KEYS = ['inspiration', 'how_built', 'biggest_challenge', 'proud_of'];
 
@@ -47,6 +49,7 @@ export default function ProjectPage() {
   const [myRating, setMyRating] = useState<CategoryRating | null>(null);
   const [loading, setLoading] = useState(true);
   const [imgIdx, setImgIdx] = useState(0);
+  const [social, setSocial] = useState<SocialCounts>({ likes: 0, comments: 0, views: 0, likedByMe: false });
 
   // Rating form state
   const [rating, setRating] = useState({ originality: 0, technicality: 0, usability: 0, impact: 0 });
@@ -75,6 +78,11 @@ export default function ProjectPage() {
   };
 
   useEffect(() => { load(); }, [id, user?.id]);
+
+  useEffect(() => {
+    incrementView(id).catch(() => {});
+    getSocialCounts([id], user?.id).then(c => setSocial(c[id])).catch(() => {});
+  }, [id, user?.id]);
 
   const wordCount = (s: string) => s.trim().split(/\s+/).filter(Boolean).length;
 
@@ -155,6 +163,7 @@ export default function ProjectPage() {
                   Open Project <IconArrow size={16} />
                 </a>
               )}
+              <SocialBar projectId={id} counts={social} onCountsChange={setSocial} />
             </div>
 
             {/* Social Buzz */}
