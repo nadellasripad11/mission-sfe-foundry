@@ -5,13 +5,78 @@ import Link from 'next/link';
 import { useAuth } from '../../../components/AuthProvider';
 import { getProjects, type ProjectWithRating } from '../../../lib/projects';
 import { IconArrow } from '../../../components/icons';
+import RngWidget from '../../../components/RngWidget';
 
-const BUZZ_LABELS: Record<string, string> = {
-  inspiration: 'What sparked this',
-  how_built: 'How they built it',
-  biggest_challenge: 'Biggest challenge',
-  proud_of: 'Most proud of',
-};
+const BUZZ_KEYS = ['inspiration', 'how_built', 'biggest_challenge', 'proud_of'] as const;
+const BODY_PREVIEW_LEN = 260;
+
+function timeAgo(iso: string): string {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d ago`;
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function BuzzPost({ p }: { p: ProjectWithRating }) {
+  const [expanded, setExpanded] = useState(false);
+  const [imgIndex, setImgIndex] = useState(0);
+
+  const buzzMap = p.buzz as Record<string, string>;
+  const paragraph = BUZZ_KEYS.map(k => buzzMap[k]?.trim()).filter(Boolean).join(' ');
+  const isLong = paragraph.length > BODY_PREVIEW_LEN;
+  const shown = expanded || !isLong ? paragraph : paragraph.slice(0, BODY_PREVIEW_LEN).trimEnd() + '…';
+  const initial = (p.author_name?.trim()?.[0] || '?').toUpperCase();
+
+  return (
+    <article className="buzz-post">
+      <div className="buzz-post-head">
+        <div className="buzz-post-avatar">{initial}</div>
+        <div className="buzz-post-meta">
+          <span className="buzz-post-user">{p.author_name || 'Anonymous'}</span> on{' '}
+          <Link href={`/project/${p.id}`} className="buzz-post-project-link">{p.title}</Link>
+          <span className="buzz-post-time"> · {timeAgo(p.created_at)}</span>
+        </div>
+      </div>
+
+      <h3 className="buzz-post-title">{p.title}</h3>
+      <hr className="buzz-post-divider" />
+
+      <p className="buzz-post-body">{shown}</p>
+      {isLong && (
+        <button className="buzz-post-readmore" onClick={() => setExpanded(e => !e)}>
+          {expanded ? 'Show less' : 'Read more'}
+        </button>
+      )}
+
+      {p.screenshots.length > 0 && (
+        <div className="buzz-post-carousel">
+          <img src={p.screenshots[imgIndex]} alt="" />
+          {p.screenshots.length > 1 && (
+            <div className="buzz-post-dots">
+              {p.screenshots.map((_, i) => (
+                <button
+                  key={i}
+                  className={`buzz-post-dot${i === imgIndex ? ' on' : ''}`}
+                  onClick={() => setImgIndex(i)}
+                  aria-label={`Image ${i + 1}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="buzz-post-footer">
+        <Link href={`/project/${p.id}`} className="buzz-post-link">View project <IconArrow size={13} /></Link>
+      </div>
+    </article>
+  );
+}
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -71,7 +136,7 @@ export default function DashboardPage() {
         <p>Here&apos;s what&apos;s happening at SFE Foundry.</p>
       </div>
 
-      {/* ── Social Buzz Feed ── */}
+      {/* ── Social Buzz Feed + RNG widget ── */}
       {buzzProjects.length > 0 && (
         <section className="buzz-feed-section">
           <div className="buzz-feed-head">
@@ -79,25 +144,11 @@ export default function DashboardPage() {
             <h2 className="buzz-feed-title">Builder Stories</h2>
             <p className="buzz-feed-sub">Real stories from builders in your community.</p>
           </div>
-          <div className="buzz-feed-list">
-            {buzzProjects.slice(0, 6).map(p => {
-              const buzzMap = p.buzz as Record<string, string>;
-              const firstKey = ['inspiration', 'how_built', 'biggest_challenge', 'proud_of'].find(k => buzzMap[k]?.trim());
-              if (!firstKey) return null;
-              const snippet = buzzMap[firstKey];
-              return (
-                <Link key={p.id} href={`/project/${p.id}`} className="buzz-feed-card" style={{ textDecoration: 'none' }}>
-                  {p.screenshots[0] && <img src={p.screenshots[0]} alt="" className="buzz-feed-img" />}
-                  <div className="buzz-feed-content">
-                    <div className="buzz-feed-project">{p.title}</div>
-                    <div className="buzz-feed-by">by {p.author_name || 'Anonymous'}</div>
-                    <div className="buzz-feed-q">{BUZZ_LABELS[firstKey]}</div>
-                    <p className="buzz-feed-a">&ldquo;{snippet.length > 160 ? snippet.slice(0, 160) + '…' : snippet}&rdquo;</p>
-                    <span className="buzz-feed-cta">Read full story <IconArrow size={12} /></span>
-                  </div>
-                </Link>
-              );
-            })}
+          <div className="dashboard-buzz-row">
+            <div className="buzz-post-list">
+              {buzzProjects.slice(0, 6).map(p => <BuzzPost key={p.id} p={p} />)}
+            </div>
+            <RngWidget />
           </div>
         </section>
       )}

@@ -1700,3 +1700,97 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
   .rate-swipe-card { grid-template-columns: 1fr; }
   .rate-swipe-left { border-right: none; border-bottom: 1px solid var(--line); }
 }
+
+/* ── Buzz feed: full-width single-post cards ── */
+.buzz-post-list { display: flex; flex-direction: column; gap: 20px; }
+.buzz-post { background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 22px 24px; }
+.buzz-post-head { display: flex; align-items: center; gap: 12px; margin-bottom: 2px; }
+.buzz-post-avatar {
+  width: 40px; height: 40px; border-radius: 50%; background: var(--ink); color: var(--cream);
+  display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: 'Outfit', sans-serif;
+  flex-shrink: 0; font-size: 1rem;
+}
+.buzz-post-meta { font-size: .92rem; color: var(--ink-soft); line-height: 1.4; }
+.buzz-post-user { color: var(--ink); font-weight: 700; }
+.buzz-post-project-link { color: var(--ink); font-weight: 700; text-decoration: underline; }
+.buzz-post-time { color: var(--faint); }
+.buzz-post-title { font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.2rem; margin: 12px 0 12px; color: var(--ink); }
+.buzz-post-divider { border: none; border-top: 1px solid var(--line); margin-bottom: 14px; }
+.buzz-post-body { font-size: .95rem; line-height: 1.7; color: var(--ink-soft); margin-bottom: 6px; }
+.buzz-post-readmore { color: var(--orange); font-weight: 600; font-size: .88rem; cursor: pointer; background: none; border: none; padding: 0; margin-bottom: 14px; display: inline-block; }
+.buzz-post-carousel { position: relative; border-radius: 12px; overflow: hidden; background: var(--panel); }
+.buzz-post-carousel img { width: 100%; max-height: 420px; object-fit: cover; display: block; }
+.buzz-post-dots { position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; }
+.buzz-post-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,.5); border: none; cursor: pointer; padding: 0; }
+.buzz-post-dot.on { background: #fff; }
+.buzz-post-footer { margin-top: 14px; }
+.buzz-post-link { color: var(--orange); font-weight: 600; font-size: .88rem; display: inline-flex; align-items: center; gap: 4px; text-decoration: none; }
+
+/* ── Dashboard: buzz feed + rng widget side by side ── */
+.dashboard-buzz-row { display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start; }
+@media (max-width: 860px) { .dashboard-buzz-row { grid-template-columns: 1fr; } }
+
+/* ── RNG widget (dark card, sits on the cream dashboard) ── */
+.rng-widget {
+  background: linear-gradient(155deg, #35335c, #201e3a); border-radius: 18px; padding: 24px 22px;
+  color: #fff; display: flex; flex-direction: column; align-items: center; text-align: center;
+  box-shadow: 0 14px 34px rgba(30,20,60,.22); position: sticky; top: 20px;
+}
+.rng-label {
+  align-self: flex-start; font-family: var(--mono); font-size: .72rem; font-weight: 700;
+  letter-spacing: .04em; color: rgba(255,255,255,.65); background: rgba(255,255,255,.08);
+  padding: 4px 10px; border-radius: 8px; margin-bottom: 10px;
+}
+.rng-value { font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 2.4rem; line-height: 1; margin: 2px 0 6px; }
+.rng-quality { font-size: .85rem; color: #f5d78e; font-weight: 600; margin-bottom: 16px; }
+.rng-btn { width: 100%; padding: 11px; border-radius: 10px; border: none; font-weight: 700; font-size: .86rem; cursor: pointer; margin-bottom: 8px; transition: filter .15s, opacity .15s; }
+.rng-btn-share { background: #f5e08e; color: #2b2a4a; }
+.rng-btn-share:hover { filter: brightness(1.05); }
+.rng-btn-reroll { background: rgba(255,255,255,.1); color: rgba(255,255,255,.55); display: flex; align-items: center; justify-content: center; gap: 6px; cursor: not-allowed; }
+.rng-leaderboard-link { font-size: .8rem; color: rgba(255,255,255,.8); text-decoration: underline; margin-top: 2px; }
+
+/* ── Leaderboard page (dark panel matching the RNG widget's theme) ── */
+.lb-daynav { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 28px; }
+.lb-daynav-btn {
+  width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: var(--white);
+  display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink);
+  transition: border-color .15s, transform .15s;
+}
+.lb-daynav-btn:hover:not(:disabled) { border-color: var(--ink); transform: translateY(-1px); }
+.lb-daynav-btn:disabled { opacity: .35; cursor: not-allowed; }
+.lb-daynav-title { font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.2rem; color: var(--ink); }
+.lb-daynav-sub { font-size: .82rem; color: var(--faint); margin-top: 2px; }
+
+.lb-avatar {
+  width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--orange));
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.4rem; flex-shrink: 0;
+}
+
+.lb-first-card {
+  background: linear-gradient(155deg, #35335c, #201e3a); color: #fff; border-radius: 18px;
+  padding: 28px 24px 24px; display: flex; flex-direction: column; align-items: center; gap: 8px;
+  margin-bottom: 16px; box-shadow: 0 14px 34px rgba(30,20,60,.18);
+}
+.lb-star { color: #f5d78e; font-size: 1.3rem; }
+.lb-first-name { font-weight: 700; font-size: 1.05rem; margin-top: 4px; }
+.lb-first-value { font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 1.9rem; color: #f5d78e; }
+
+.lb-podium-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+.lb-podium-card {
+  background: var(--white); border: 1px solid var(--line); border-radius: 16px; padding: 20px 16px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.lb-rank { font-family: var(--mono); font-size: .78rem; color: var(--muted); font-weight: 700; }
+.lb-podium-name { font-weight: 700; color: var(--ink); font-size: .95rem; margin-top: 2px; }
+.lb-podium-value { font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 1.3rem; color: var(--orange); }
+
+.lb-list { display: flex; flex-direction: column; gap: 10px; }
+.lb-row {
+  display: flex; align-items: center; gap: 14px; background: var(--white); border: 1px solid var(--line);
+  border-radius: 14px; padding: 10px 18px;
+}
+.lb-row-rank { font-family: var(--mono); font-size: .82rem; color: var(--muted); font-weight: 700; width: 30px; flex-shrink: 0; }
+.lb-row .lb-avatar { width: 38px; height: 38px; font-size: 1rem; }
+.lb-row-name { flex: 1; font-weight: 600; color: var(--ink); }
+.lb-row-value { font-family: 'Outfit', sans-serif; font-weight: 800; color: var(--orange); }
