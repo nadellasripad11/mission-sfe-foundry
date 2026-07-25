@@ -14,11 +14,11 @@ export default function RngWidget() {
 
   useEffect(() => {
     if (!user) { setLoading(false); return; }
-    rollForToday(user.id, user.name || user.email.split('@')[0])
+    rollForToday(user.id, user.name || user.email.split('@')[0], user.avatarUrl)
       .then(setRoll)
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [user?.id]);
+  }, [user?.id, user?.avatarUrl]);
 
   const copyToShare = () => {
     if (!roll) return;

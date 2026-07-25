@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../../components/AuthProvider';
 import { supabase } from '../../../lib/supabaseClient';
-import { createProject, deleteProject, getMyProjects, getProjects, type Project, type SocialBuzz } from '../../../lib/projects';
+import { createProject, deleteProject, getMyProjects, getProjects, getMyRatings, type Project, type SocialBuzz } from '../../../lib/projects';
 import { uploadImage } from '../../../lib/uploadImage';
 import { IconArrow, IconClose } from '../../../components/icons';
 import MentionTextarea from '../../../components/MentionTextarea';
@@ -30,11 +30,12 @@ function formatJoined(iso?: string) {
 
 // ── Edit overlay (Stardance style) ────────────────────────────────────────────
 function EditProfile({
-  initialBio, initialBanner, initialAvatar, avatarLetter, username, joinedAt, projectCount, mentionSuggestions,
+  initialBio, initialBanner, initialAvatar, avatarLetter, username, joinedAt, projectCount, buzzCount, shipsCount, votesCount, mentionSuggestions,
   onSave, onCancel,
 }: {
   initialBio: string; initialBanner: string; initialAvatar: string; avatarLetter: string;
-  username: string; joinedAt: string; projectCount: number; mentionSuggestions: string[];
+  username: string; joinedAt: string; projectCount: number; buzzCount: number; shipsCount: number; votesCount: number;
+  mentionSuggestions: string[];
   onSave: (bio: string, bannerUrl: string, avatarUrl: string) => void;
   onCancel: () => void;
 }) {
@@ -109,10 +110,10 @@ function EditProfile({
 
         {/* Stats */}
         <div className="ep-stats">
-          <div className="ep-stat"><span className="ep-stat-n">0</span><span className="ep-stat-l">Devlogs</span></div>
+          <div className="ep-stat"><span className="ep-stat-n">{buzzCount}</span><span className="ep-stat-l">Social Buzz</span></div>
           <div className="ep-stat"><span className="ep-stat-n">{projectCount}</span><span className="ep-stat-l">Projects</span></div>
-          <div className="ep-stat"><span className="ep-stat-n">0</span><span className="ep-stat-l">Ships</span></div>
-          <div className="ep-stat"><span className="ep-stat-n">0</span><span className="ep-stat-l">Votes</span></div>
+          <div className="ep-stat"><span className="ep-stat-n">{shipsCount}</span><span className="ep-stat-l">Ships</span></div>
+          <div className="ep-stat"><span className="ep-stat-n">{votesCount}</span><span className="ep-stat-l">Votes</span></div>
         </div>
 
         {/* Bio textarea */}
@@ -289,6 +290,7 @@ export default function MyProjectsPage() {
   const [avatarUrl, setAvatarUrl] = useState('');
   const [joinedAt, setJoinedAt] = useState('');
   const [mentionSuggestions, setMentionSuggestions] = useState<string[]>([]);
+  const [votesCount, setVotesCount] = useState(0);
 
   useEffect(() => {
     getProjects().then(all => {
@@ -308,7 +310,11 @@ export default function MyProjectsPage() {
       setJoinedAt(data.user?.created_at || '');
     });
     getMyProjects(user.id).then(p => setProjects(p)).catch(() => {}).finally(() => setLoading(false));
+    getMyRatings(user.id).then(map => setVotesCount(Object.keys(map).length)).catch(() => {});
   }, [user?.id]);
+
+  const buzzCount = projects.filter(p => p.buzz && Object.values(p.buzz as Record<string, string>).some(v => v?.trim())).length;
+  const shipsCount = projects.filter(p => /^https?:\/\//.test(p.url)).length;
 
   const saveProfile = async (newBio: string, newBanner: string, newAvatar: string) => {
     setBio(newBio); setBannerUrl(newBanner); setAvatarUrl(newAvatar);
@@ -339,6 +345,7 @@ export default function MyProjectsPage() {
           <EditProfile
             initialBio={bio} initialBanner={bannerUrl} initialAvatar={avatarUrl} avatarLetter={avatarLetter}
             username={username} joinedAt={formatJoined(joinedAt)} projectCount={projects.length}
+            buzzCount={buzzCount} shipsCount={shipsCount} votesCount={votesCount}
             mentionSuggestions={mentionSuggestions}
             onSave={saveProfile} onCancel={() => setEditing(false)}
           />
@@ -363,10 +370,10 @@ export default function MyProjectsPage() {
 
           {/* Stats */}
           <div className="mp-stats">
+            <div className="mp-stat"><span className="mp-stat-n">{buzzCount}</span><span className="mp-stat-l">Social Buzz</span></div>
             <div className="mp-stat"><span className="mp-stat-n">{projects.length}</span><span className="mp-stat-l">Projects</span></div>
-            <div className="mp-stat"><span className="mp-stat-n">0</span><span className="mp-stat-l">Devlogs</span></div>
-            <div className="mp-stat"><span className="mp-stat-n">0</span><span className="mp-stat-l">Ships</span></div>
-            <div className="mp-stat"><span className="mp-stat-n">0</span><span className="mp-stat-l">Votes</span></div>
+            <div className="mp-stat"><span className="mp-stat-n">{shipsCount}</span><span className="mp-stat-l">Ships</span></div>
+            <div className="mp-stat"><span className="mp-stat-n">{votesCount}</span><span className="mp-stat-l">Votes</span></div>
           </div>
 
           {/* Edit profile link */}

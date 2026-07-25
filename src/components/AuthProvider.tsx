@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabaseClient';
 import { claimReferral } from '../lib/referrals';
 import ChatWidget from './ChatWidget';
 
-export type AppUser = { id: string; email: string; name: string | null };
+export type AppUser = { id: string; email: string; name: string | null; avatarUrl: string | null };
 type AuthMode = 'signup' | 'signin';
 
 interface AuthCtx {
@@ -56,7 +56,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     }
 
     const toUser = (su: any): AppUser | null =>
-      su ? { id: su.id, email: su.email ?? '', name: su.user_metadata?.name ?? su.user_metadata?.full_name ?? null } : null;
+      su ? {
+        id: su.id,
+        email: su.email ?? '',
+        name: su.user_metadata?.name ?? su.user_metadata?.full_name ?? null,
+        avatarUrl: su.user_metadata?.avatar_url ?? null,
+      } : null;
 
     const initSession = async () => {
       try {
@@ -82,13 +87,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       if (mounted) {
         const u = toUser(session?.user);
         const newUserId = u?.id ?? null;
-
-        // Only update state if user ID actually changed (prevents redundant updates)
-        if (newUserId !== lastUserId) {
-          lastUserId = newUserId;
-          setUser(u);
-          if (u) setShowModal(false);
-        }
+        const signedIn = newUserId !== lastUserId;
+        lastUserId = newUserId;
+        // Always propagate — a USER_UPDATED event (e.g. avatar/name change) keeps the same
+        // id but must still refresh consumers like the sidebar and RNG widget.
+        setUser(u);
+        if (u && signedIn) setShowModal(false);
       }
     });
 

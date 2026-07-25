@@ -18,9 +18,9 @@ function formatDay(dateStr: string): string {
   return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-function Avatar({ name }: { name: string }) {
+function Avatar({ name, avatarUrl }: { name: string; avatarUrl?: string | null }) {
   const initial = (name.trim()[0] || '?').toUpperCase();
-  return <div className="lb-avatar">{initial}</div>;
+  return <div className="lb-avatar">{avatarUrl ? <img src={avatarUrl} alt="" /> : initial}</div>;
 }
 
 export default function LeaderboardPage() {
@@ -80,7 +80,7 @@ export default function LeaderboardPage() {
           {first && (
             <div className="lb-first-card">
               <span className="lb-star">★</span>
-              <Avatar name={first.display_name} />
+              <Avatar name={first.display_name} avatarUrl={first.avatar_url} />
               <div className="lb-first-name">{first.display_name}</div>
               <div className="lb-first-value">{first.roll_value.toLocaleString()}</div>
             </div>
@@ -91,7 +91,7 @@ export default function LeaderboardPage() {
               {second && (
                 <div className="lb-podium-card">
                   <div className="lb-rank">#2</div>
-                  <Avatar name={second.display_name} />
+                  <Avatar name={second.display_name} avatarUrl={second.avatar_url} />
                   <div className="lb-podium-name">{second.display_name}</div>
                   <div className="lb-podium-value">{second.roll_value.toLocaleString()}</div>
                 </div>
@@ -99,7 +99,7 @@ export default function LeaderboardPage() {
               {third && (
                 <div className="lb-podium-card">
                   <div className="lb-rank">#3</div>
-                  <Avatar name={third.display_name} />
+                  <Avatar name={third.display_name} avatarUrl={third.avatar_url} />
                   <div className="lb-podium-name">{third.display_name}</div>
                   <div className="lb-podium-value">{third.roll_value.toLocaleString()}</div>
                 </div>
@@ -112,7 +112,7 @@ export default function LeaderboardPage() {
               {rest.map((r, i) => (
                 <div key={r.id} className="lb-row">
                   <span className="lb-row-rank">#{i + 4}</span>
-                  <Avatar name={r.display_name} />
+                  <Avatar name={r.display_name} avatarUrl={r.avatar_url} />
                   <span className="lb-row-name">{r.display_name}</span>
                   <span className="lb-row-value">{r.roll_value.toLocaleString()}</span>
                 </div>

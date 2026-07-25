@@ -4,6 +4,7 @@ export type DailyRoll = {
   id: string;
   user_id: string;
   display_name: string;
+  avatar_url: string | null;
   roll_value: number;
   roll_date: string;
   created_at: string;
@@ -36,14 +37,26 @@ export async function getMyRollToday(userId: string): Promise<DailyRoll | null> 
   return data ?? null;
 }
 
-export async function rollForToday(userId: string, displayName: string): Promise<DailyRoll> {
+export async function rollForToday(userId: string, displayName: string, avatarUrl: string | null = null): Promise<DailyRoll> {
   const existing = await getMyRollToday(userId);
-  if (existing) return existing;
+  if (existing) {
+    // Keep today's row's profile info fresh if the user updated their name/avatar since rolling.
+    if (existing.display_name !== displayName || existing.avatar_url !== avatarUrl) {
+      const { data } = await supabase
+        .from('daily_rolls')
+        .update({ display_name: displayName, avatar_url: avatarUrl })
+        .eq('id', existing.id)
+        .select('*')
+        .single();
+      if (data) return data;
+    }
+    return existing;
+  }
 
   const roll_value = Math.floor(Math.random() * MAX_ROLL) + 1;
   const { data, error } = await supabase
     .from('daily_rolls')
-    .insert({ user_id: userId, display_name: displayName, roll_value, roll_date: todayStr() })
+    .insert({ user_id: userId, display_name: displayName, avatar_url: avatarUrl, roll_value, roll_date: todayStr() })
     .select('*')
     .single();
 

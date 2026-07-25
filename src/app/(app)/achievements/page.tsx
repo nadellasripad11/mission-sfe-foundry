@@ -2,35 +2,11 @@
 
 import { useAuth } from '../../../components/AuthProvider';
 import { useEffect, useState } from 'react';
-import { getMyProjects } from '../../../lib/projects';
 import { getOrCreateReferralProfile, earnedReferralBadges, REFERRAL_BADGES, type ReferralProfile } from '../../../lib/referrals';
+import { ACHIEVEMENTS, TOTAL_BADGES, buildAchievementCtx, type AchievementCtx } from '../../../lib/achievements';
 import {
-  IconFirstProject, IconMultiProject, IconProlic, IconVoted, IconHundredVotes,
-  IconHardware, IconAI, IconStreak, IconCommunity, IconFounder, IconMystery,
   IconConnector, IconNetworker, IconEvangelist, IconAmbassador, IconLock,
 } from '../../../components/AchievementIcons';
-
-type AchievementDef = {
-  id: number;
-  title: string;
-  description: string;
-  Icon: React.ComponentType<{ size?: number }>;
-  check: (ctx: { projectCount: number; referralCount: number }) => boolean;
-};
-
-const ACHIEVEMENTS: AchievementDef[] = [
-  { id: 1,  title: 'First Project',      description: 'Ship your first project.',        Icon: IconFirstProject,  check: ({ projectCount }) => projectCount >= 1 },
-  { id: 2,  title: '5 Projects',         description: 'Ship 5 projects.',                Icon: IconMultiProject,  check: ({ projectCount }) => projectCount >= 5 },
-  { id: 3,  title: 'Ultra Prolific',     description: 'Ship 10 projects.',               Icon: IconProlic,        check: ({ projectCount }) => projectCount >= 10 },
-  { id: 4,  title: 'Voted For',          description: 'Get 5 ratings on a project.',     Icon: IconVoted,         check: () => false },
-  { id: 5,  title: '100 Votes',          description: 'Get 100 total ratings.',           Icon: IconHundredVotes,  check: () => false },
-  { id: 6,  title: 'Hardware Builder',   description: 'Ship a hardware project.',        Icon: IconHardware,      check: () => false },
-  { id: 7,  title: 'AI Pioneer',         description: 'Ship a project using AI.',        Icon: IconAI,            check: () => false },
-  { id: 8,  title: '7-Day Streak',       description: 'Contribute 7 days in a row.',     Icon: IconStreak,        check: () => false },
-  { id: 9,  title: 'Community Champion', description: 'Rate 20 projects.',               Icon: IconCommunity,     check: () => false },
-  { id: 10, title: 'Founder',            description: 'Ship in the SFE launch month.',   Icon: IconFounder,       check: () => false },
-  { id: 11, title: 'Mystery Badge',      description: 'Unknown achievement unlocked...', Icon: IconMystery,       check: () => false },
-];
 
 const REFERRAL_BADGE_ICONS: Record<string, React.ComponentType<{ size?: number }>> = {
   connector:  IconConnector,
@@ -39,21 +15,23 @@ const REFERRAL_BADGE_ICONS: Record<string, React.ComponentType<{ size?: number }
   ambassador: IconAmbassador,
 };
 
+const EMPTY_CTX: AchievementCtx = {
+  projectCount: 0, referralCount: 0, maxRatingsOnProject: 0, totalRatingsReceived: 0, votesCast: 0, hasHardwareTag: false, hasAiTag: false,
+};
+
 export default function AchievementsPage() {
   const { user, ready, openAuth } = useAuth();
-  const [projectCount, setProjectCount] = useState(0);
+  const [ctx, setCtx] = useState<AchievementCtx>(EMPTY_CTX);
   const [profile, setProfile] = useState<ReferralProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!user || !ready) return;
-    Promise.all([
-      getMyProjects(user.id).catch(() => []),
-      getOrCreateReferralProfile(user.id).catch(() => null),
-    ]).then(([projects, rp]) => {
-      setProjectCount(projects.length);
+    getOrCreateReferralProfile(user.id).catch(() => null).then(async (rp) => {
       setProfile(rp);
+      const c = await buildAchievementCtx(user.id, rp?.referral_count ?? 0);
+      setCtx(c);
     }).finally(() => setLoading(false));
   }, [user?.id, ready]);
 
@@ -68,11 +46,10 @@ export default function AchievementsPage() {
     );
   }
 
-  const ctx = { projectCount, referralCount: profile?.referral_count ?? 0 };
   const earnedMain = ACHIEVEMENTS.filter(a => a.check(ctx));
   const earnedRef = earnedReferralBadges(ctx.referralCount);
   const totalEarned = earnedMain.length + earnedRef.length;
-  const totalBadges = ACHIEVEMENTS.length + REFERRAL_BADGES.length;
+  const totalBadges = TOTAL_BADGES;
 
   const referralLink = profile
     ? `${typeof window !== 'undefined' ? window.location.origin : 'https://sfe-foundery.vercel.app'}/join?ref=${profile.referral_code}`

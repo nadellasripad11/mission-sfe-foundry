@@ -55,7 +55,9 @@ export default function Sidebar() {
         {user ? (
           <div className="sidebar-user-profile">
             <div className="sidebar-user-main" onClick={() => setShowMenu(!showMenu)}>
-              <div className="user-avatar">{user.email?.[0]?.toUpperCase() || 'U'}</div>
+              <div className="user-avatar">
+                {user.avatarUrl ? <img src={user.avatarUrl} alt="" /> : (user.email?.[0]?.toUpperCase() || 'U')}
+              </div>
               <div className="user-info">
                 <div className="user-name">{user.name || 'User'}</div>
                 <div className="user-email">@{user.name?.toLowerCase().replace(/\s+/g, '') || user.email.split('@')[0]}</div>

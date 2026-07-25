@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../../components/AuthProvider';
-import { getMyProjects, type Project } from '../../../lib/projects';
+import { getMyProjects, getMyRatings, type Project } from '../../../lib/projects';
+import { getOrCreateReferralProfile } from '../../../lib/referrals';
+import { TOTAL_BADGES, countEarned, buildAchievementCtx } from '../../../lib/achievements';
 import { IconArrow } from '../../../components/icons';
 
 export default function ProfilePage() {
@@ -11,11 +13,21 @@ export default function ProfilePage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<'feed' | 'projects'>('feed');
+  const [votesCount, setVotesCount] = useState(0);
+  const [earnedCount, setEarnedCount] = useState(0);
 
   useEffect(() => {
     if (!user) { setLoading(false); return; }
     getMyProjects(user.id).then((p) => { setProjects(p); setLoading(false); }).catch(() => setLoading(false));
+    getMyRatings(user.id).then(map => setVotesCount(Object.keys(map).length)).catch(() => {});
+    getOrCreateReferralProfile(user.id).catch(() => null).then(async (rp) => {
+      const ctx = await buildAchievementCtx(user.id, rp?.referral_count ?? 0);
+      setEarnedCount(countEarned(ctx));
+    });
   }, [user]);
+
+  const buzzCount = projects.filter(p => p.buzz && Object.values(p.buzz as Record<string, string>).some(v => v?.trim())).length;
+  const shipsCount = projects.filter(p => /^https?:\/\//.test(p.url)).length;
 
   if (ready && !user) {
     return (
@@ -54,15 +66,15 @@ export default function ProfilePage() {
           <div className="stat-label">Projects</div>
         </div>
         <div className="stat">
-          <div className="stat-value">0</div>
-          <div className="stat-label">Devlogs</div>
+          <div className="stat-value">{buzzCount}</div>
+          <div className="stat-label">Social Buzz</div>
         </div>
         <div className="stat">
-          <div className="stat-value">0</div>
+          <div className="stat-value">{shipsCount}</div>
           <div className="stat-label">Ships</div>
         </div>
         <div className="stat">
-          <div className="stat-value">0</div>
+          <div className="stat-value">{votesCount}</div>
           <div className="stat-label">Votes</div>
         </div>
       </div>
@@ -132,9 +144,9 @@ export default function ProfilePage() {
       <aside className="profile-sidebar">
         <div className="widget">
           <div className="widget-title">Your Achievements</div>
-          <div className="widget-stat">0 / 5</div>
+          <div className="widget-stat">{earnedCount} / {TOTAL_BADGES}</div>
           <div className="widget-substat">earned</div>
-          <Link href="#" style={{ display: 'block', marginTop: 12, color: 'var(--orange)', textDecoration: 'none', fontSize: '.9rem', fontWeight: 600 }}>
+          <Link href="/achievements" style={{ display: 'block', marginTop: 12, color: 'var(--orange)', textDecoration: 'none', fontSize: '.9rem', fontWeight: 600 }}>
             See all achievements
           </Link>
         </div>
