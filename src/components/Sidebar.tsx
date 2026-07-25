@@ -28,7 +28,7 @@ export default function Sidebar() {
     <aside className="sidebar">
       {/* Logo */}
       <Link href="/dashboard" className="sidebar-logo">
-        <SFELogo size={100} light />
+        <SFELogo size={100} />
       </Link>
 
       {/* Nav items */}
