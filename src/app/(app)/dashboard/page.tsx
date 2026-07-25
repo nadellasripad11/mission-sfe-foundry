@@ -7,10 +7,12 @@ import { getProjects, type ProjectWithRating } from '../../../lib/projects';
 import { IconArrow } from '../../../components/icons';
 import RngWidget from '../../../components/RngWidget';
 import SocialBar from '../../../components/SocialBar';
+import BuzzModal from '../../../components/BuzzModal';
 import { getSocialCounts, type SocialCounts } from '../../../lib/projectSocial';
 
 const BUZZ_KEYS = ['inspiration', 'how_built', 'biggest_challenge', 'proud_of'] as const;
 const BODY_PREVIEW_LEN = 260;
+const EMPTY_COUNTS: SocialCounts = { likes: 0, comments: 0, views: 0, likedByMe: false };
 
 function timeAgo(iso: string): string {
   const diffMs = Date.now() - new Date(iso).getTime();
@@ -24,19 +26,31 @@ function timeAgo(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-function BuzzPost({ p, initialCounts }: { p: ProjectWithRating; initialCounts: SocialCounts }) {
+function buzzParagraph(p: ProjectWithRating): string {
+  const buzzMap = p.buzz as Record<string, string>;
+  return BUZZ_KEYS.map(k => buzzMap[k]?.trim()).filter(Boolean).join(' ');
+}
+
+function BuzzPost({
+  p, counts, onCountsChange, onOpen,
+}: {
+  p: ProjectWithRating; counts: SocialCounts; onCountsChange: (c: SocialCounts) => void; onOpen: () => void;
+}) {
   const [expanded, setExpanded] = useState(false);
   const [imgIndex, setImgIndex] = useState(0);
-  const [social, setSocial] = useState(initialCounts);
 
-  const buzzMap = p.buzz as Record<string, string>;
-  const paragraph = BUZZ_KEYS.map(k => buzzMap[k]?.trim()).filter(Boolean).join(' ');
+  const paragraph = buzzParagraph(p);
   const isLong = paragraph.length > BODY_PREVIEW_LEN;
   const shown = expanded || !isLong ? paragraph : paragraph.slice(0, BODY_PREVIEW_LEN).trimEnd() + '…';
   const initial = (p.author_name?.trim()?.[0] || '?').toUpperCase();
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('a, button, input')) return;
+    onOpen();
+  };
+
   return (
-    <article className="buzz-post">
+    <article className="buzz-post" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
       <div className="buzz-post-head">
         <div className="buzz-post-avatar">{initial}</div>
         <div className="buzz-post-meta">
@@ -51,7 +65,7 @@ function BuzzPost({ p, initialCounts }: { p: ProjectWithRating; initialCounts: S
 
       <p className="buzz-post-body">{shown}</p>
       {isLong && (
-        <button className="buzz-post-readmore" onClick={() => setExpanded(e => !e)}>
+        <button className="buzz-post-readmore" onClick={(e) => { e.stopPropagation(); setExpanded(x => !x); }}>
           {expanded ? 'Show less' : 'Read more'}
         </button>
       )}
@@ -65,7 +79,7 @@ function BuzzPost({ p, initialCounts }: { p: ProjectWithRating; initialCounts: S
                 <button
                   key={i}
                   className={`buzz-post-dot${i === imgIndex ? ' on' : ''}`}
-                  onClick={() => setImgIndex(i)}
+                  onClick={(e) => { e.stopPropagation(); setImgIndex(i); }}
                   aria-label={`Image ${i + 1}`}
                 />
               ))}
@@ -77,7 +91,7 @@ function BuzzPost({ p, initialCounts }: { p: ProjectWithRating; initialCounts: S
       <div className="buzz-post-footer">
         <Link href={`/project/${p.id}`} className="buzz-post-link">View project <IconArrow size={13} /></Link>
       </div>
-      <SocialBar projectId={p.id} counts={social} onCountsChange={setSocial} />
+      <SocialBar projectId={p.id} counts={counts} onCountsChange={onCountsChange} onOpenComments={onOpen} />
     </article>
   );
 }
@@ -87,6 +101,8 @@ export default function DashboardPage() {
   const [projects, setProjects] = useState<ProjectWithRating[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [socialCounts, setSocialCounts] = useState<Record<string, SocialCounts>>({});
+  const [openPostId, setOpenPostId] = useState<string | null>(null);
 
   const load = async () => {
     try {
@@ -106,12 +122,14 @@ export default function DashboardPage() {
   // Projects with Social Buzz for the buzz feed
   const buzzProjects = projects.filter(p => p.buzz && Object.values(p.buzz as Record<string, string>).some(v => v?.trim()));
 
-  const [socialCounts, setSocialCounts] = useState<Record<string, SocialCounts>>({});
   useEffect(() => {
     if (buzzProjects.length === 0) return;
     getSocialCounts(buzzProjects.map(p => p.id), user?.id).then(setSocialCounts).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projects.length, user?.id]);
+
+  const updateCounts = (id: string, c: SocialCounts) => setSocialCounts(prev => ({ ...prev, [id]: c }));
+  const openPost = openPostId ? buzzProjects.find(p => p.id === openPostId) ?? null : null;
 
   if (loading) {
     return (
@@ -161,7 +179,9 @@ export default function DashboardPage() {
                 <BuzzPost
                   key={p.id}
                   p={p}
-                  initialCounts={socialCounts[p.id] ?? { likes: 0, comments: 0, views: 0, likedByMe: false }}
+                  counts={socialCounts[p.id] ?? EMPTY_COUNTS}
+                  onCountsChange={(c) => updateCounts(p.id, c)}
+                  onOpen={() => setOpenPostId(p.id)}
                 />
               ))}
             </div>
@@ -213,6 +233,16 @@ export default function DashboardPage() {
           </div>
         )}
       </section>
+
+      {openPost && (
+        <BuzzModal
+          post={openPost}
+          paragraph={buzzParagraph(openPost)}
+          counts={socialCounts[openPost.id] ?? EMPTY_COUNTS}
+          onCountsChange={(c) => updateCounts(openPost.id, c)}
+          onClose={() => setOpenPostId(null)}
+        />
+      )}
     </div>
   );
 }

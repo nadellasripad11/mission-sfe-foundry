@@ -137,7 +137,7 @@ export async function submitRating(input: {
   // Check if rating already exists
   const { data: existing, error: selectErr } = await supabase
     .from('ratings')
-    .select('id')
+    .select('project_id')
     .eq('project_id', input.project_id)
     .eq('user_id', input.user_id)
     .maybeSingle();

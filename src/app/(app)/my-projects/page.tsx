@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../../components/AuthProvider';
 import { supabase } from '../../../lib/supabaseClient';
-import { createProject, deleteProject, getMyProjects, type Project, type SocialBuzz } from '../../../lib/projects';
+import { createProject, deleteProject, getMyProjects, getProjects, type Project, type SocialBuzz } from '../../../lib/projects';
 import { uploadImage } from '../../../lib/uploadImage';
 import { IconArrow, IconClose } from '../../../components/icons';
+import MentionTextarea from '../../../components/MentionTextarea';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
@@ -29,11 +30,11 @@ function formatJoined(iso?: string) {
 
 // ── Edit overlay (Stardance style) ────────────────────────────────────────────
 function EditProfile({
-  initialBio, initialBanner, initialAvatar, avatarLetter, username, joinedAt, projectCount,
+  initialBio, initialBanner, initialAvatar, avatarLetter, username, joinedAt, projectCount, mentionSuggestions,
   onSave, onCancel,
 }: {
   initialBio: string; initialBanner: string; initialAvatar: string; avatarLetter: string;
-  username: string; joinedAt: string; projectCount: number;
+  username: string; joinedAt: string; projectCount: number; mentionSuggestions: string[];
   onSave: (bio: string, bannerUrl: string, avatarUrl: string) => void;
   onCancel: () => void;
 }) {
@@ -115,10 +116,11 @@ function EditProfile({
         </div>
 
         {/* Bio textarea */}
-        <textarea
+        <MentionTextarea
           className="ep-bio-input"
           value={bio}
-          onChange={(e) => setBio(e.target.value)}
+          onChange={setBio}
+          suggestions={mentionSuggestions}
           placeholder="Tell people about yourself…"
           maxLength={200}
         />
@@ -286,6 +288,14 @@ export default function MyProjectsPage() {
   const [bannerUrl, setBannerUrl] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
   const [joinedAt, setJoinedAt] = useState('');
+  const [mentionSuggestions, setMentionSuggestions] = useState<string[]>([]);
+
+  useEffect(() => {
+    getProjects().then(all => {
+      const names = Array.from(new Set(all.map(p => p.author_name?.trim()).filter((n): n is string => !!n)));
+      setMentionSuggestions(names);
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!user) { setLoading(false); return; }
@@ -329,6 +339,7 @@ export default function MyProjectsPage() {
           <EditProfile
             initialBio={bio} initialBanner={bannerUrl} initialAvatar={avatarUrl} avatarLetter={avatarLetter}
             username={username} joinedAt={formatJoined(joinedAt)} projectCount={projects.length}
+            mentionSuggestions={mentionSuggestions}
             onSave={saveProfile} onCancel={() => setEditing(false)}
           />
         ) : (<>
