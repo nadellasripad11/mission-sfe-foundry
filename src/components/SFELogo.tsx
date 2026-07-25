@@ -1,5 +1,7 @@
-export default function SFELogo({ size = 120 }: { size?: number }) {
+export default function SFELogo({ size = 120, light = false }: { size?: number; light?: boolean }) {
   const h = Math.round(size * 0.52);
+  const textFill = light ? '#FFFFFF' : '#1C1C2E';
+  const stripeDark = light ? '#4A4A66' : '#1C1C2E';
   return (
     <svg
       width={size}
@@ -10,7 +12,7 @@ export default function SFELogo({ size = 120 }: { size?: number }) {
       style={{ display: 'block' }}
     >
       {/* Three diagonal speed stripes */}
-      <polygon points="0,108 18,108 34,8 16,8" fill="#1C1C2E" />
+      <polygon points="0,108 18,108 34,8 16,8" fill={stripeDark} />
       <polygon points="22,108 40,108 56,8 38,8" fill="#2684C6" />
       <polygon points="44,108 62,108 78,8 60,8" fill="#EB5F27" />
 
@@ -22,7 +24,7 @@ export default function SFELogo({ size = 120 }: { size?: number }) {
         fontSize="96"
         fontWeight="900"
         fontStyle="italic"
-        fill="#1C1C2E"
+        fill={textFill}
         letterSpacing="-3"
       >
         SFE
@@ -38,7 +40,7 @@ export default function SFELogo({ size = 120 }: { size?: number }) {
         fontFamily="Arial, 'Helvetica Neue', sans-serif"
         fontSize="14"
         fontWeight="700"
-        fill="#1C1C2E"
+        fill={textFill}
         letterSpacing="6"
       >
         FOUNDRY

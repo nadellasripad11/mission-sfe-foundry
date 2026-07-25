@@ -28,7 +28,7 @@ export default function Sidebar() {
     <aside className="sidebar">
       {/* Logo */}
       <Link href="/dashboard" className="sidebar-logo">
-        <SFELogo size={100} />
+        <SFELogo size={100} light />
       </Link>
 
       {/* Nav items */}
@@ -40,7 +40,7 @@ export default function Sidebar() {
             className={`sidebar-link ${isActive(href) ? 'active' : ''}`}
             title={label}
           >
-            <span className="sidebar-icon"><Icon size={26} /></span>
+            <span className="sidebar-icon"><Icon size={28} /></span>
             <span className="sidebar-label">{label}</span>
           </Link>
         ))}

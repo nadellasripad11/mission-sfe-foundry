@@ -46,7 +46,15 @@ export async function rollForToday(userId: string, displayName: string): Promise
     .insert({ user_id: userId, display_name: displayName, roll_value, roll_date: todayStr() })
     .select('*')
     .single();
-  if (error) throw error;
+
+  if (error) {
+    // Unique constraint hit (e.g. two tabs rolling at once) — someone already rolled, fetch it.
+    if (error.code === '23505') {
+      const row = await getMyRollToday(userId);
+      if (row) return row;
+    }
+    throw new Error(`Roll failed: ${error.message} (${error.code})`);
+  }
   return data;
 }
 
