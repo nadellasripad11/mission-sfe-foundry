@@ -6,6 +6,7 @@ import { useAuth } from '../../../components/AuthProvider';
 import { getProjects, type ProjectWithRating } from '../../../lib/projects';
 import { IconArrow } from '../../../components/icons';
 import RngWidget from '../../../components/RngWidget';
+import ReferralCard from '../../../components/ReferralCard';
 import SocialBar from '../../../components/SocialBar';
 import BuzzModal from '../../../components/BuzzModal';
 import { getSocialCounts, type SocialCounts } from '../../../lib/projectSocial';
@@ -166,16 +167,20 @@ export default function DashboardPage() {
       </div>
 
       {/* ── Social Buzz Feed + RNG widget ── */}
-      {buzzProjects.length > 0 && (
-        <section className="buzz-feed-section">
-          <div className="buzz-feed-head">
-            <span className="buzz-feed-badge">Social Buzz</span>
-            <h2 className="buzz-feed-title">Builder Stories</h2>
-            <p className="buzz-feed-sub">Real stories from builders in your community.</p>
-          </div>
-          <div className="dashboard-buzz-row">
-            <div className="buzz-post-list">
-              {buzzProjects.slice(0, 6).map(p => (
+      <section className="buzz-feed-section">
+        <div className="buzz-feed-head">
+          <span className="buzz-feed-badge">Social Buzz</span>
+          <h2 className="buzz-feed-title">Builder Stories</h2>
+          <p className="buzz-feed-sub">Real stories from builders in your community.</p>
+        </div>
+        <div className="dashboard-buzz-row">
+          <div className="buzz-post-list">
+            {buzzProjects.length === 0 ? (
+              <div className="empty">
+                <p style={{ color: 'var(--muted)' }}>No builder stories yet — be the first to share one.</p>
+              </div>
+            ) : (
+              buzzProjects.slice(0, 6).map(p => (
                 <BuzzPost
                   key={p.id}
                   p={p}
@@ -183,12 +188,15 @@ export default function DashboardPage() {
                   onCountsChange={(c) => updateCounts(p.id, c)}
                   onOpen={() => setOpenPostId(p.id)}
                 />
-              ))}
-            </div>
+              ))
+            )}
+          </div>
+          <div className="dashboard-side-col">
+            <ReferralCard />
             <RngWidget />
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* ── All Projects Feed ── */}
       <section>
