@@ -134,42 +134,64 @@ export default function ProjectPage() {
         </div>
 
         <div className="proj-detail-layout">
-          {/* Left: screenshots + info */}
+          {/* Left: hero card + info */}
           <div className="proj-detail-left">
-            {project.screenshots.length > 0 && (
-              <div className="proj-gallery">
-                <img src={project.screenshots[imgIdx]} alt={project.title} className="proj-gallery-main" />
-                {project.screenshots.length > 1 && (
-                  <div className="proj-gallery-thumbs">
-                    {project.screenshots.map((s, i) => (
-                      <button key={i} className={`proj-thumb${imgIdx === i ? ' on' : ''}`} onClick={() => setImgIdx(i)}>
-                        <img src={s} alt="" />
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            <div className="proj-detail-meta">
-              <h1 className="proj-detail-title">{project.title}</h1>
-              <div className="proj-detail-author">by {project.author_name || 'Anonymous'}</div>
-              <p className="proj-detail-desc">{project.description}</p>
-              {project.tags.length > 0 && (
-                <div className="tag-row" style={{ marginTop: 12 }}>
-                  {project.tags.map(t => <span key={t} className="tag mini">#{t}</span>)}
+            <div className="proj-hero">
+              {/* Gallery banner */}
+              {project.screenshots.length > 0 && (
+                <div className="proj-hero-gallery">
+                  <img src={project.screenshots[imgIdx]} alt={project.title} className="proj-hero-img" />
+                  {project.screenshots.length > 1 && (
+                    <div className="proj-hero-thumbs">
+                      {project.screenshots.map((s, i) => (
+                        <button key={i} className={`proj-hero-thumb${imgIdx === i ? ' on' : ''}`} onClick={() => setImgIdx(i)}>
+                          <img src={s} alt="" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
-              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 16 }}>
-                {/^https?:\/\//.test(project.url) && (
-                  <a href={project.url} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display: 'inline-flex' }}>
-                    Open Project <IconArrow size={16} />
-                  </a>
+
+              {/* Highlighted panel */}
+              <div className="proj-hero-panel">
+                <div className="proj-hero-top">
+                  <div>
+                    <h1 className="proj-hero-title">{project.title}</h1>
+                    <div className="proj-hero-author">
+                      <span className="proj-hero-avatar">{(project.author_name?.trim()?.[0] || '?').toUpperCase()}</span>
+                      By <strong>{project.author_name || 'Anonymous'}</strong>
+                    </div>
+                  </div>
+                  <div className="proj-hero-stats">
+                    <div className="proj-hero-stat"><span className="proj-hero-stat-n">{n}</span><span className="proj-hero-stat-l">Ratings</span></div>
+                    <div className="proj-hero-stat"><span className="proj-hero-stat-n">{social.views}</span><span className="proj-hero-stat-l">Views</span></div>
+                  </div>
+                </div>
+
+                <p className="proj-hero-desc">{project.description}</p>
+
+                {project.tags.length > 0 && (
+                  <div className="tag-row" style={{ marginTop: 12 }}>
+                    {project.tags.map(t => <span key={t} className="tag mini">#{t}</span>)}
+                  </div>
                 )}
-                {user && user.id === project.user_id && (
-                  <button className="btn-ghost" onClick={() => setEditing(true)}>Edit project</button>
-                )}
+
+                <div className="proj-hero-footer">
+                  <span className="proj-hero-likes">{social.likes} like{social.likes === 1 ? '' : 's'}</span>
+                  <div className="proj-hero-actions">
+                    {/^https?:\/\//.test(project.url) && (
+                      <a href={project.url} target="_blank" rel="noopener noreferrer" className="btn-ghost btn-sm">Source</a>
+                    )}
+                    {user && user.id === project.user_id && (
+                      <button className="btn-ghost btn-sm" onClick={() => setEditing(true)}>Edit project</button>
+                    )}
+                  </div>
+                </div>
               </div>
+            </div>
+
+            <div style={{ marginTop: 16 }}>
               <SocialBar projectId={id} counts={social} onCountsChange={setSocial} />
             </div>
 
