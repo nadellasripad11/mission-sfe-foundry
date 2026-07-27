@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../../components/AuthProvider';
 import { supabase } from '../../../lib/supabaseClient';
-import { createProject, deleteProject, getMyProjects, getProjects, getMyRatings, type Project, type SocialBuzz } from '../../../lib/projects';
+import { createProject, getMyProjects, getProjects, getMyRatings, type Project, type SocialBuzz } from '../../../lib/projects';
 import { uploadImage } from '../../../lib/uploadImage';
 import { IconArrow, IconClose } from '../../../components/icons';
 import MentionTextarea from '../../../components/MentionTextarea';
@@ -406,7 +406,7 @@ export default function MyProjectsPage() {
             <div className="empty"><p style={{ color: 'var(--muted)' }}>No projects yet. Ship your first!</p></div>
           ) : (
             <div className="proj-grid">
-              {projects.map(p => <ProjectCard key={p.id} p={p} onDelete={async () => { if (!user) return; await deleteProject(p.id, user.id); setProjects(projects.filter(x => x.id !== p.id)); }} />)}
+              {projects.map(p => <ProjectCard key={p.id} p={p} />)}
             </div>
           )
         )}
@@ -426,7 +426,7 @@ export default function MyProjectsPage() {
   );
 }
 
-function ProjectCard({ p, onDelete }: { p: Project; onDelete?: () => void }) {
+function ProjectCard({ p }: { p: Project }) {
   return (
     <article className="proj-card">
       {p.screenshots[0] && <div className="proj-shot"><img src={p.screenshots[0]} alt="" /></div>}
@@ -442,7 +442,6 @@ function ProjectCard({ p, onDelete }: { p: Project; onDelete?: () => void }) {
           {/^https?:\/\//.test(p.url) && (
             <a href={p.url} target="_blank" rel="noopener noreferrer" className="btn-ghost btn-sm">Open</a>
           )}
-          {onDelete && <button className="btn-ghost btn-sm danger" onClick={onDelete}>Delete</button>}
         </div>
       </div>
     </article>
