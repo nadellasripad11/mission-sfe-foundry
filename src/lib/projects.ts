@@ -134,6 +134,10 @@ export async function submitRating(input: {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) throw new Error('Not authenticated — please sign in again.');
 
+  // Legacy `stars` column (NOT NULL) predates the 4-category schema — populate it with
+  // the rounded overall so the constraint is satisfied.
+  const stars = Math.round((input.originality + input.technicality + input.usability + input.impact) / 4);
+
   // Check if rating already exists
   const { data: existing, error: selectErr } = await supabase
     .from('ratings')
@@ -153,6 +157,7 @@ export async function submitRating(input: {
         usability: input.usability,
         impact: input.impact,
         feedback: input.feedback,
+        stars,
       })
       .eq('project_id', input.project_id)
       .eq('user_id', input.user_id);
@@ -160,7 +165,7 @@ export async function submitRating(input: {
   } else {
     const { error } = await supabase
       .from('ratings')
-      .insert(input);
+      .insert({ ...input, stars });
     if (error) throw new Error(`Insert failed: ${error.message} (${error.code})`);
   }
 }
