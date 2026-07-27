@@ -1772,6 +1772,10 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 .rng-btn-share { background: var(--orange); color: #fff; box-shadow: 0 6px 16px rgba(242,101,34,.28); }
 .rng-btn-share:hover { filter: brightness(1.06); }
 .rng-btn-reroll { background: var(--panel); border: 1px solid var(--line); color: var(--muted); display: flex; align-items: center; justify-content: center; gap: 6px; cursor: not-allowed; }
+.rng-btn-reroll.ready { background: var(--ink); color: #fff; cursor: pointer; }
+.rng-btn-reroll.ready:hover { filter: brightness(1.1); }
+.rng-btn-reroll:disabled { opacity: .7; }
+.rng-notice { font-size: .78rem; color: var(--orange); font-weight: 600; margin: -2px 0 8px; }
 .rng-leaderboard-link { font-size: .8rem; color: var(--muted); text-decoration: underline; margin-top: 2px; }
 .rng-leaderboard-link:hover { color: var(--orange); }
 

@@ -8,9 +8,29 @@ export type DailyRoll = {
   roll_value: number;
   roll_date: string;
   created_at: string;
+  updated_at: string;
 };
 
 const MAX_ROLL = 99_999_999;
+export const REROLL_COOLDOWN_MS = 10 * 60 * 60 * 1000; // 10 hours
+
+/** Milliseconds left before this roll can be rerolled, or 0 if it's ready now. */
+export function rerollCooldownRemaining(roll: DailyRoll): number {
+  const last = new Date(roll.updated_at ?? roll.created_at).getTime();
+  const remaining = REROLL_COOLDOWN_MS - (Date.now() - last);
+  return remaining > 0 ? remaining : 0;
+}
+
+/** Formats a millisecond duration as "9h 42m" or "3m 12s". */
+export function formatCooldown(ms: number): string {
+  const totalSec = Math.ceil(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  if (h > 0) return `${h}h ${m}m`;
+  if (m > 0) return `${m}m ${s}s`;
+  return `${s}s`;
+}
 
 export function rollQuality(value: number): string {
   if (value >= 10_000_000) return 'legendary';
@@ -68,6 +88,30 @@ export async function rollForToday(userId: string, displayName: string, avatarUr
     }
     throw new Error(`Roll failed: ${error.message} (${error.code})`);
   }
+  return data;
+}
+
+/** Reroll today's number. Throws with the remaining time if the 10-hour cooldown hasn't elapsed. */
+export async function rerollForToday(userId: string, displayName: string, avatarUrl: string | null = null): Promise<DailyRoll> {
+  const existing = await getMyRollToday(userId);
+  if (!existing) {
+    // Nothing to reroll yet — treat as a first roll.
+    return rollForToday(userId, displayName, avatarUrl);
+  }
+
+  const remaining = rerollCooldownRemaining(existing);
+  if (remaining > 0) {
+    throw new Error(`Reroll available in ${formatCooldown(remaining)}.`);
+  }
+
+  const roll_value = Math.floor(Math.random() * MAX_ROLL) + 1;
+  const { data, error } = await supabase
+    .from('daily_rolls')
+    .update({ roll_value, display_name: displayName, avatar_url: avatarUrl, updated_at: new Date().toISOString() })
+    .eq('id', existing.id)
+    .select('*')
+    .single();
+  if (error) throw new Error(`Reroll failed: ${error.message} (${error.code})`);
   return data;
 }
 
