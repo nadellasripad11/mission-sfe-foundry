@@ -428,7 +428,7 @@ export default function MyProjectsPage() {
 
 function ProjectCard({ p }: { p: Project }) {
   return (
-    <article className="proj-card">
+    <Link href={`/project/${p.id}`} className="proj-card rate-card-hover" style={{ textDecoration: 'none', display: 'block' }}>
       {p.screenshots[0] && <div className="proj-shot"><img src={p.screenshots[0]} alt="" /></div>}
       <div className="proj-body">
         <div className="proj-title">{p.title}</div>
@@ -438,12 +438,7 @@ function ProjectCard({ p }: { p: Project }) {
             {p.tags.map(t => <span key={t} className="tag mini">#{t}</span>)}
           </div>
         )}
-        <div className="proj-actions" style={{ marginTop: 12 }}>
-          {/^https?:\/\//.test(p.url) && (
-            <a href={p.url} target="_blank" rel="noopener noreferrer" className="btn-ghost btn-sm">Open</a>
-          )}
-        </div>
       </div>
-    </article>
+    </Link>
   );
 }

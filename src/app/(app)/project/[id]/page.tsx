@@ -12,6 +12,7 @@ import {
 import { IconArrow } from '../../../../components/icons';
 import StarRating from '../../../../components/StarRating';
 import SocialBar from '../../../../components/SocialBar';
+import EditProjectModal from '../../../../components/EditProjectModal';
 import { getSocialCounts, incrementView, type SocialCounts } from '../../../../lib/projectSocial';
 
 const BUZZ_QUESTIONS_KEYS = ['inspiration', 'how_built', 'biggest_challenge', 'proud_of'];
@@ -50,6 +51,7 @@ export default function ProjectPage() {
   const [loading, setLoading] = useState(true);
   const [imgIdx, setImgIdx] = useState(0);
   const [social, setSocial] = useState<SocialCounts>({ likes: 0, comments: 0, views: 0, likedByMe: false });
+  const [editing, setEditing] = useState(false);
 
   // Rating form state
   const [rating, setRating] = useState({ originality: 0, technicality: 0, usability: 0, impact: 0 });
@@ -158,11 +160,16 @@ export default function ProjectPage() {
                   {project.tags.map(t => <span key={t} className="tag mini">#{t}</span>)}
                 </div>
               )}
-              {/^https?:\/\//.test(project.url) && (
-                <a href={project.url} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display: 'inline-flex', marginTop: 16 }}>
-                  Open Project <IconArrow size={16} />
-                </a>
-              )}
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 16 }}>
+                {/^https?:\/\//.test(project.url) && (
+                  <a href={project.url} target="_blank" rel="noopener noreferrer" className="btn-primary" style={{ display: 'inline-flex' }}>
+                    Open Project <IconArrow size={16} />
+                  </a>
+                )}
+                {user && user.id === project.user_id && (
+                  <button className="btn-ghost" onClick={() => setEditing(true)}>Edit project</button>
+                )}
+              </div>
               <SocialBar projectId={id} counts={social} onCountsChange={setSocial} />
             </div>
 
@@ -291,6 +298,14 @@ export default function ProjectPage() {
         </div>
       </section>
       <Footer />
+      {editing && user && (
+        <EditProjectModal
+          project={project}
+          userId={user.id}
+          onClose={() => setEditing(false)}
+          onSaved={(updated) => { setProject(updated); setEditing(false); }}
+        />
+      )}
     </div>
   );
 }

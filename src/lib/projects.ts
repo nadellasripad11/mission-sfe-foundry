@@ -125,6 +125,24 @@ export async function deleteProject(id: string, userId: string) {
   if (error) throw error;
 }
 
+export async function updateProject(id: string, userId: string, patch: {
+  title: string; description: string; url: string;
+  tags: string[]; buzz: SocialBuzz | null;
+}) {
+  const { error } = await supabase
+    .from('projects')
+    .update({
+      title: patch.title,
+      description: patch.description,
+      url: patch.url,
+      tags: patch.tags,
+      buzz: patch.buzz,
+    })
+    .eq('id', id)
+    .eq('user_id', userId);
+  if (error) throw new Error(`Update failed: ${error.message} (${error.code})`);
+}
+
 export async function submitRating(input: {
   project_id: string; user_id: string;
   originality: number; technicality: number; usability: number; impact: number;
